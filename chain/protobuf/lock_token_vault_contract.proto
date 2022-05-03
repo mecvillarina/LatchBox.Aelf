@@ -1,0 +1,125 @@
+/* This files is part of the Hello World smart contract example that is included in Boilerplate.
+ * It is only the definition of the contract, implementation is located in the "contract" folder
+ * and tests are located in the "test" folder.
+ *
+ * You can use this as a basic template for new contracts.
+ * 
+ * When building Boilerplate or the contract project located in the "../contract/LatchBox.Contracts.LockTokenVaultContract/" 
+ * protoc (the protobuf compiler) will be invoked and this file will produce a .c.cs file and .g.cs file, in the 
+ * "../contract/LatchBox.Contracts.LockTokenVaultContract/Protobuf/Generated/" folder. 
+ */
+
+// the version of the language, use proto3 for contracts
+syntax = "proto3";
+
+// some core imports for aelf chain types
+import "aelf/core.proto";
+import "aelf/options.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+
+// the name of the C# namespace in which the contract code will be,
+// generated code will also be in this namespace.
+option csharp_namespace = "LatchBox.Contracts.LockTokenVaultContract";
+
+// the contract definition: a gRPC service definition.
+service LockTokenVaultContract {
+
+    option (aelf.csharp_state) = "LatchBox.Contracts.LockTokenVaultContract.LockTokenVaultContractState";
+
+    rpc Initialize (InitializeInput) returns (google.protobuf.Empty) { }
+    rpc UpdateTokenVaultSettings (UpdateTokenVaultSettingsInput) returns (google.protobuf.Empty) { }
+    rpc UpdatePayment (UpdatePaymentInput) returns (google.protobuf.Empty) { }
+    rpc AddLock (AddLockInput) returns (google.protobuf.Empty) { }
+
+    rpc GetLocksCount(google.protobuf.Empty) returns (google.protobuf.UInt64Value) {
+        option (aelf.is_view) = true;
+    }
+
+    rpc GetLockTransaction(google.protobuf.UInt64Value) returns (GetLatchBoxLockTransactionOutput) {
+        option (aelf.is_view) = true;
+    }
+}
+
+message InitializeInput {
+}
+
+message UpdatePaymentInput {
+    string token_symbol = 1;
+    int64 add_lock_payment_fee = 2;
+    int64 claim_lock_payment_fee = 3;
+    int64 revoke_lock_payment_fee = 4;
+}
+
+message UpdateTokenVaultSettingsInput {
+    aelf.Address foundation_address = 1;
+    aelf.Address staking_address = 2;
+    aelf.Address platform_address = 3;
+}
+
+message AddLockInput {
+    string token_symbol = 1;
+    int64 total_amount = 2;
+    google.protobuf.Timestamp unlock_time = 3;
+    bool is_revocable = 4;
+    repeated AddLockReceiverInput receivers = 5;
+}
+
+message AddLockReceiverInput {
+    aelf.Address receiver_address = 1;
+    int64 amount = 2;
+}
+
+message TokenVaultSettings {
+    aelf.Address foundation_address = 1;
+    aelf.Address staking_address = 2;
+    aelf.Address platform_address = 3;
+}
+
+message LatchBoxPayment {
+    string token_symbol = 1;
+    int64 add_lock_fee = 2;
+    int64 claim_lock_fee = 3;
+    int64 revoke_lock_fee = 4;
+}
+
+message LatchBoxLock {
+    string token_symbol = 1;
+    aelf.Address initiator_address = 2;
+    google.protobuf.Timestamp creation_time = 3;
+    google.protobuf.Timestamp start_time = 4;
+    google.protobuf.Timestamp unlock_time = 5;
+    bool is_revocable = 7;
+    bool is_revoked = 8;
+    bool is_active = 9;
+    repeated LatchBoxLockReceiver receivers = 10;
+}
+
+
+message LatchBoxLockReceiver {
+    aelf.Address receiver_address = 1;
+    int64 amount = 2;
+    google.protobuf.Timestamp date_claimed = 3;
+    google.protobuf.Timestamp date_revoked = 4;
+    bool is_active = 5;
+}
+
+message LockIndexList {
+    repeated uint64 indexes = 1;
+}
+
+message LockAssetCounter {
+    int64 locked_amount = 1;
+    int64 unlocked_amount = 2;
+}
+
+message GetLatchBoxLockTransactionOutput {
+    uint64 Index = 1;
+    LatchBoxLock Lock = 2;
+}
+
+message OnCreatedLockEvent {
+    option (aelf.is_event) = true;
+    uint64 lockIdx = 1;
+}
