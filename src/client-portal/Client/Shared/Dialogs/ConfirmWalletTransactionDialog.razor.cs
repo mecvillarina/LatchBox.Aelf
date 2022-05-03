@@ -7,7 +7,7 @@ namespace Client.Shared.Dialogs
 {
     public partial class ConfirmWalletTransactionDialog
     {
-        [Parameter] public ConfirmWalletTransactionParameter Model { get; set; } = new();
+        public ConfirmWalletTransactionParameter Model { get; set; } = new();
         [Parameter] public string GasDetails { get; set; }
         [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
 
@@ -19,23 +19,40 @@ namespace Client.Shared.Dialogs
         public InputType PasswordInput { get; set; } = InputType.Password;
         public string PasswordInputIcon { get; set; } = Icons.Material.Filled.VisibilityOff;
 
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                await InvokeAsync(async () =>
+                {
+                    var wallet = await WalletManager.GetWalletInformationAsync();
+                    if (wallet == null)
+                    {
+                        MudDialog.Cancel();
+                        return;
+                    }
+
+                    Model.Address = wallet.Address;
+
+                    StateHasChanged();
+                });
+            }
+        }
         private async Task SubmitAsync()
         {
             if (Validated)
             {
                 IsProcessing = true;
 
-                //var walletAccount = await WalletManager.GetWalletAccountAsync(Model.WalletAddress, Model.Password);
-
-                //if (walletAccount != null)
-                //{
-                //    MudDialog.Close(DialogResult.Ok(walletAccount));
-                //    return;
-                //}
-                //else
-                //{
-                //    AppDialogService.ShowError("Open wallet error, please check password and retry");
-                //}
+                try
+                {
+                    await WalletManager.AuthenticateAsync(Model.Password);
+                    MudDialog.Close();
+                }
+                catch (Exception ex)
+                {
+                    AppDialogService.ShowError(ex.Message);
+                }
 
                 IsProcessing = false;
             }

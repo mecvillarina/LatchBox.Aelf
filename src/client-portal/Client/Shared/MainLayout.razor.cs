@@ -11,7 +11,7 @@ namespace Client.Shared
         private bool DrawerOpen { get; set; } = true;
         private MudTheme CurrentTheme { get; set; }
         public string Network { get; set; }
-        public string RpcUrl { get; set; }
+        public string Node { get; set; }
 
         protected override void OnInitialized()
         {
@@ -24,7 +24,10 @@ namespace Client.Shared
             {
                 await InvokeAsync(async () =>
                 {
+                    IsAuthenticated = await AuthManager.IsAuthenticated();
                     await AppBreakpointService.InitAsync();
+                    Network = BlockchainManager.Network;
+                    Node = BlockchainManager.Node;
                     StateHasChanged();
                 });
             }

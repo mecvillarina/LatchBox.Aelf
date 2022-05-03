@@ -15,6 +15,7 @@ namespace Client.Shared.Dialogs
 
         private async Task Submit()
         {
+            await AuthManager.DisconnectWalletAsync();
             NavigationManager.NavigateTo("/", true);
             MudDialog.Close(DialogResult.Ok(true));
         }

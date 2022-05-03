@@ -20,7 +20,6 @@
 @using Client.Shared.Components
 @using Client.Shared.Dialogs
 @using Client.Services
-@*@using Client.PeriodicExecutors*@
 @using Client.Infrastructure.Managers
 @using Client.Infrastructure.Managers.Interfaces
 @using Client.Infrastructure.Constants
@@ -28,6 +27,9 @@
 @using Client.Infrastructure.Extensions
 
 @inject IManagerToolkit ManagerToolkit
+@inject IAuthManager AuthManager 
+@inject IBlockchainManager BlockchainManager
+@inject IWalletManager WalletManager
 
 @inject ClientPreferenceManager ClientPreferenceManager
 @inject NavigationManager NavigationManager

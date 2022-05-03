@@ -4,7 +4,7 @@ namespace Client.Parameters
 {
     public class ConfirmWalletTransactionParameter
     {
-        public string WalletAddress { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
     }
 

@@ -2,6 +2,8 @@ using Blazored.LocalStorage;
 using Client.Extensions;
 using Client.Infrastructure.Managers;
 using Client.Infrastructure.Models;
+using Client.Infrastructure.Services;
+using Client.Infrastructure.Services.Interfaces;
 using Client.Services;
 using MudBlazor;
 using MudBlazor.Services;
@@ -24,6 +26,7 @@ builder.Services.AddServerSideBlazor()
 #if RELEASE
 builder.Services.AddSignalR().AddAzureSignalR();
 #endif
+builder.Services.Configure<AElfSettings>(builder.Configuration.GetSection("AELF"));
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddMudServices(configuration =>
 {
@@ -33,6 +36,12 @@ builder.Services.AddMudServices(configuration =>
     configuration.SnackbarConfiguration.VisibleStateDuration = 5000;
     configuration.SnackbarConfiguration.ShowCloseIcon = true;
 });
+
+builder.Services.AddScoped<AElfClientFactory>();
+builder.Services.AddScoped<IKeyStore, AElfKeyStore>();
+builder.Services.AddScoped<IAccountsService, AccountsService>();
+builder.Services.AddScoped<IBlockChainService, BlockChainService>();
+
 builder.Services.AddScoped<ClientPreferenceManager>();
 builder.Services.AddScoped<IAppDialogService, AppDialogService>();
 builder.Services.AddManagers();

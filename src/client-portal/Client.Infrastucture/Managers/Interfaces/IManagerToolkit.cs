@@ -5,7 +5,8 @@ namespace Client.Infrastructure.Managers.Interfaces
 {
     public interface IManagerToolkit : IManager
     {
-        string FilePathRoot { get; }
+        AElfSettings AelfSettings { get; }
+
         string FilePathTemp { get; }
         string FilePathWallet { get; }
 

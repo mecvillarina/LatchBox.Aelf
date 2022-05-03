@@ -1,4 +1,5 @@
-﻿using Client.Shared.Dialogs;
+﻿using Client.Pages.Modals;
+using Client.Shared.Dialogs;
 using MudBlazor;
 
 namespace Client.Shared.Components
@@ -9,10 +10,36 @@ namespace Client.Shared.Components
         public bool IsPlatformTokenLoaded { get; set; }
         public bool IsAuthenticated { get; set; }
         public string Network { get; set; }
-        public string RpcUrl { get; set; }
+        public string Node { get; set; }
+        public string WalletAddress { get; set; }
+
+        protected async override Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                await InvokeAsync(async () =>
+                {
+                    IsAuthenticated = await AuthManager.IsAuthenticated();
+                    Network = BlockchainManager.Network;
+                    Node = BlockchainManager.Node;
+
+                    if(IsAuthenticated)
+                    {
+                        var wallet = await WalletManager.GetWalletInformationAsync();
+                        WalletAddress = wallet.Address;
+                    }
+
+                    IsLoaded = true;
+                    StateHasChanged();
+                });
+            }
+        }
+
 
         private void InvokeConnectWalletModal()
         {
+            var options = new DialogOptions() { MaxWidth = MaxWidth.ExtraSmall };
+            DialogService.Show<ConnectWalletModal>("Connect Wallet (JSON)", options);
         }
 
         private void InvokeDisconnectWalletDialog()
