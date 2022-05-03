@@ -1,4 +1,6 @@
-﻿namespace Client.Services
+﻿using Client.Infrastructure.Models;
+
+namespace Client.Services
 {
     public interface IAppDialogService
     {
@@ -6,5 +8,6 @@
         void ShowWarning(string message);
         void ShowError(string message);
         void ShowErrors(List<string> messages);
+        Task<(WalletInformation, string)> ShowConfirmWalletTransactionAsync();
     }
 }

@@ -1,4 +1,5 @@
-﻿using Client.Parameters;
+﻿using Client.Infrastructure.Models;
+using Client.Parameters;
 using Client.Shared.Dialogs;
 using MudBlazor;
 
@@ -26,23 +27,9 @@ namespace Client.Services
 
         public void ShowError(string message)
         {
-            if (message.Contains("[LatchBoxLockTokenVaultContract]"))
-            {
-                var messages = message.Split("[LatchBoxLockTokenVaultContract]", StringSplitOptions.RemoveEmptyEntries);
-                if (messages.Length == 2)
-                {
-                    message = messages.Last().Trim();
-                }
-            }
-            else if (message.Contains("[LatchBoxVestingTokenVaultContract]"))
-            {
-                var messages = message.Split("[LatchBoxVestingTokenVaultContract]", StringSplitOptions.RemoveEmptyEntries);
-                if (messages.Length == 2)
-                {
-                    message = messages.Last().Trim();
-                }
-            }
-
+            message ??= string.Empty;
+            message = message.Replace("AElf.Sdk.CSharp.AssertionException:", "");
+            message = message.Trim();
             _snackbar.Add(message, Severity.Error);
         }
 
@@ -54,5 +41,18 @@ namespace Client.Services
             }
         }
 
+        public async Task<(WalletInformation, string)> ShowConfirmWalletTransactionAsync()
+        {
+            var options = new DialogOptions() { MaxWidth = MaxWidth.ExtraSmall, Position = DialogPosition.TopRight };
+            var parameters = new DialogParameters();
+            var dialog = _dialogService.Show<ConfirmWalletTransactionDialog>($"Confirm Wallet Transaction", parameters, options);
+            var dialogResult = await dialog.Result;
+            if (!dialogResult.Cancelled)
+            {
+                return ((WalletInformation, string)) dialogResult.Data;
+            }
+
+            return (null, null);
+        }
     }
 }

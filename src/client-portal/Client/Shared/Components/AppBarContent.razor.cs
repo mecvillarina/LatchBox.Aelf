@@ -1,11 +1,15 @@
-﻿using Client.Pages.Modals;
+﻿using Client.Infrastructure.Managers.Interfaces;
+using Client.Pages.Modals;
 using Client.Shared.Dialogs;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 namespace Client.Shared.Components
 {
     public partial class AppBarContent
     {
+        [Inject] public IFaucetManager FaucetManager { get; set; }
+
         public bool IsLoaded { get; set; }
         public bool IsPlatformTokenLoaded { get; set; }
         public bool IsAuthenticated { get; set; }
@@ -23,7 +27,7 @@ namespace Client.Shared.Components
                     Network = BlockchainManager.Network;
                     Node = BlockchainManager.Node;
 
-                    if(IsAuthenticated)
+                    if (IsAuthenticated)
                     {
                         var wallet = await WalletManager.GetWalletInformationAsync();
                         WalletAddress = wallet.Address;
@@ -40,6 +44,22 @@ namespace Client.Shared.Components
         {
             var options = new DialogOptions() { MaxWidth = MaxWidth.ExtraSmall };
             DialogService.Show<ConnectWalletModal>("Connect Wallet (JSON)", options);
+        }
+
+        private async Task InvokeClaimAsync(string symbol)
+        {
+            var credentials = await AppDialogService.ShowConfirmWalletTransactionAsync();
+
+            if (credentials.Item1 != null)
+            {
+                var result = await FaucetManager.TakeAsync(credentials.Item1, credentials.Item2, symbol, 100_00000000);
+
+                if (!string.IsNullOrEmpty(result.Error))
+                {
+                    AppDialogService.ShowError(result.Error);
+                    return;
+                }
+            }
         }
 
         private void InvokeDisconnectWalletDialog()

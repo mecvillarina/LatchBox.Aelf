@@ -11,7 +11,7 @@ namespace Client.Infrastructure.Extensions
         public static string ToMask(this string value, int length)
         {
             if (value == null) return "";
-
+            if (length > value.Length) return "";
             return string.Format("{0}....{1}", value.Substring(0, length), value.Substring(value.Length - length, length));
         }
     }

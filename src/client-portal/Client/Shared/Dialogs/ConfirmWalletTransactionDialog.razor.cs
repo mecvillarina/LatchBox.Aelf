@@ -1,4 +1,5 @@
 ﻿using Blazored.FluentValidation;
+using Client.Infrastructure.Models;
 using Client.Parameters;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -14,7 +15,8 @@ namespace Client.Shared.Dialogs
         private FluentValidationValidator _fluentValidationValidator;
         private bool Validated => _fluentValidationValidator.Validate(options => { options.IncludeAllRuleSets(); });
         public bool IsProcessing { get; set; }
-
+        
+        public WalletInformation Wallet { get; set; }
         public bool PasswordVisibility { get; set; }
         public InputType PasswordInput { get; set; } = InputType.Password;
         public string PasswordInputIcon { get; set; } = Icons.Material.Filled.VisibilityOff;
@@ -25,19 +27,20 @@ namespace Client.Shared.Dialogs
             {
                 await InvokeAsync(async () =>
                 {
-                    var wallet = await WalletManager.GetWalletInformationAsync();
-                    if (wallet == null)
+                    Wallet = await WalletManager.GetWalletInformationAsync();
+                    if (Wallet == null)
                     {
                         MudDialog.Cancel();
                         return;
                     }
 
-                    Model.Address = wallet.Address;
+                    Model.Address = Wallet.Address;
 
                     StateHasChanged();
                 });
             }
         }
+
         private async Task SubmitAsync()
         {
             if (Validated)
@@ -47,7 +50,7 @@ namespace Client.Shared.Dialogs
                 try
                 {
                     await WalletManager.AuthenticateAsync(Model.Password);
-                    MudDialog.Close();
+                    MudDialog.Close(DialogResult.Ok((Wallet, Model.Password)));
                 }
                 catch (Exception ex)
                 {

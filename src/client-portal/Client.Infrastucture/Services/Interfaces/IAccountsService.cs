@@ -8,6 +8,6 @@ namespace Client.Infrastructure.Services.Interfaces
         void SaveKeyStoreJsonContent(string filename, string content);
         void RemoveKeyStore(string filename);
         Task<ECKeyPair> GetAccountKeyPairAsync(string filename, string password);
-        Task<byte[]> SignAsync(string address, string password, byte[] data);
+        Task<byte[]> SignAsync(string keyStoreFile, string password, byte[] data);
     }
 }

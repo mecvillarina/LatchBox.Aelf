@@ -15,7 +15,7 @@
 
                     <MudItem xs="12">
                         <MudText Typo="Typo.caption" Class="text-white"><b>Wallet Address</b></MudText>
-                        <MudText Typo="Typo.body1" Class="text-white">@Model.Address</MudText>
+                        <MudText Typo="Typo.body1" Class="text-white">@Model.Address.ToMask(6)</MudText>
                     </MudItem>
 
                     <MudItem xs="12">

@@ -1,6 +1,7 @@
 ﻿using AElf;
 using AElf.Client.Dto;
 using AElf.Types;
+using Client.Infrastructure.Models;
 using Client.Infrastructure.Services.Interfaces;
 using Google.Protobuf;
 using Newtonsoft.Json;
@@ -19,11 +20,11 @@ namespace Client.Infrastructure.Services
             _aelfClientFactory = aelfClientFactory;
         }
 
-        public async Task<string> SendTransactionAsync(string account, string password, string contract, string method, string @params = null)
+        public async Task<string> SendTransactionAsync(WalletInformation wallet, string password, string contract, string method, string @params = null)
         {
             var contractAddress = await GetContractAddressAsync(contract);
-            var rawTransaction = await GenerateRawTransactionAsync(account, contractAddress, method, FormatParams(@params));
-            var signature = await GetSignatureAsync(account, password, rawTransaction);
+            var rawTransaction = await GenerateRawTransactionAsync(wallet.Address, contractAddress, method, FormatParams(@params));
+            var signature = await GetSignatureAsync(wallet.Filename, password, rawTransaction);
 
             var rawTransactionResult = await _aelfClientFactory.CreateClient().SendRawTransactionAsync(new SendRawTransactionInput()
             {
@@ -35,11 +36,11 @@ namespace Client.Infrastructure.Services
         }
 
 
-        public async Task<string> ExecuteTransactionAsync(string account, string password, string contract, string method, string @params = null)
+        public async Task<string> ExecuteTransactionAsync(WalletInformation wallet, string password, string contract, string method, string @params = null)
         {
             var contractAddress = await GetContractAddressAsync(contract);
-            var rawTransaction = await GenerateRawTransactionAsync(account, contractAddress, method, FormatParams(@params));
-            var signature = await GetSignatureAsync(account, password, rawTransaction);
+            var rawTransaction = await GenerateRawTransactionAsync(wallet.Address, contractAddress, method, FormatParams(@params));
+            var signature = await GetSignatureAsync(wallet.Filename, password, rawTransaction);
 
             var rawTransactionResult = await _aelfClientFactory.CreateClient().ExecuteRawTransactionAsync(new ExecuteRawTransactionDto()
             {
@@ -76,10 +77,10 @@ namespace Client.Infrastructure.Services
             return result;
         }
 
-        private async Task<string> GetSignatureAsync(string account, string password, string rawTransaction)
+        private async Task<string> GetSignatureAsync(string keyStoreFile, string password, string rawTransaction)
         {
             var transactionId = HashHelper.ComputeFrom(ByteArrayHelper.HexStringToByteArray(rawTransaction));
-            var signature = await _accountsService.SignAsync(account, password,
+            var signature = await _accountsService.SignAsync(keyStoreFile, password,
                 transactionId.ToByteArray());
             return ByteString.CopyFrom(signature).ToHex();
         }

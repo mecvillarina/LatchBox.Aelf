@@ -29,9 +29,9 @@ namespace Client.Infrastructure.Services
             return await _keyStore.ReadKeyPairAsync(filename, password);
         }
 
-        public async Task<byte[]> SignAsync(string address, string password, byte[] data)
+        public async Task<byte[]> SignAsync(string keyStoreFile, string password, byte[] data)
         {
-            var signature = CryptoHelper.SignWithPrivateKey((await GetAccountKeyPairAsync(address, password)).PrivateKey, data);
+            var signature = CryptoHelper.SignWithPrivateKey((await GetAccountKeyPairAsync(keyStoreFile, password)).PrivateKey, data);
             return signature;
         }
 
