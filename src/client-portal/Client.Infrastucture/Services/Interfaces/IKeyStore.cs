@@ -8,5 +8,6 @@ namespace Client.Infrastructure.Services.Interfaces
         Task<ECKeyPair> ReadKeyPairAsync(string filename, string password);
         void SaveKeyStoreJsonContent(string filename, string scrypt);
         void DeleteKeyStore(string filename);
+        string FetchKeyStoreContent(string filename);
     }
 }

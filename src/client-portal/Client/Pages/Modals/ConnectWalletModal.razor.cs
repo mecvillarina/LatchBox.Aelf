@@ -57,12 +57,14 @@ namespace Client.Pages.Modals
                     }
                     else
                     {
+                        await AuthManager.ClearKeyStoreAsync();
                         Model.Password = string.Empty;
                         AppDialogService.ShowError("Open wallet error, please check wallet file or password and retry");
                     }
                 }
                 catch
                 {
+                    await AuthManager.ClearKeyStoreAsync();
                     Model.Password = string.Empty;
                     AppDialogService.ShowError("Open wallet error, please check wallet file or password and retry");
                 }

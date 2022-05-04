@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Client.Infrastructure.Managers.Interfaces;
+using Microsoft.AspNetCore.Components;
 
 namespace Client.Pages
 {
     public partial class HomePage
     {
+        [Inject] public ITokenManager TokenManager { get; set; }
+
         [Parameter]
         public long? LockIndex { get; set; }
 
@@ -11,42 +14,46 @@ namespace Client.Pages
         public long? VestingIndex { get; set; }
 
         public bool IsLoaded { get; set; }
-        //public PlatformTokenStats PlatformTokenStats { get; set; }
-        //public LockTokenVaultContractInfo LockTokenVaultContractInfo { get; set; }
-        //public VestingTokenVaultContractInfo VestingTokenVaultContractInfo { get; set; }
-        //protected async override Task OnAfterRenderAsync(bool firstRender)
-        //{
-        //    if (firstRender)
-        //    {
-        //        if (LockIndex.HasValue && LockIndex.Value >= 0)
-        //        {
-        //            InvokeLockPreviewerModal(LockIndex.Value);
-        //        }
-        //        else if (VestingIndex.HasValue && VestingIndex.Value >= 0)
-        //        {
-        //            InvokeVestingPreviewerModal(VestingIndex.Value);
-        //        }
 
-        //        await InvokeAsync(async () =>
-        //        {
-        //            await FetchDataAsync();
-        //        });
-        //    }
-        //}
+        protected async override Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                //if (LockIndex.HasValue && LockIndex.Value >= 0)
+                //{
+                //    InvokeLockPreviewerModal(LockIndex.Value);
+                //}
+                //else if (VestingIndex.HasValue && VestingIndex.Value >= 0)
+                //{
+                //    InvokeVestingPreviewerModal(VestingIndex.Value);
+                //}
 
-        //private async Task FetchDataAsync()
-        //{
-        //    IsLoaded = false;
+                await InvokeAsync(async () =>
+                {
+                    await FetchDataAsync();
+                });
+            }
+        }
 
-        //    StateHasChanged();
+        private async Task FetchDataAsync()
+        {
+            IsLoaded = false;
 
-        //    PlatformTokenStats = await PlatformTokenManager.GetTokenStatsAsync();
-        //    LockTokenVaultContractInfo = await LockTokenVaultManager.GetInfoAsync();
-        //    VestingTokenVaultContractInfo = await VestingTokenVaultManager.GetInfoAsync();
+            StateHasChanged();
 
-        //    IsLoaded = true;
-        //    StateHasChanged();
-        //}
+            var authenticated = await AuthManager.IsAuthenticated();
+
+            if (authenticated)
+            {
+                var cred = await WalletManager.GetWalletCrdentialsAsync();
+                //await TokenManager.GetBalanceAsync(cred.Item1, cred.Item2, "LATCH");
+                //await TokenManager.GetTokenInfoAsync(cred.Item1, cred.Item2, "ELF");
+                await TokenManager.CreateTokenAsync(cred.Item1, cred.Item2);
+            }
+
+            IsLoaded = true;
+            StateHasChanged();
+        }
 
         //private void InvokeLockPreviewerModal(BigInteger lockIndex)
         //{

@@ -7,6 +7,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client.Infrastucture", "Client.Infrastucture\Client.Infrastucture.csproj", "{18330EAE-440B-447F-BF90-FF65553071F3}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LatchBox.Contracts.LockTokenVaultContract", "..\chain\contract\LatchBox.Contracts.LockTokenVaultContract\LatchBox.Contracts.LockTokenVaultContract.csproj", "{A569E8D5-D2C3-4D00-9643-7A9716C096DE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AElf.Client", "AElf.Client\AElf.Client.csproj", "{91D87FF7-AEC1-4652-AF3C-306CA80EE02E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AELF", "AELF", "{60913538-EBD5-48C1-95AF-B85D4F7978EB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LatchBoxContracts", "LatchBoxContracts", "{5F03CCB4-5BA6-44D2-8114-C49D09E77BA5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Portal", "Portal", "{88A2B2BB-5E06-4192-895D-371C18E2BF68}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,9 +31,23 @@ Global
 		{18330EAE-440B-447F-BF90-FF65553071F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18330EAE-440B-447F-BF90-FF65553071F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18330EAE-440B-447F-BF90-FF65553071F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A569E8D5-D2C3-4D00-9643-7A9716C096DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A569E8D5-D2C3-4D00-9643-7A9716C096DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A569E8D5-D2C3-4D00-9643-7A9716C096DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A569E8D5-D2C3-4D00-9643-7A9716C096DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91D87FF7-AEC1-4652-AF3C-306CA80EE02E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91D87FF7-AEC1-4652-AF3C-306CA80EE02E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91D87FF7-AEC1-4652-AF3C-306CA80EE02E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91D87FF7-AEC1-4652-AF3C-306CA80EE02E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{07144FCD-735A-402E-A395-BCF43C44AFDE} = {88A2B2BB-5E06-4192-895D-371C18E2BF68}
+		{18330EAE-440B-447F-BF90-FF65553071F3} = {88A2B2BB-5E06-4192-895D-371C18E2BF68}
+		{A569E8D5-D2C3-4D00-9643-7A9716C096DE} = {5F03CCB4-5BA6-44D2-8114-C49D09E77BA5}
+		{91D87FF7-AEC1-4652-AF3C-306CA80EE02E} = {60913538-EBD5-48C1-95AF-B85D4F7978EB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EAE26D0B-8DBF-48CB-A36C-0A59805A6067}

@@ -1,7 +1,6 @@
 ﻿using AElf.Cryptography;
 using AElf.Cryptography.ECDSA;
 using AElf.Cryptography.Exceptions;
-using AElf.Types;
 using Client.Infrastructure.Services.Interfaces;
 using Nethereum.KeyStore;
 using Nethereum.KeyStore.Crypto;
@@ -41,6 +40,22 @@ namespace Client.Infrastructure.Services
             if (File.Exists(fullPath))
             {
                 File.Delete(fullPath);
+            }
+        }
+
+        public string FetchKeyStoreContent(string filename)
+        {
+            var fullPath = GetKeyFileFullPath(filename);
+
+            if (!File.Exists(fullPath))
+            {
+                throw new KeyStoreNotFoundException("Keystore file not found.", null);
+            }
+
+            using (var textReader = File.OpenText(fullPath))
+            {
+                var json = textReader.ReadToEnd();
+                return json;
             }
         }
 

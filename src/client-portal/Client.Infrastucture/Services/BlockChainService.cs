@@ -35,6 +35,20 @@ namespace Client.Infrastructure.Services
             return rawTransactionResult.TransactionId;
         }
 
+        public async Task<string> SendTransactionAsync(WalletInformation wallet, string password, string contract, string method, IMessage @params = null)
+        {
+            var contractAddress = await GetContractAddressAsync(contract);
+            var tx = await _aelfClientFactory.CreateClient().GenerateTransactionAsync(wallet.Address, contractAddress, method, @params);
+            var txWithSign = await GetTransactionWithSignatureAsync(wallet.Filename, password, tx);
+
+            var rawTransactionResult = await _aelfClientFactory.CreateClient().SendTransactionAsync(new SendTransactionInput()
+            {
+                RawTransaction = txWithSign.ToByteArray().ToHex()
+            });
+
+            return rawTransactionResult.TransactionId;
+        }
+
 
         public async Task<string> ExecuteTransactionAsync(WalletInformation wallet, string password, string contract, string method, string @params = null)
         {
@@ -46,6 +60,20 @@ namespace Client.Infrastructure.Services
             {
                 RawTransaction = rawTransaction,
                 Signature = signature,
+            });
+
+            return rawTransactionResult;
+        }
+
+        public async Task<string> ExecuteTransactionAsync(WalletInformation wallet, string password, string contract, string method, IMessage @params = null)
+        {
+            var contractAddress = await GetContractAddressAsync(contract);
+            var tx = await _aelfClientFactory.CreateClient().GenerateTransactionAsync(wallet.Address, contractAddress, method, @params);
+            var txWithSign = await GetTransactionWithSignatureAsync(wallet.Filename, password, tx);
+
+            var rawTransactionResult = await _aelfClientFactory.CreateClient().ExecuteTransactionAsync(new ExecuteTransactionDto
+            {
+                RawTransaction = txWithSign.ToByteArray().ToHex()
             });
 
             return rawTransactionResult;
@@ -83,6 +111,14 @@ namespace Client.Infrastructure.Services
             var signature = await _accountsService.SignAsync(keyStoreFile, password,
                 transactionId.ToByteArray());
             return ByteString.CopyFrom(signature).ToHex();
+        }
+
+        private async Task<Transaction> GetTransactionWithSignatureAsync(string keyStoreFile, string password, Transaction transaction)
+        {
+            byte[] hash = transaction.GetHash().ToByteArray();
+            byte[] bytes = await _accountsService.SignAsync(keyStoreFile, password, hash);
+            transaction.Signature = ByteString.CopyFrom(bytes);
+            return transaction;
         }
 
         private async Task<string> GetContractAddressAsync(string contract)

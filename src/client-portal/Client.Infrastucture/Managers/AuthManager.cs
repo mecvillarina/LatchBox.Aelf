@@ -36,18 +36,38 @@ namespace Client.Infrastructure.Managers
 
             using (var textReader = File.OpenText(tempFullPath))
             {
-                var content = textReader.ReadToEnd();
-                _accountsService.SaveKeyStoreJsonContent(filename, content);
-                var keyPair = await _accountsService.GetAccountKeyPairAsync(filename, password);
-                var address = Address.FromPublicKey(keyPair.PublicKey);
-                await ManagerToolkit.SaveWalletAsync(filename, address.ToBase58());
+                try
+                {
+                    var content = textReader.ReadToEnd();
+                    _accountsService.SaveKeyStoreJsonContent(filename, content);
+                    var keyPair = await _accountsService.GetAccountKeyPairAsync(filename, password);
+                    _accountsService.SaveKeyStorePassJsonContent(filename, password);
+                    var address = Address.FromPublicKey(keyPair.PublicKey);
+                    await ManagerToolkit.SaveWalletAsync(filename, address.ToBase58());
+                }
+                catch
+                {
+                    _accountsService.RemoveKeyStore(filename);
+                    throw;
+                }
+            }
+        }
+
+        public async Task ClearKeyStoreAsync()
+        {
+            var wallet = await ManagerToolkit.GetWalletAsync();
+
+            if(wallet != null)
+            {
+                var filename = wallet.Filename;
+                _accountsService.RemoveKeyStore(filename);
+                _accountsService.RemoveKeyStore(filename.Replace(".json", "_pass.json"));
             }
         }
 
         public async Task DisconnectWalletAsync()
         {
-            var wallet = await ManagerToolkit.GetWalletAsync();
-            _accountsService.RemoveKeyStore(wallet.Filename);
+            await ClearKeyStoreAsync();
             await ManagerToolkit.ClearLocalStorageAsync();
         }
     }

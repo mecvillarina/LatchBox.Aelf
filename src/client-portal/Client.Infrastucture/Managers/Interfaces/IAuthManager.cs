@@ -8,5 +8,6 @@ namespace Client.Infrastructure.Managers.Interfaces
         Task<bool> IsAuthenticated();
         Task ConnectWalletAsync(IBrowserFile file, string password);
         Task DisconnectWalletAsync();
+        Task ClearKeyStoreAsync();
     }
 }

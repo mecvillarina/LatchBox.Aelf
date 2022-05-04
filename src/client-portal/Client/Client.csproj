@@ -16,12 +16,12 @@
 		<PackageReference Include="Nethereum.web3" Version="3.8.0" />
 
 		<PackageReference Include="AElf.Types" Version="1.1.1-18963" />
-		<PackageReference Include="AElf.Core" Version="1.0.0" />
-		<PackageReference Include="AElf.Client" Version="1.1.0" />
-		<PackageReference Include="AElf.CSharp.Core" Version="1.0.0" />
+		<PackageReference Include="AElf.Core" Version="1.1.1-18963" />
+		<PackageReference Include="AElf.CSharp.Core" Version="1.1.1-18963" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\AElf.Client\AElf.Client.csproj" />
 		<ProjectReference Include="..\Client.Infrastucture\Client.Infrastucture.csproj" />
 	</ItemGroup>
 

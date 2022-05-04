@@ -52,7 +52,7 @@ namespace Client.Shared.Components
 
             if (credentials.Item1 != null)
             {
-                var result = await FaucetManager.TakeAsync(credentials.Item1, credentials.Item2, symbol, 100_00000000);
+                var result = await FaucetManager.TakeAsync(credentials.Item1, credentials.Item2, symbol, 1000_00000000);
 
                 if (!string.IsNullOrEmpty(result.Error))
                 {

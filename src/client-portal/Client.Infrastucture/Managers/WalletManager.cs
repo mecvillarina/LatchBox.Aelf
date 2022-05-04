@@ -20,6 +20,16 @@ namespace Client.Infrastructure.Managers
             return await ManagerToolkit.GetWalletAsync();
         }
 
+        public async Task<(WalletInformation, string)> GetWalletCrdentialsAsync()
+        {
+            var wallet = await ManagerToolkit.GetWalletAsync();
+
+            if (wallet == null) throw new GeneralException("Connect your wallet first.");
+
+            var pass = _accountsService.FetchKeyStorePassword(wallet.Filename);
+            return (wallet, pass);
+        }
+
         public async Task AuthenticateAsync(string password)
         {
             var wallet = await GetWalletInformationAsync();
@@ -28,5 +38,6 @@ namespace Client.Infrastructure.Managers
 
             await _accountsService.GetAccountKeyPairAsync(wallet.Filename, password);
         }
+
     }
 }
