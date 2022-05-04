@@ -8,9 +8,9 @@ namespace Client.Infrastructure.Services.Interfaces
     public interface IBlockChainService
     {
         Task<string> SendTransactionAsync(WalletInformation wallet, string password, string contract, string method, string @params = null);
-        Task<string> SendTransactionAsync(WalletInformation wallet, string password, string contract, string method, IMessage @params = null);
+        Task<string> SendTransactionAsync(WalletInformation wallet, string password, string contract, string method, IMessage @params);
         Task<string> ExecuteTransactionAsync(WalletInformation wallet, string password, string contract, string method, string @params = null);
-        Task<string> ExecuteTransactionAsync(WalletInformation wallet, string password, string contract, string method, IMessage @params = null);
+        Task<string> ExecuteTransactionAsync(WalletInformation wallet, string password, string contract, string method, IMessage @params);
         Task<TransactionResultDto> CheckTransactionResultAsync(string txId);
 
     }

@@ -1,12 +1,15 @@
-﻿using Client.Infrastructure.Models;
+﻿using AElf.Client.MultiToken;
+using Client.Infrastructure.Models;
 using System.Threading.Tasks;
 
 namespace Client.Infrastructure.Managers.Interfaces
 {
     public interface ITokenManager : IManager
     {
-        Task GetBalanceAsync(WalletInformation wallet, string password, string symbol);
-        Task GetTokenInfoAsync(WalletInformation wallet, string password, string symbol);
+        Task<TokenInfo> GetNativeTokenInfoAsync(WalletInformation wallet, string password);
+        Task<TokenInfoList> GetTokenInfoListAsync(WalletInformation wallet, string password);
+        Task<TokenInfo> GetTokenInfoAsync(WalletInformation wallet, string password, string symbol);
+        Task<GetBalanceOutput> GetBalanceAsync(WalletInformation wallet, string password, string symbol);
         Task CreateTokenAsync(WalletInformation wallet, string password);
     }
 }

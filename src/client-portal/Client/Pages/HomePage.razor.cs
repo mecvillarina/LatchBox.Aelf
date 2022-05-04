@@ -46,9 +46,9 @@ namespace Client.Pages
             if (authenticated)
             {
                 var cred = await WalletManager.GetWalletCrdentialsAsync();
-                //await TokenManager.GetBalanceAsync(cred.Item1, cred.Item2, "LATCH");
-                //await TokenManager.GetTokenInfoAsync(cred.Item1, cred.Item2, "ELF");
-                await TokenManager.CreateTokenAsync(cred.Item1, cred.Item2);
+                //var nativeToken = await TokenManager.GetNativeTokenInfoAsync(cred.Item1, cred.Item2);
+                //var tokenList = await TokenManager.GetTokenInfoListAsync(cred.Item1, cred.Item2);
+                //await TokenManager.CreateTokenAsync(cred.Item1, cred.Item2);
             }
 
             IsLoaded = true;

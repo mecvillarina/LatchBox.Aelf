@@ -3,6 +3,8 @@ using AElf.Client.MultiToken;
 using Client.Infrastructure.Managers.Interfaces;
 using Client.Infrastructure.Models;
 using Client.Infrastructure.Services.Interfaces;
+using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 
@@ -17,7 +19,34 @@ namespace Client.Infrastructure.Managers
             _blockChainService = blockChainService;
         }
 
-        public async Task GetBalanceAsync(WalletInformation wallet, string password, string symbol)
+        public async Task<TokenInfo> GetNativeTokenInfoAsync(WalletInformation wallet, string password)
+        {
+            IMessage @params = new Empty { };
+
+            var result = await _blockChainService.ExecuteTransactionAsync(wallet, password, ManagerToolkit.AelfSettings.MultiTokenContractAddress, "GetNativeTokenInfo", @params);
+            return TokenInfo.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
+        }
+
+        public async Task<TokenInfoList> GetTokenInfoListAsync(WalletInformation wallet, string password)
+        {
+            IMessage @params = new Empty { };
+
+            var result = await _blockChainService.ExecuteTransactionAsync(wallet, password, ManagerToolkit.AelfSettings.MultiTokenContractAddress, "GetResourceTokenInfo", @params);
+            return TokenInfoList.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
+        }
+
+        public async Task<TokenInfo> GetTokenInfoAsync(WalletInformation wallet, string password, string symbol)
+        {
+            var paramGetTokenInfo = new GetTokenInfoInput()
+            {
+                Symbol = symbol
+            };
+
+            var result = await _blockChainService.ExecuteTransactionAsync(wallet, password, ManagerToolkit.AelfSettings.MultiTokenContractAddress, "GetTokenInfo", paramGetTokenInfo);
+            return TokenInfo.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
+        }
+
+        public async Task<GetBalanceOutput> GetBalanceAsync(WalletInformation wallet, string password, string symbol)
         {
             var paramGetBalance = new GetBalanceInput
             {
@@ -26,18 +55,7 @@ namespace Client.Infrastructure.Managers
             };
 
             var result = await _blockChainService.ExecuteTransactionAsync(wallet, password, ManagerToolkit.AelfSettings.MultiTokenContractAddress, "GetBalance", paramGetBalance);
-            var balance = GetBalanceOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
-        }
-
-        public async Task GetTokenInfoAsync(WalletInformation wallet, string password, string symbol)
-        {
-            var paramGetTokenInfo = new GetTokenInfoInput()
-            {
-                Symbol = symbol
-            };
-
-            var result = await _blockChainService.ExecuteTransactionAsync(wallet, password, ManagerToolkit.AelfSettings.MultiTokenContractAddress, "GetTokenInfo", paramGetTokenInfo);
-            var tokenInfo = TokenInfo.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
+            return GetBalanceOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task CreateTokenAsync(WalletInformation wallet, string password)

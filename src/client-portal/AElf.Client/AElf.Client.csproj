@@ -29,4 +29,8 @@
             <ProtoRoot>Protobuf/Proto</ProtoRoot>
         </Protobuf>
     </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Protobuf\Proto\lock_token_vault_contract.proto" />
+    </ItemGroup>
 </Project>
