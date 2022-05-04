@@ -47,6 +47,7 @@ builder.Services.AddScoped<IAppDialogService, AppDialogService>();
 builder.Services.AddManagers();
 builder.Services.AddScoped<AppBreakpointService>();
 builder.Services.AddScoped<ClipboardService>();
+builder.Services.AddScoped<PageService>();
 
 var app = builder.Build();
 

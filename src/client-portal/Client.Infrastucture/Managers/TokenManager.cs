@@ -27,7 +27,7 @@ namespace Client.Infrastructure.Managers
             return TokenInfo.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
-        public async Task<TokenInfoList> GetTokenInfoListAsync(WalletInformation wallet, string password)
+        public async Task<TokenInfoList> GetResourceTokenInfoListAsync(WalletInformation wallet, string password)
         {
             IMessage @params = new Empty { };
 

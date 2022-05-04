@@ -16,6 +16,7 @@ namespace Client.Shared.Components
         public string Network { get; set; }
         public string Node { get; set; }
         public string WalletAddress { get; set; }
+        public bool IsClaimingElf { get; set; }
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
@@ -46,20 +47,27 @@ namespace Client.Shared.Components
             DialogService.Show<ConnectWalletModal>("Connect Wallet (JSON)", options);
         }
 
-        private async Task InvokeClaimAsync(string symbol)
+        private async Task InvokeClaimELFAsync()
         {
+            IsClaimingElf = true;
+
             var credentials = await AppDialogService.ShowConfirmWalletTransactionAsync();
 
             if (credentials.Item1 != null)
             {
-                var result = await FaucetManager.TakeAsync(credentials.Item1, credentials.Item2, symbol, 1000_00000000);
+                var result = await FaucetManager.TakeAsync(credentials.Item1, credentials.Item2, "ELF", 100_00000000);
 
                 if (!string.IsNullOrEmpty(result.Error))
                 {
                     AppDialogService.ShowError(result.Error);
-                    return;
+                }
+                else
+                {
+                    AppDialogService.ShowSuccess("Claim ELF Success.");
                 }
             }
+
+            IsClaimingElf = false;
         }
 
         private void InvokeDisconnectWalletDialog()

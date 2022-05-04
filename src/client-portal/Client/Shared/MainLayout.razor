@@ -44,7 +44,7 @@
 
         <MudNavMenu Rounded="true" Margin="Margin.Dense">
             <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
-            <MudNavLink Href="/assets" Disabled="@(!IsAuthenticated)" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Payments">My Assets</MudNavLink>
+            <MudNavLink Href="/assets" Disabled="@(!IsAuthenticated)" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Payments">Assets/Tokens</MudNavLink>
             <MudNavGroup Title="Locks" Icon="@Icons.Material.Filled.LockClock" Disabled="@(!IsAuthenticated)" Expanded="IsAuthenticated">
                 <MudNavLink Href="/locks/assets" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.CurrencyBitcoin">Locked Tokens</MudNavLink>
                 <MudNavLink Href="/locks" Disabled="@(!IsAuthenticated)" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Lock">My Locks</MudNavLink>

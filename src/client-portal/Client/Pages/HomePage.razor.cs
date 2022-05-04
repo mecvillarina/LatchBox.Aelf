@@ -5,8 +5,6 @@ namespace Client.Pages
 {
     public partial class HomePage
     {
-        [Inject] public ITokenManager TokenManager { get; set; }
-
         [Parameter]
         public long? LockIndex { get; set; }
 
@@ -38,8 +36,6 @@ namespace Client.Pages
         private async Task FetchDataAsync()
         {
             IsLoaded = false;
-
-            StateHasChanged();
 
             var authenticated = await AuthManager.IsAuthenticated();
 

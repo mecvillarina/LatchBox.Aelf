@@ -27,8 +27,10 @@
 @using Client.Infrastructure.Extensions
 
 @inject IManagerToolkit ManagerToolkit
+
 @inject IAuthManager AuthManager 
 @inject IBlockchainManager BlockchainManager
+@inject ITokenManager TokenManager
 @inject IWalletManager WalletManager
 
 @inject ClientPreferenceManager ClientPreferenceManager
@@ -40,3 +42,4 @@
 @inject IAppDialogService AppDialogService
 @inject AppBreakpointService AppBreakpointService
 @inject ClipboardService ClipboardService
+@inject PageService PageService

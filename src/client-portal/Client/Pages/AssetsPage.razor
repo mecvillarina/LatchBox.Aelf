@@ -1,0 +1,61 @@
+﻿@page "/assets"
+
+@attribute [Authorize]
+
+<MudContainer MaxWidth="MaxWidth.False">
+    <div class="d-flex">
+        <MudHidden Breakpoint="Breakpoint.SmAndUp">
+            <MudText Class="mr-2 align-self-center" Typo="Typo.h5" Color="Color.Primary" GutterBottom="false">Assets/Tokens</MudText>
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.Xs">
+            <MudText Class="mr-4 align-self-center" Typo="Typo.h4" Color="Color.Primary" GutterBottom="false">Assets/Tokens</MudText>
+        </MudHidden>
+
+        @if (IsCompletelyLoaded)
+        {
+            <MudIconButton Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" Color="Color.Secondary" Variant="Variant.Filled" Size="Size.Small" OnClick="FetchDataAsync" />
+        }
+    </div>
+</MudContainer>
+
+<MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
+    @if (!IsLoaded)
+    {
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="56px" Width="100%" />
+        <MudSkeleton Class="mt-2" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="280px" Width="100%" />
+    }
+    else
+    {
+        <MudPaper Square="true" Elevation="10">
+            <MudTable Items="@TokenInfoWithBalanceList" Class="mx-0 grey darken-4" FixedHeader="true" Breakpoint="Breakpoint.Sm">
+                <HeaderContent>
+                    <MudTh>Name</MudTh>
+                    <MudTh>Total Supply</MudTh>
+                    <MudTh>Balance</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Name">
+                        <MudText Typo="Typo.body2" Color="Color.Primary">
+                            <b>@context.Token.TokenName</b>
+                        </MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Total Supply">
+                        <span>
+                            @context.Token.TotalSupply.ToAmountDisplay(@context.Token.Decimals) @context.Token.Symbol
+                        </span>
+                    </MudTd>
+                    <MudTd DataLabel="Balance">
+                        @if (!@context.Balance.HasValue)
+                        {
+                            <MudSkeleton Height="20px" Width="100px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" />
+                        }
+                        else
+                        {
+                            <span>@context.Balance.Value.ToAmountDisplay(@context.Token.Decimals) @context.Token.Symbol</span>
+                        }
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudPaper>
+    }
+</MudContainer>

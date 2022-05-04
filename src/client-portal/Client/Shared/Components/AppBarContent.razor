@@ -8,21 +8,32 @@
     else
     {
         <MudHidden Breakpoint="Breakpoint.SmAndDown">
-            <MudChip Class="ml-1" Color="Color.Primary" Variant="Variant.Text" OnClick="@(() => InvokeClaimAsync("ELF"))">
-                Claim ELF
-            </MudChip>
-            <MudChip Class="ml-1" Color="Color.Primary" Variant="Variant.Text" OnClick="@(() => InvokeClaimAsync("LATCH"))">
-                Claim LATCH
+            <MudChip Class="ml-1" Color="Color.Primary" Disabled="IsClaimingElf" Variant="Variant.Outlined" OnClick="@(() => InvokeClaimELFAsync())">
+                @if (IsClaimingElf)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                }
+                else
+                {
+                    <span>Claim ELF</span>
+                }
             </MudChip>
         </MudHidden>
 
-        <MudMenu Class="ml-3" Label="@WalletAddress.ToMask(6)" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" StartIcon="@Icons.Material.Filled.ConnectedTv" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" Variant="Variant.Filled" Color="Color.Secondary">
+        <MudMenu Class="ml-3" Label="@WalletAddress.ToMask(6)" Disabled="IsClaimingElf" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" StartIcon="@Icons.Material.Filled.ConnectedTv" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" Variant="Variant.Filled" Color="Color.Secondary">
             <ChildContent>
                 <MudHidden Breakpoint="Breakpoint.MdAndUp">
-                    <MudMenuItem>Claim ELF</MudMenuItem>
-                    <MudMenuItem>Claim LATCH</MudMenuItem>
+                    <MudMenuItem OnClick="@(() => InvokeClaimELFAsync())">
+                        @if (IsClaimingElf)
+                        {
+                            <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                        }
+                        else
+                        {
+                            <span>Claim ELF</span>
+                        }
+                    </MudMenuItem>
                 </MudHidden>
-
                 <MudMenuItem OnClick="@(() => InvokeDisconnectWalletDialog())">Disconnect Wallet</MudMenuItem>
             </ChildContent>
         </MudMenu>
