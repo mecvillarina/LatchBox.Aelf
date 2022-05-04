@@ -55,15 +55,22 @@ namespace Client.Shared.Components
 
             if (credentials.Item1 != null)
             {
-                var result = await FaucetManager.TakeAsync(credentials.Item1, credentials.Item2, "ELF", 100_00000000);
+                try
+                {
+                    var result = await FaucetManager.TakeAsync(credentials.Item1, credentials.Item2, "ELF", 100_00000000);
 
-                if (!string.IsNullOrEmpty(result.Error))
-                {
-                    AppDialogService.ShowError(result.Error);
+                    if (!string.IsNullOrEmpty(result.Error))
+                    {
+                        AppDialogService.ShowError(result.Error);
+                    }
+                    else
+                    {
+                        AppDialogService.ShowSuccess("Claim ELF Success.");
+                    }
                 }
-                else
+                catch(Exception ex)
                 {
-                    AppDialogService.ShowSuccess("Claim ELF Success.");
+                    AppDialogService.ShowError(ex.Message);
                 }
             }
 
