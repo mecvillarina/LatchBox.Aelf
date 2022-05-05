@@ -12,6 +12,6 @@ namespace Client.Infrastructure.Managers.Interfaces
 
         Task SaveWalletAsync(string filename, string address);
         Task<WalletInformation> GetWalletAsync();
-        Task ClearLocalStorageAsync();
+        Task ClearAccountLocalStorageAsync();
     }
 }

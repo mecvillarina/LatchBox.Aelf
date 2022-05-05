@@ -1,4 +1,7 @@
-﻿namespace Client.Infrastructure.Extensions
+﻿using AElf;
+using AElf.Client.Proto;
+
+namespace Client.Infrastructure.Extensions
 {
     public static class StringExtensions
     {
@@ -10,6 +13,12 @@
         public static string ToAmountDisplay(this long amount, int decimals)
         {
             return amount.ToAmount(decimals).ToAmountDisplay(decimals);
+        }
+
+        public static string ToStringAddress(this Address address)
+        {
+            var newAdd = new AElf.Types.Address() { Value = address.Value };
+            return newAdd.ToBase58();
         }
 
         public static string ToMask(this string value, int length)

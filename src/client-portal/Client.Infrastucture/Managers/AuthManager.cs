@@ -68,7 +68,7 @@ namespace Client.Infrastructure.Managers
         public async Task DisconnectWalletAsync()
         {
             await ClearKeyStoreAsync();
-            await ManagerToolkit.ClearLocalStorageAsync();
+            await ManagerToolkit.ClearAccountLocalStorageAsync();
         }
     }
 }

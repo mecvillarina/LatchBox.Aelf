@@ -6,6 +6,5 @@ namespace Client.Infrastructure.Managers.Interfaces
     public interface IClientPreferenceManager : IPreferenceManager
     {
         MudTheme GetCurrentTheme();
-        Task<bool> ToggleDarkModeAsync();
     }
 }

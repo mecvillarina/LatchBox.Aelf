@@ -1,5 +1,5 @@
-﻿using AElf.Client.MultiToken;
-using Client.Infrastructure.Models;
+﻿using Client.Infrastructure.Models;
+using Client.Pages.Tokens.Modals;
 
 namespace Client.Pages
 {
@@ -35,13 +35,22 @@ namespace Client.Pages
             TokenInfoWithBalanceList.Clear();
 
             var nativeToken = await TokenManager.GetNativeTokenInfoAsync(_creds.Item1, _creds.Item2);
-            var resourceTokens = await TokenManager.GetResourceTokenInfoListAsync(_creds.Item1, _creds.Item2);
-
             TokenInfoWithBalanceList.Add(new TokenInfoWithBalance() { Token = nativeToken });
 
-            foreach (var token in resourceTokens.Value)
+            var tokenSymbolList = await TokenManager.GetTokenSymbolsFromStorageAsync();
+
+            foreach (var symbol in tokenSymbolList)
             {
-                TokenInfoWithBalanceList.Add(new TokenInfoWithBalance() { Token = token });
+                var token = await TokenManager.GetTokenInfoAsync(_creds.Item1, _creds.Item2, symbol);
+
+                if (!string.IsNullOrEmpty(token.Symbol))
+                {
+                    TokenInfoWithBalanceList.Add(new TokenInfoWithBalance() { Token = token });
+                }
+                else
+                {
+                    await TokenManager.RemoveTokenSymbolFromStorageAsync(symbol);
+                }
             }
 
             IsLoaded = true;
@@ -56,6 +65,17 @@ namespace Client.Pages
 
             IsCompletelyLoaded = true;
             StateHasChanged();
+        }
+
+        private async Task InvokeCreateTokenModalAsync()
+        {
+            var dialog = DialogService.Show<CreateTokenModal>($"Create New Lock");
+            var dialogResult = await dialog.Result;
+
+            if (!dialogResult.Cancelled)
+            {
+                await FetchDataAsync();
+            }
         }
     }
 }

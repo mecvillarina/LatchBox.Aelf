@@ -3,6 +3,7 @@ using Client.Infrastructure.Constants;
 using Client.Infrastructure.Managers.Interfaces;
 using Client.Infrastructure.Models;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -57,9 +58,9 @@ namespace Client.Infrastructure.Managers
             return await _localStorageService.GetItemAsync<WalletInformation>(StorageConstants.Local.Wallet);
         }
 
-        public async Task ClearLocalStorageAsync()
+        public async Task ClearAccountLocalStorageAsync()
         {
-            await _localStorageService.ClearAsync();
+            await _localStorageService.RemoveItemsAsync(new List<string>() { StorageConstants.Local.Wallet });
         }
     }
 }

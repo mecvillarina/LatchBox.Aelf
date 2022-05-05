@@ -5,7 +5,5 @@ namespace Client.Infrastructure.Managers.Interfaces
 {
     public interface IPreferenceManager
     {
-        Task SetPreference(IPreference preference);
-        Task<IPreference> GetPreference();
     }
 }

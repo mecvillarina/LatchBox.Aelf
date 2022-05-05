@@ -11,9 +11,11 @@
             <MudText Class="mr-4 align-self-center" Typo="Typo.h4" Color="Color.Primary" GutterBottom="false">Assets/Tokens</MudText>
         </MudHidden>
 
+        <MudIconButton Class="align-self-center" Icon="@Icons.Material.Filled.Add" Color="Color.Secondary" Variant="Variant.Filled" Size="Size.Small" OnClick="InvokeCreateTokenModalAsync" />
+
         @if (IsCompletelyLoaded)
         {
-            <MudIconButton Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" Color="Color.Secondary" Variant="Variant.Filled" Size="Size.Small" OnClick="FetchDataAsync" />
+            <MudIconButton Class="align-self-center mx-1" Icon="@Icons.Material.Filled.Refresh" Color="Color.Secondary" Variant="Variant.Filled" Size="Size.Small" OnClick="FetchDataAsync" />
         }
     </div>
 </MudContainer>
@@ -30,14 +32,23 @@
             <MudTable Items="@TokenInfoWithBalanceList" Class="mx-0 grey darken-4" FixedHeader="true" Breakpoint="Breakpoint.Sm">
                 <HeaderContent>
                     <MudTh>Name</MudTh>
+                    <MudTh>Issuer</MudTh>
                     <MudTh>Total Supply</MudTh>
                     <MudTh>Balance</MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel="Name">
-                        <MudText Typo="Typo.body2" Color="Color.Primary">
+                        <MudText Typo="Typo.body1" Color="Color.Primary">
                             <b>@context.Token.TokenName</b>
                         </MudText>
+                        <MudText Typo="Typo.caption">
+                            <span>@context.Token.Symbol (@context.Token.Decimals)</span>
+                        </MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Issuer">
+                        <span>
+                            @context.Token.Issuer.ToStringAddress() 
+                        </span>
                     </MudTd>
                     <MudTd DataLabel="Total Supply">
                         <span>
@@ -47,15 +58,15 @@
                     <MudTd DataLabel="Balance">
                         @if (!@context.Balance.HasValue)
                         {
-                            <MudSkeleton Height="20px" Width="100px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" />
+                        <MudSkeleton Height="20px" Width="100px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" />
                         }
                         else
                         {
-                            <span>@context.Balance.Value.ToAmountDisplay(@context.Token.Decimals) @context.Token.Symbol</span>
+                        <span>@context.Balance.Value.ToAmountDisplay(@context.Token.Decimals) @context.Token.Symbol</span>
                         }
-                    </MudTd>
-                </RowTemplate>
-            </MudTable>
-        </MudPaper>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudPaper>
     }
 </MudContainer>

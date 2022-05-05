@@ -46,12 +46,7 @@ namespace Client.Pages
                 //var nativeToken = await TokenManager.GetNativeTokenInfoAsync(cred.Item1, cred.Item2);
                 //var tokenList = await TokenManager.GetTokenInfoListAsync(cred.Item1, cred.Item2);
                 //await TokenManager.CreateTokenAsync(cred.Item1, cred.Item2);
-                var token = await TokenManager.GetTokenInfoAsync(cred.Item1, cred.Item2, "LATCHH");
-
-                if(token == Empty())
-                {
-
-                }
+                //var token = await TokenManager.GetTokenInfoAsync(cred.Item1, cred.Item2, "LATCHH");
             }
 
             IsLoaded = true;
