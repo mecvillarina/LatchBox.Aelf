@@ -9,7 +9,7 @@ namespace Client.Parameters
         public long TotalSupply { get; set; }
         public long InitialSupply { get; set; }
         public int Decimals { get; set; }
-        public bool IsBurnable { get; set; }
+        public bool IsBurnable { get; set; } = true;
     }
 
     public class CreateTokenParameterValidator : AbstractValidator<CreateTokenParameter>
