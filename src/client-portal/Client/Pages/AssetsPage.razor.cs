@@ -1,5 +1,7 @@
 ﻿using Client.Infrastructure.Models;
 using Client.Pages.Tokens.Modals;
+using Client.Parameters;
+using MudBlazor;
 
 namespace Client.Pages
 {
@@ -98,6 +100,20 @@ namespace Client.Pages
             await TokenManager.RemoveTokenSymbolFromStorageAsync(tokenInfo.Token.Symbol);
         }
 
-        
+        private async Task InvokeIssueTokenModalAsync(TokenInfoWithBalance tokenInfo)
+        {
+            var parameters = new DialogParameters()
+            {
+                { nameof(IssueTokenModal.Model), new IssueTokenParameter() { Symbol = tokenInfo.Token.Symbol, TokenName = tokenInfo.Token.TokenName, Decimals = tokenInfo.Token.Decimals } }
+            };
+
+            var dialog = DialogService.Show<IssueTokenModal>($"Issue New Token", parameters);
+            var dialogResult = await dialog.Result;
+
+            if (!dialogResult.Cancelled)
+            {
+                await FetchDataAsync();
+            }
+        }
     }
 }

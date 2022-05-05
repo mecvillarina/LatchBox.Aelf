@@ -7,9 +7,9 @@ using MudBlazor;
 
 namespace Client.Pages.Tokens.Modals
 {
-    public partial class CreateTokenModal
+    public partial class IssueTokenModal
     {
-        [Parameter] public CreateTokenParameter Model { get; set; } = new();
+        [Parameter] public IssueTokenParameter Model { get; set; } = new();
         [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
 
         private FluentValidationValidator _fluentValidationValidator;
@@ -25,32 +25,20 @@ namespace Client.Pages.Tokens.Modals
 
                 try
                 {
-                    var totalSupply = Model.TotalSupply.ToChainAmount(Model.Decimals);
-                    var initialSupply = Model.InitialSupply.ToChainAmount(Model.Decimals);
+                    var amount = Model.Amount.ToChainAmount(Model.Decimals);
                     var cred = await AppDialogService.ShowConfirmWalletTransactionAsync();
 
                     if (cred.Item1 != null)
                     {
-                        var createTokenResult = await TokenManager.CreateTokenAsync(cred.Item1, cred.Item2, Model.Symbol, Model.TokenName, totalSupply, Model.Decimals, Model.IsBurnable);
+                        var issueTokenResult = await TokenManager.IssueTokenAsync(cred.Item1, cred.Item2, Model.Symbol, amount, Model.Memo, Model.To);
 
-                        if (!string.IsNullOrEmpty(createTokenResult.Error))
+                        if (!string.IsNullOrEmpty(issueTokenResult.Error))
                         {
-                            throw new GeneralException(createTokenResult.Error);
+                            throw new GeneralException(issueTokenResult.Error);
                         }
                         else
                         {
-                            if (initialSupply > 0)
-                            {
-                                var issueTokenResult = await TokenManager.IssueTokenAsync(cred.Item1, cred.Item2, Model.Symbol, initialSupply, "Initial Supply", cred.Item1.Address);
-
-                                if (!string.IsNullOrEmpty(issueTokenResult.Error))
-                                {
-                                    throw new GeneralException(issueTokenResult.Error);
-                                }
-                            }
-
-                            await TokenManager.AddTokenSymbolToStorageAsync(Model.Symbol.ToUpper());
-                            AppDialogService.ShowSuccess("Token creation success.");
+                            AppDialogService.ShowSuccess("Issue new token success.");
                             MudDialog.Close();
                         }
                     }
@@ -62,6 +50,12 @@ namespace Client.Pages.Tokens.Modals
 
                 IsProcessing = false;
             }
+        }
+
+        private async Task SetToValueAsync()
+        {
+            var wallet = await WalletManager.GetWalletInformationAsync();
+            Model.To = wallet.Address;
         }
 
         public void Cancel()

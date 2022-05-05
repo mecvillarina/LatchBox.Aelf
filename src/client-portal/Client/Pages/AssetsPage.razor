@@ -90,7 +90,7 @@
                 <MudTd DataLabel="Actions">
                     <MudMenu Variant="Variant.Filled" Color="Color.Primary" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" DisableElevation="true" Icon="@Icons.Filled.MoreVert" IconColor="Color.Secondary" Direction="Direction.Left" OffsetX="true">
                         <MudMenuItem Disabled="context.IsNative" OnClick="(() => InvokeRemoveFromList(context))">Remove from List</MudMenuItem>
-                        <MudMenuItem Disabled="_creds.Item1.Address != context.Token.Issuer.ToStringAddress()">Issue Amount</MudMenuItem>
+                        <MudMenuItem Disabled="_creds.Item1.Address != context.Token.Issuer.ToStringAddress()" OnClick="(() => InvokeIssueTokenModalAsync(context))">Issue New Token</MudMenuItem>
                     </MudMenu>
                 </MudTd>
             </RowTemplate>

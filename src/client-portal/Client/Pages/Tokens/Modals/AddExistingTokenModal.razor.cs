@@ -45,11 +45,6 @@ namespace Client.Pages.Tokens.Modals
             }
         }
 
-        private Exception GeneralException(string error)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Cancel()
         {
             MudDialog.Cancel();
