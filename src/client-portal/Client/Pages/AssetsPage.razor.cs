@@ -21,7 +21,7 @@ namespace Client.Pages
 
                     await InvokeAsync(async () =>
                     {
-                        _creds = await WalletManager.GetWalletCrdentialsAsync();
+                        _creds = await WalletManager.GetWalletCredentialsAsync();
                         await FetchDataAsync();
                     });
                 });
@@ -30,12 +30,14 @@ namespace Client.Pages
 
         private async Task FetchDataAsync()
         {
+            IsLoaded = false;
             IsCompletelyLoaded = false;
-
+            StateHasChanged();
+            
             TokenInfoWithBalanceList.Clear();
 
             var nativeToken = await TokenManager.GetNativeTokenInfoAsync(_creds.Item1, _creds.Item2);
-            TokenInfoWithBalanceList.Add(new TokenInfoWithBalance() { Token = nativeToken });
+            TokenInfoWithBalanceList.Add(new TokenInfoWithBalance() { Token = nativeToken, IsNative = true });
 
             var tokenSymbolList = await TokenManager.GetTokenSymbolsFromStorageAsync();
 
@@ -67,9 +69,9 @@ namespace Client.Pages
             StateHasChanged();
         }
 
-        private async Task InvokeCreateTokenModalAsync()
+        private async Task InvokAddTokenModalAsync()
         {
-            var dialog = DialogService.Show<CreateTokenModal>($"Create New Lock");
+            var dialog = DialogService.Show<AddExistingTokenModal>($"Add Existing Token");
             var dialogResult = await dialog.Result;
 
             if (!dialogResult.Cancelled)
@@ -77,5 +79,25 @@ namespace Client.Pages
                 await FetchDataAsync();
             }
         }
+
+        private async Task InvokeCreateTokenModalAsync()
+        {
+            var dialog = DialogService.Show<CreateTokenModal>($"Create New Token");
+            var dialogResult = await dialog.Result;
+
+            if (!dialogResult.Cancelled)
+            {
+                await FetchDataAsync();
+            }
+        }
+
+        private async Task InvokeRemoveFromList(TokenInfoWithBalance tokenInfo)
+        {
+            TokenInfoWithBalanceList.Remove(tokenInfo);
+            StateHasChanged();
+            await TokenManager.RemoveTokenSymbolFromStorageAsync(tokenInfo.Token.Symbol);
+        }
+
+        
     }
 }

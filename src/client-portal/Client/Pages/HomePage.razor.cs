@@ -42,7 +42,7 @@ namespace Client.Pages
 
             if (authenticated)
             {
-                var cred = await WalletManager.GetWalletCrdentialsAsync();
+                var cred = await WalletManager.GetWalletCredentialsAsync();
                 //var nativeToken = await TokenManager.GetNativeTokenInfoAsync(cred.Item1, cred.Item2);
                 //var tokenList = await TokenManager.GetTokenInfoListAsync(cred.Item1, cred.Item2);
                 //await TokenManager.CreateTokenAsync(cred.Item1, cred.Item2);

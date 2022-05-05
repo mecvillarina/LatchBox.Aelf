@@ -11,7 +11,16 @@
             <MudText Class="mr-4 align-self-center" Typo="Typo.h4" Color="Color.Primary" GutterBottom="false">Assets/Tokens</MudText>
         </MudHidden>
 
-        <MudIconButton Class="align-self-center" Icon="@Icons.Material.Filled.Add" Color="Color.Secondary" Variant="Variant.Filled" Size="Size.Small" OnClick="InvokeCreateTokenModalAsync" />
+
+        <MudMenu AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+            <ActivatorContent>
+                <MudIconButton Class="align-self-center" Icon="@Icons.Material.Filled.Add" Color="Color.Secondary" Variant="Variant.Filled" Size="Size.Small" />
+            </ActivatorContent>
+            <ChildContent>
+                <MudMenuItem OnClick="InvokAddTokenModalAsync">Add Exisitng Token</MudMenuItem>
+                <MudMenuItem OnClick="InvokeCreateTokenModalAsync">Create New Token</MudMenuItem>
+            </ChildContent>
+        </MudMenu>
 
         @if (IsCompletelyLoaded)
         {
@@ -35,28 +44,41 @@
                     <MudTh>Issuer</MudTh>
                     <MudTh>Total Supply</MudTh>
                     <MudTh>Balance</MudTh>
+                    <MudTh>Actions</MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel="Name">
                         <MudText Typo="Typo.body1" Color="Color.Primary">
                             <b>@context.Token.TokenName</b>
                         </MudText>
-                        <MudText Typo="Typo.caption">
-                            <span>@context.Token.Symbol (@context.Token.Decimals)</span>
-                        </MudText>
+                        <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+                            <MudText Typo="Typo.caption">
+                                <span>@context.Token.Symbol (@context.Token.Decimals)</span>
+                            </MudText>
+                        </MudHidden>
                     </MudTd>
                     <MudTd DataLabel="Issuer">
                         <span>
-                            @context.Token.Issuer.ToStringAddress() 
-                        </span>
-                    </MudTd>
-                    <MudTd DataLabel="Total Supply">
-                        <span>
-                            @context.Token.TotalSupply.ToAmountDisplay(@context.Token.Decimals) @context.Token.Symbol
-                        </span>
-                    </MudTd>
-                    <MudTd DataLabel="Balance">
-                        @if (!@context.Balance.HasValue)
+                            <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
+                                @context.Token.Issuer.ToStringAddress().ToMask(6)
+                            </MudHidden>
+                            <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+                                @context.Token.Issuer.ToStringAddress()
+                            </MudHidden>
+
+                            @if (_creds.Item1.Address == @context.Token.Issuer.ToStringAddress())
+                            {
+                            <span> (You)</span>
+                            }
+                    </span>
+                </MudTd>
+                <MudTd DataLabel="Total Supply">
+                    <span>
+                        @context.Token.TotalSupply.ToAmountDisplay(@context.Token.Decimals) @context.Token.Symbol
+                    </span>
+                </MudTd>
+                <MudTd DataLabel="Balance">
+                    @if (!@context.Balance.HasValue)
                         {
                         <MudSkeleton Height="20px" Width="100px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" />
                         }
@@ -64,6 +86,12 @@
                         {
                         <span>@context.Balance.Value.ToAmountDisplay(@context.Token.Decimals) @context.Token.Symbol</span>
                         }
+                </MudTd>
+                <MudTd DataLabel="Actions">
+                    <MudMenu Variant="Variant.Filled" Color="Color.Primary" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" DisableElevation="true" Icon="@Icons.Filled.MoreVert" IconColor="Color.Secondary" Direction="Direction.Left" OffsetX="true">
+                        <MudMenuItem Disabled="context.IsNative" OnClick="(() => InvokeRemoveFromList(context))">Remove from List</MudMenuItem>
+                        <MudMenuItem Disabled="_creds.Item1.Address != context.Token.Issuer.ToStringAddress()">Issue Amount</MudMenuItem>
+                    </MudMenu>
                 </MudTd>
             </RowTemplate>
         </MudTable>

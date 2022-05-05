@@ -6,7 +6,7 @@ namespace Client.Infrastructure.Managers.Interfaces
     public interface IWalletManager : IManager
     {
         Task<WalletInformation> GetWalletInformationAsync();
-        Task<(WalletInformation, string)> GetWalletCrdentialsAsync();
+        Task<(WalletInformation, string)> GetWalletCredentialsAsync();
         Task AuthenticateAsync(string password);
     }
 }

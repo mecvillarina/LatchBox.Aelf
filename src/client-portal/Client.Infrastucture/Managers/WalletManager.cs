@@ -20,7 +20,7 @@ namespace Client.Infrastructure.Managers
             return await ManagerToolkit.GetWalletAsync();
         }
 
-        public async Task<(WalletInformation, string)> GetWalletCrdentialsAsync()
+        public async Task<(WalletInformation, string)> GetWalletCredentialsAsync()
         {
             var wallet = await ManagerToolkit.GetWalletAsync();
 

@@ -27,28 +27,32 @@ namespace Client.Pages.Tokens.Modals
                 {
                     var totalSupply = Model.TotalSupply.ToChainAmount(Model.Decimals);
                     var initialSupply = Model.InitialSupply.ToChainAmount(Model.Decimals);
-                    var cred = await WalletManager.GetWalletCrdentialsAsync();
-                    var createTokenResult = await TokenManager.CreateTokenAsync(cred.Item1, cred.Item2, Model.Symbol, Model.TokenName, totalSupply, Model.Decimals, Model.IsBurnable);
+                    var cred = await AppDialogService.ShowConfirmWalletTransactionAsync();
 
-                    if (!string.IsNullOrEmpty(createTokenResult.Error))
+                    if (cred.Item1 != null)
                     {
-                        throw new GeneralException(createTokenResult.Error);
-                    }
-                    else
-                    {
-                        if (initialSupply > 0)
+                        var createTokenResult = await TokenManager.CreateTokenAsync(cred.Item1, cred.Item2, Model.Symbol, Model.TokenName, totalSupply, Model.Decimals, Model.IsBurnable);
+
+                        if (!string.IsNullOrEmpty(createTokenResult.Error))
                         {
-                            var issueTokenResult = await TokenManager.IssueTokenAsync(cred.Item1, cred.Item2, Model.Symbol, initialSupply, "Initial Supply", cred.Item1.Address);
-
-                            if (!string.IsNullOrEmpty(issueTokenResult.Error))
-                            {
-                                throw new GeneralException(issueTokenResult.Error);
-                            }
+                            throw new GeneralException(createTokenResult.Error);
                         }
+                        else
+                        {
+                            if (initialSupply > 0)
+                            {
+                                var issueTokenResult = await TokenManager.IssueTokenAsync(cred.Item1, cred.Item2, Model.Symbol, initialSupply, "Initial Supply", cred.Item1.Address);
 
-                        await TokenManager.AddTokenSymbolToStorageAsync(Model.Symbol.ToUpper());
-                        AppDialogService.ShowSuccess("Token creation successful.");
-                        MudDialog.Close();
+                                if (!string.IsNullOrEmpty(issueTokenResult.Error))
+                                {
+                                    throw new GeneralException(issueTokenResult.Error);
+                                }
+                            }
+
+                            await TokenManager.AddTokenSymbolToStorageAsync(Model.Symbol.ToUpper());
+                            AppDialogService.ShowSuccess("Token creation successful.");
+                            MudDialog.Close();
+                        }
                     }
                 }
                 catch (Exception ex)
