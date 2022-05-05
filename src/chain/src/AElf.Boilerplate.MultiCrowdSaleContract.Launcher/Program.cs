@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace AElf.Boilerplate.CrowdSaleContract.Launcher
+namespace AElf.Boilerplate.MultiCrowdSaleContract.Launcher
 {
     class Program
     {

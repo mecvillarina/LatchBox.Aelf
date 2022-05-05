@@ -17,7 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\contract\LatchBox.Contracts.CrowdSaleContract\LatchBox.Contracts.CrowdSaleContract.csproj">
+        <ProjectReference Include="..\..\contract\LatchBox.Contracts.MultiCrowdSaleContract\LatchBox.Contracts.MultiCrowdSaleContract.csproj">
             <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
             <OutputItemType>Contract</OutputItemType>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

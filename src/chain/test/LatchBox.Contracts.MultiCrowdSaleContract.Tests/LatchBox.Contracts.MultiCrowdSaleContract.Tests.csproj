@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>LatchBox.Contracts.CrowdSaleContract</RootNamespace>
+    <RootNamespace>LatchBox.Contracts.MultiCrowdSaleContract</RootNamespace>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -31,13 +31,13 @@
     </ContractMessage>
   </ItemGroup>
   <ItemGroup>
-    <ContractStub Include="..\..\protobuf\crowd_sale_contract.proto">
-      <Link>Protobuf\Proto\crowd_sale_contract.proto</Link>
+    <ContractStub Include="..\..\protobuf\multi_crowd_sale_contract.proto">
+      <Link>Protobuf\Proto\multi_crowd_sale_contract.proto</Link>
     </ContractStub>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\contract\LatchBox.Contracts.CrowdSaleContract\LatchBox.Contracts.CrowdSaleContract.csproj" />
+    <ProjectReference Include="..\..\contract\LatchBox.Contracts.MultiCrowdSaleContract\LatchBox.Contracts.MultiCrowdSaleContract.csproj" />
     <ProjectReference Include="..\..\src\AElf.Boilerplate.TestBase\AElf.Boilerplate.TestBase.csproj" />
   </ItemGroup>
 

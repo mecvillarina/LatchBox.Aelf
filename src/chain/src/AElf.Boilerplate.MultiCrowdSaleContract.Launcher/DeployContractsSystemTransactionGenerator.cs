@@ -11,7 +11,7 @@ using AElf.Types;
 using Google.Protobuf;
 using Microsoft.Extensions.Options;
 
-namespace AElf.Boilerplate.CrowdSaleContract.Launcher
+namespace AElf.Boilerplate.MultiCrowdSaleContract.Launcher
 {
     public class DeployContractsSystemTransactionGenerator : ISystemTransactionGenerator
     {
@@ -49,7 +49,7 @@ namespace AElf.Boilerplate.CrowdSaleContract.Launcher
         private byte[] GetContractCodes()
         {
             return ContractsDeployer.GetContractCodes<DeployContractsSystemTransactionGenerator>(_contractOptions
-                .GenesisContractDir)["LatchBox.Contracts.CrowdSaleContract"];
+                .GenesisContractDir)["LatchBox.Contracts.MultiCrowdSaleContract"];
         }
     }
 }

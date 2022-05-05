@@ -40,7 +40,6 @@ namespace Client.Shared.Components
             }
         }
 
-
         private void InvokeConnectWalletModal()
         {
             var options = new DialogOptions() { MaxWidth = MaxWidth.ExtraSmall };

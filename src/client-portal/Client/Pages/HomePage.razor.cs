@@ -1,4 +1,5 @@
 ﻿using Client.Infrastructure.Managers.Interfaces;
+using Google.Protobuf.WellKnownTypes;
 using Microsoft.AspNetCore.Components;
 
 namespace Client.Pages
@@ -45,6 +46,12 @@ namespace Client.Pages
                 //var nativeToken = await TokenManager.GetNativeTokenInfoAsync(cred.Item1, cred.Item2);
                 //var tokenList = await TokenManager.GetTokenInfoListAsync(cred.Item1, cred.Item2);
                 //await TokenManager.CreateTokenAsync(cred.Item1, cred.Item2);
+                var token = await TokenManager.GetTokenInfoAsync(cred.Item1, cred.Item2, "LATCHH");
+
+                if(token == Empty())
+                {
+
+                }
             }
 
             IsLoaded = true;

@@ -3,9 +3,9 @@ using AElf.Boilerplate.TestBase;
 using AElf.Kernel.SmartContract.Application;
 using AElf.Types;
 
-namespace LatchBox.Contracts.CrowdSaleContract
+namespace LatchBox.Contracts.MultiCrowdSaleContract
 {
-    public class CrowdSaleContractInitializationProvider : IContractInitializationProvider
+    public class MultiCrowdSaleContractInitializationProvider : IContractInitializationProvider
     {
         public List<ContractInitializationMethodCall> GetInitializeMethodList(byte[] contractCode)
         {
@@ -13,6 +13,6 @@ namespace LatchBox.Contracts.CrowdSaleContract
         }
 
         public Hash SystemSmartContractName { get; } = DAppSmartContractAddressNameProvider.Name;
-        public string ContractCodeName { get; } = "LatchBox.Contracts.CrowdSaleContract";
+        public string ContractCodeName { get; } = "LatchBox.Contracts.MultiCrowdSaleContract";
     }
 }

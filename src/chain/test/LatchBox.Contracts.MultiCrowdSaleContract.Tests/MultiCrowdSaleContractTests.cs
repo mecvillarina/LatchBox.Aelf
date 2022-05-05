@@ -7,16 +7,16 @@ using Google.Protobuf.WellKnownTypes;
 using Shouldly;
 using Xunit;
 
-namespace LatchBox.Contracts.CrowdSaleContract
+namespace LatchBox.Contracts.MultiCrowdSaleContract
 {
-    public class CrowdSaleContractTests : CrowdSaleContractTestBase
+    public class MultiCrowdSaleContractTests : MultiCrowdSaleContractTestBase
     {
         [Fact]
         public async Task Test()
         {
             // Get a stub for testing.
             var keyPair = SampleAccount.Accounts.First().KeyPair;
-            var stub = GetCrowdSaleContractStub(keyPair);
+            var stub = GetMultiCrowdSaleContractStub(keyPair);
 
             // Use CallAsync or SendAsync method of this stub to test.
             // await stub.Hello.SendAsync(new Empty())

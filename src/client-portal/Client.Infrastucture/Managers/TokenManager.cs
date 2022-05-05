@@ -71,9 +71,9 @@ namespace Client.Infrastructure.Managers
                 IssueChainId = 9992731
             };
 
-            paramCreateInput.LockWhiteList.Add(new AElf.Client.Proto.Address() { Value = AElf.Types.Address.FromBase58(wallet.Address).Value });
+            //paramCreateInput.LockWhiteList.Add(new AElf.Client.Proto.Address() { Value = AElf.Types.Address.FromBase58(wallet.Address).Value });
 
-            var txId = await _blockChainService.SendTransactionAsync(wallet, password, ManagerToolkit.AelfSettings.MultiTokenContractAddress, "Create", JsonConvert.SerializeObject(paramCreateInput));
+            var txId = await _blockChainService.SendTransactionAsync(wallet, password, ManagerToolkit.AelfSettings.MultiTokenContractAddress, "Create", paramCreateInput);
             var result = await _blockChainService.CheckTransactionResultAsync(txId);
 
         }
