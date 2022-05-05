@@ -26,6 +26,10 @@ namespace Client.Parameters
 
             RuleFor(v => v.Amount)
                .GreaterThan(0).WithMessage("'Amount' must be greater than 0.");
+
+            RuleFor(v => v.Memo)
+                .NotNull()
+                .NotEmpty();
         }
     }
 
