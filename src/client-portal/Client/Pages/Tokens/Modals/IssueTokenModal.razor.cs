@@ -21,10 +21,25 @@ namespace Client.Pages.Tokens.Modals
         {
             if (Validated)
             {
-                IsProcessing = true;
 
                 try
                 {
+                    if (Model.Amount.CountDecimalPlaces() > Model.Decimals)
+                    {
+                        if (Model.Decimals > 0)
+                        {
+                            AppDialogService.ShowError($"Allowable decimal places for 'Amount' less than or equal to {Model.Decimals}");
+                        }
+                        else
+                        {
+                            AppDialogService.ShowError($"{Model.TokenName} doesn't allow 'Amount' to have decimal places.");
+                        }
+
+                        return;
+                    }
+
+                    IsProcessing = true;
+
                     var amount = Model.Amount.ToChainAmount(Model.Decimals);
                     var cred = await AppDialogService.ShowConfirmWalletTransactionAsync();
 

@@ -42,7 +42,7 @@
                 <HeaderContent>
                     <MudTh>Name</MudTh>
                     <MudTh>Issuer</MudTh>
-                    <MudTh>Total Supply</MudTh>
+                    <MudTh>Supply</MudTh>
                     <MudTh>Balance</MudTh>
                     <MudTh>Actions</MudTh>
                 </HeaderContent>
@@ -51,7 +51,7 @@
                         <MudText Typo="Typo.body1" Color="Color.Primary">
                             <b>@context.Token.TokenName</b>
                         </MudText>
-                        <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+                        <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
                             <MudText Typo="Typo.caption">
                                 <span>@context.Token.Symbol (@context.Token.Decimals)</span>
                             </MudText>
@@ -59,10 +59,10 @@
                     </MudTd>
                     <MudTd DataLabel="Issuer">
                         <span>
-                            <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
+                            <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
                                 @context.Token.Issuer.ToStringAddress().ToMask(6)
                             </MudHidden>
-                            <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+                            <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
                                 @context.Token.Issuer.ToStringAddress()
                             </MudHidden>
 
@@ -74,6 +74,7 @@
                 </MudTd>
                 <MudTd DataLabel="Total Supply">
                     <span>
+                        @context.Token.Supply.ToAmountDisplay(@context.Token.Decimals) /
                         @context.Token.TotalSupply.ToAmountDisplay(@context.Token.Decimals) @context.Token.Symbol
                     </span>
                 </MudTd>

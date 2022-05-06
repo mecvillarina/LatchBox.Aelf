@@ -8,7 +8,7 @@ namespace Client.Parameters
         public string Symbol { get; set; }
         public string TokenName { get; set; }
         public int Decimals { get; set; }
-        public long Amount { get; set; }
+        public double Amount { get; set; }
         public string To { get; set; }
         public string Memo { get; set; }
     }
@@ -25,7 +25,7 @@ namespace Client.Parameters
                 .Must(x => AddressHelper.VerifyFormattedAddress(x)).WithMessage("Invalid 'To' Address format.");
 
             RuleFor(v => v.Amount)
-               .GreaterThan(0).WithMessage("'Amount' must be greater than 0.");
+               .GreaterThan(0.0).WithMessage("'Amount' must be greater than 0.");
 
             RuleFor(v => v.Memo)
                 .NotNull()
