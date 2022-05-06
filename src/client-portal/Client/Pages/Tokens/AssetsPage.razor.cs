@@ -3,7 +3,7 @@ using Client.Pages.Tokens.Modals;
 using Client.Parameters;
 using MudBlazor;
 
-namespace Client.Pages
+namespace Client.Pages.Tokens
 {
     public partial class AssetsPage
     {
@@ -35,7 +35,7 @@ namespace Client.Pages
             IsLoaded = false;
             IsCompletelyLoaded = false;
             StateHasChanged();
-            
+
             TokenInfoWithBalanceList.Clear();
 
             var nativeToken = await TokenManager.GetNativeTokenInfoAsync(_creds.Item1, _creds.Item2);
