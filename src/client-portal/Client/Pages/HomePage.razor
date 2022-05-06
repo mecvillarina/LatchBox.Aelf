@@ -1,0 +1,17 @@
+﻿@page "/"
+@page "/view/locks/{lockIndex:long?}"
+@page "/view/vestings/{vestingIndex:long?}"
+
+@attribute [Authorize]
+
+<MudContainer MaxWidth="MaxWidth.False">
+    <div class="d-flex">
+        <MudHidden Breakpoint="Breakpoint.SmAndUp">
+            <MudText Class="mr-2 align-self-center" Color="Color.Primary" Typo="Typo.h5" GutterBottom="false">Dashboard</MudText>
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.Xs">
+            <MudText Class="mr-4 align-self-center" Color="Color.Primary" Typo="Typo.h4" GutterBottom="false">Dashboard</MudText>
+        </MudHidden>
+
+    </div>
+</MudContainer>

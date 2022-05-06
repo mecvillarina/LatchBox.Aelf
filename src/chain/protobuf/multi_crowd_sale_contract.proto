@@ -1,0 +1,99 @@
+syntax = "proto3";
+
+import "aelf/core.proto";
+import "aelf/options.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+
+// the name of the C# namespace in which the contract code will be,
+// generated code will also be in this namespace.
+option csharp_namespace = "LatchBox.Contracts.MultiCrowdSaleContract";
+
+// the contract definition: a gRPC service definition.
+service MultiCrowdSaleContract {
+
+    option (aelf.csharp_state) = "LatchBox.Contracts.MultiCrowdSaleContract.MultiCrowdSaleContractState";
+
+    rpc Initialize (google.protobuf.Empty) returns (google.protobuf.Empty) { }
+    rpc Create (CreateCrowdSaleInput) returns (google.protobuf.Empty) { }
+}
+
+message InitializeInput {
+
+}
+
+
+message CreateCrowdSaleInput {
+    string name = 1;                            
+    string token_symbol = 2;                    // SYMB
+    int64 soft_cap_native_token_amount = 3;     //in ELF
+    int64 hard_cap_native_token_amount = 4;     //in ELF
+    int64 token_amount_per_native_token = 5;    //ex.  1000 SYMB rate (3)
+    int64 native_token_limit_per_sale = 6;  // 1, 2, 3 ELF
+    google.protobuf.Timestamp sale_end_date = 7; 
+    google.protobuf.Timestamp unlock_date = 8;
+    bool pausable = 9;
+}
+
+message StartCrowdSaleInput {
+    int64 id = 1;
+}
+
+message CancelCrowdSaleInput{
+    int64 id = 1;
+}
+
+message PauseCrowdSaleInput {
+    int64 id = 1;
+}
+
+message ResumeCrowdSaleInput {
+    int64 id = 1;
+}
+
+message CompleteCrowdSaleInput {
+    int64 id = 1;
+}
+
+message CrowdSaleBuyInput {
+    int64 id = 1;
+    int64 native_token_amount = 2;
+}
+
+message CrowdSale {
+    int64 id = 1;
+    aelf.Address initiator = 2;
+    string name = 3;
+    string token_symbol = 4;
+    int64 soft_cap_native_token_amount = 5;
+    int64 hard_cap_native_token_amount = 6;
+    int64 token_amount_per_native_token = 7; //ex. 1 ELF = 1000 SYMB
+    int64 native_token_limit_per_sale = 8;
+    google.protobuf.Timestamp sale_end_date = 9;
+    google.protobuf.Timestamp unlock_date = 10;
+    bool pausable = 11;
+    bool is_started = 12;
+    bool is_paused = 13;
+    bool is_cancelled = 14;
+}
+
+message CrowdSaleBuy {
+    aelf.Address investor = 1;
+    int64 native_token_amount = 2;
+    google.protobuf.Timestamp date_last_purchased = 3; 
+}
+
+message CrowdSaleList {
+    repeated int64 ids = 1;
+}
+
+message Refund {
+    aelf.Address to = 1;
+    string token_symbol = 2;
+    int64 amount = 3;
+}
+
+message RefundList {
+    repeated Refund Refunds = 1;
+}

@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+import "client.proto";
+
+option csharp_namespace = "AElf.Client.LatchBox.LockTokenVault";
+
+message InitializeInput {
+}
+
+message UpdatePaymentInput {
+    string token_symbol = 1;
+    int64 add_lock_payment_fee = 2;
+    int64 claim_lock_payment_fee = 3;
+    int64 revoke_lock_payment_fee = 4;
+}
+
+message UpdateTokenVaultSettingsInput {
+    client.Address foundation_address = 1;
+    client.Address staking_address = 2;
+    client.Address platform_address = 3;
+}
+
+message AddLockInput {
+    string token_symbol = 1;
+    int64 total_amount = 2;
+    google.protobuf.Timestamp unlock_time = 3;
+    bool is_revocable = 4;
+    repeated AddLockReceiverInput receivers = 5;
+}
+
+message AddLockReceiverInput {
+    client.Address receiver_address = 1;
+    int64 amount = 2;
+}
+
+message TokenVaultSettings {
+    client.Address foundation_address = 1;
+    client.Address staking_address = 2;
+    client.Address platform_address = 3;
+}
+
+message LatchBoxPayment {
+    string token_symbol = 1;
+    int64 add_lock_fee = 2;
+    int64 claim_lock_fee = 3;
+    int64 revoke_lock_fee = 4;
+}
+
+message LatchBoxLock {
+    string token_symbol = 1;
+    client.Address initiator_address = 2;
+    google.protobuf.Timestamp creation_time = 3;
+    google.protobuf.Timestamp start_time = 4;
+    google.protobuf.Timestamp unlock_time = 5;
+    bool is_revocable = 7;
+    bool is_revoked = 8;
+    bool is_active = 9;
+    repeated LatchBoxLockReceiver receivers = 10;
+}
+
+
+message LatchBoxLockReceiver {
+    client.Address receiver_address = 1;
+    int64 amount = 2;
+    google.protobuf.Timestamp date_claimed = 3;
+    google.protobuf.Timestamp date_revoked = 4;
+    bool is_active = 5;
+}
+
+message LockIndexList {
+    repeated uint64 indexes = 1;
+}
+
+message LockAssetCounter {
+    int64 locked_amount = 1;
+    int64 unlocked_amount = 2;
+}
+
+message GetLatchBoxLockTransactionOutput {
+    uint64 Index = 1;
+    LatchBoxLock Lock = 2;
+}
