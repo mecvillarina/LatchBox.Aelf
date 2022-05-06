@@ -8,7 +8,7 @@ namespace Client.Parameters
         public string TokenName { get; set; }
         public long TotalSupply { get; set; }
         public long InitialSupply { get; set; }
-        public int Decimals { get; set; }
+        public int Decimals { get; set; } = 8;
         public bool IsBurnable { get; set; } = true;
     }
 

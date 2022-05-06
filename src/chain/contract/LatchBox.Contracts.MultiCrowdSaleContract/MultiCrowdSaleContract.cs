@@ -1,6 +1,7 @@
 using AElf.Contracts.MultiToken;
 using AElf.CSharp.Core;
 using AElf.Sdk.CSharp;
+using AElf.Types;
 using Google.Protobuf.WellKnownTypes;
 using System;
 
@@ -47,8 +48,11 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             var nativeTokenInfo = GetNativeToken();
             var tokenInfo = State.TokenContract.GetTokenInfo.Call(new GetTokenInfoInput() { Symbol = input.TokenSymbol });
 
-            var contHardCapNativeToken = input.HardCapNativeTokenAmount / Convert.ToInt64(SafeMath.Pow(10, nativeTokenInfo.Decimals).Value);
-            var totalAmount = input.TokenAmountPerNativeToken * contHardCapNativeToken;
+            var contHardCapNativeToken = Convert.ToInt64(input.HardCapNativeTokenAmount);
+            var contHardCapNativeToken2 = ((BigIntValue)10).Pow(nativeTokenInfo.Decimals);
+            //var totalAmount = input.TokenAmountPerNativeToken * contHardCapNativeToken;
+            var totalAmount = 5000;
+            Assert(false, "Hay");
 
             State.TokenContract.TransferToContract.Call(new TransferToContractInput()
             {

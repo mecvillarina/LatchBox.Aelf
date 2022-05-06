@@ -32,70 +32,71 @@ namespace Client.Pages.CrowdFundings.Modals
         {
             if (Validated)
             {
-                try
+                if (Model.SoftCapNativeTokenAmount.CountDecimalPlaces() > Model.NativeTokenDecimals)
                 {
-                    if (Model.SoftCapNativeTokenAmount.CountDecimalPlaces() > Model.NativeTokenDecimals)
+                    if (Model.NativeTokenDecimals > 0)
                     {
-                        if (Model.NativeTokenDecimals > 0)
-                        {
-                            AppDialogService.ShowError($"Allowable decimal places for 'Soft Cap' less than or equal to {Model.NativeTokenDecimals}");
-                        }
-                        else
-                        {
-                            AppDialogService.ShowError($"{Model.NativeTokenName} doesn't allow 'Soft Cap' to have decimal places.");
-                        }
-
-                        return;
+                        AppDialogService.ShowError($"Allowable decimal places for 'Soft Cap' less than or equal to {Model.NativeTokenDecimals}");
                     }
-                    else if (Model.HardCapNativeTokenAmount.CountDecimalPlaces() > Model.NativeTokenDecimals)
+                    else
                     {
-                        if (Model.NativeTokenDecimals > 0)
-                        {
-                            AppDialogService.ShowError($"Allowable decimal places for 'Hard Cap' less than or equal to {Model.NativeTokenDecimals}");
-                        }
-                        else
-                        {
-                            AppDialogService.ShowError($"{Model.NativeTokenName} doesn't allow 'Hard Cap' to have decimal places.");
-                        }
-
-                        return;
-                    }
-                    else if (Model.TokenAmountPerNativeToken.CountDecimalPlaces() > Model.TokenDecimals)
-                    {
-                        if (Model.TokenDecimals > 0)
-                        {
-                            AppDialogService.ShowError($"Allowable decimal places for 'Token Amount' less than or equal to {Model.TokenDecimals}");
-                        }
-                        else
-                        {
-                            AppDialogService.ShowError($"{Model.TokenName} doesn't allow 'Token Amount' to have decimal places.");
-                        }
-
-                        return;
-                    }
-                    else if (Model.NativeTokenPurchaseLimitPerBuyerAddress.CountDecimalPlaces() > Model.NativeTokenDecimals)
-                    {
-                        if (Model.NativeTokenDecimals > 0)
-                        {
-                            AppDialogService.ShowError($"Allowable decimal places for 'Token Purchase limit per buyer address' less than or equal to {Model.NativeTokenDecimals}");
-                        }
-                        else
-                        {
-                            AppDialogService.ShowError($"{Model.NativeTokenName} doesn't allow 'Token Purchase limit per buyer address' to have decimal places.");
-                        }
-
-                        return;
+                        AppDialogService.ShowError($"{Model.NativeTokenName} doesn't allow 'Soft Cap' to have decimal places.");
                     }
 
-                    IsProcessing = true;
-
+                    return;
                 }
-                catch (Exception ex)
+                else if (Model.HardCapNativeTokenAmount.CountDecimalPlaces() > Model.NativeTokenDecimals)
                 {
-                    AppDialogService.ShowError(ex.Message);
+                    if (Model.NativeTokenDecimals > 0)
+                    {
+                        AppDialogService.ShowError($"Allowable decimal places for 'Hard Cap' less than or equal to {Model.NativeTokenDecimals}");
+                    }
+                    else
+                    {
+                        AppDialogService.ShowError($"{Model.NativeTokenName} doesn't allow 'Hard Cap' to have decimal places.");
+                    }
+
+                    return;
+                }
+                else if (Model.TokenAmountPerNativeToken.CountDecimalPlaces() > Model.TokenDecimals)
+                {
+                    if (Model.TokenDecimals > 0)
+                    {
+                        AppDialogService.ShowError($"Allowable decimal places for 'Token Amount' less than or equal to {Model.TokenDecimals}");
+                    }
+                    else
+                    {
+                        AppDialogService.ShowError($"{Model.TokenName} doesn't allow 'Token Amount' to have decimal places.");
+                    }
+
+                    return;
+                }
+                else if (Model.NativeTokenPurchaseLimitPerBuyerAddress.CountDecimalPlaces() > Model.NativeTokenDecimals)
+                {
+                    if (Model.NativeTokenDecimals > 0)
+                    {
+                        AppDialogService.ShowError($"Allowable decimal places for 'Token Purchase limit per buyer address' less than or equal to {Model.NativeTokenDecimals}");
+                    }
+                    else
+                    {
+                        AppDialogService.ShowError($"{Model.NativeTokenName} doesn't allow 'Token Purchase limit per buyer address' to have decimal places.");
+                    }
+
+                    return;
                 }
 
-                IsProcessing = false;
+                var createCrowdSaleConfirmationParameters = new DialogParameters()
+                    {
+                        { nameof(CreateCrowdSaleConfirmationModal.Model), Model}
+                    };
+
+                var createCrowdSaleDialog = DialogService.Show<CreateCrowdSaleConfirmationModal>("Create Crowd Funding Confirmation", createCrowdSaleConfirmationParameters);
+                var createCrowdSaleDialogResult = await createCrowdSaleDialog.Result;
+
+                if (!createCrowdSaleDialogResult.Cancelled)
+                {
+                    MudDialog.Close();
+                }
             }
         }
 

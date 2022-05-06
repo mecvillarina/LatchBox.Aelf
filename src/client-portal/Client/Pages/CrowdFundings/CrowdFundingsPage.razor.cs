@@ -39,7 +39,7 @@ namespace Client.Pages.CrowdFundings
             StateHasChanged();
 
             _nativeTokenInfo = await TokenManager.GetNativeTokenInfoAsync(_creds.Item1, _creds.Item2);
-            //await MultiCrowdSaleManager.InitializeAsync(_creds.Item1, _creds.Item2);
+            await MultiCrowdSaleManager.InitializeAsync(_creds.Item1, _creds.Item2);
             //var result = await MultiCrowdSaleManager.CreateAsync(_creds.Item1, _creds.Item2, new CreateCrowdSaleInputModel()
             //{
             //    Name = "PreSale - LATCH",
