@@ -16,47 +16,38 @@ service MultiCrowdSaleContract {
     option (aelf.csharp_state) = "LatchBox.Contracts.MultiCrowdSaleContract.MultiCrowdSaleContractState";
 
     rpc Initialize (google.protobuf.Empty) returns (google.protobuf.Empty) { }
-    rpc Create (CreateCrowdSaleInput) returns (google.protobuf.Empty) { }
+    rpc Create (CreateInput) returns (google.protobuf.Empty) { }
+    rpc Cancel (CancelInput) returns (google.protobuf.Empty) { }
+
+    rpc GetCrowdSalesByInitiator (aelf.Address) returns (CrowdSaleListOutput) { 
+        option (aelf.is_view) = true;
+    }
 }
 
 message InitializeInput {
 
 }
 
-
-message CreateCrowdSaleInput {
+message CreateInput {
     string name = 1;                            
     string token_symbol = 2;                    // SYMB
     int64 soft_cap_native_token_amount = 3;     //in ELF
     int64 hard_cap_native_token_amount = 4;     //in ELF
     int64 token_amount_per_native_token = 5;    //ex.  1000 SYMB rate (3)
-    int64 native_token_limit_per_sale = 6;  // 1, 2, 3 ELF
+    int64 native_token_purchase_limit_per_buyer_address = 6;  // 1, 2, 3 ELF
     google.protobuf.Timestamp sale_end_date = 7; 
-    google.protobuf.Timestamp unlock_date = 8;
-    bool pausable = 9;
+    int64 lock_until_duration_in_minutes = 8;
 }
 
-message StartCrowdSaleInput {
+message CancelInput {
     int64 id = 1;
 }
 
-message CancelCrowdSaleInput{
+message CompleteInput {
     int64 id = 1;
 }
 
-message PauseCrowdSaleInput {
-    int64 id = 1;
-}
-
-message ResumeCrowdSaleInput {
-    int64 id = 1;
-}
-
-message CompleteCrowdSaleInput {
-    int64 id = 1;
-}
-
-message CrowdSaleBuyInput {
+message BuyInput {
     int64 id = 1;
     int64 native_token_amount = 2;
 }
@@ -68,14 +59,13 @@ message CrowdSale {
     string token_symbol = 4;
     int64 soft_cap_native_token_amount = 5;
     int64 hard_cap_native_token_amount = 6;
-    int64 token_amount_per_native_token = 7; //ex. 1 ELF = 1000 SYMB
-    int64 native_token_limit_per_sale = 8;
+    int64 token_amount_per_native_token = 7;
+    int64 native_token_purchase_limit_per_buyer_address = 8;
     google.protobuf.Timestamp sale_end_date = 9;
-    google.protobuf.Timestamp unlock_date = 10;
-    bool pausable = 11;
-    bool is_started = 12;
-    bool is_paused = 13;
-    bool is_cancelled = 14;
+    int64 lock_until_duration_in_minutes = 10;
+    bool is_started = 11;
+    bool is_paused = 12;
+    bool is_cancelled = 13;
 }
 
 message CrowdSaleBuy {
@@ -84,7 +74,7 @@ message CrowdSaleBuy {
     google.protobuf.Timestamp date_last_purchased = 3; 
 }
 
-message CrowdSaleList {
+message CrowdSaleIds {
     repeated int64 ids = 1;
 }
 
@@ -96,4 +86,8 @@ message Refund {
 
 message RefundList {
     repeated Refund Refunds = 1;
+}
+
+message CrowdSaleListOutput {
+    repeated CrowdSale CrowdSales = 1;
 }

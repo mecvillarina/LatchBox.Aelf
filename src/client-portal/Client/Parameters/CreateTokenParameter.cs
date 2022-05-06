@@ -37,7 +37,7 @@ namespace Client.Parameters
 
             RuleFor(v => v.InitialSupply)
                 .GreaterThanOrEqualTo(0).WithMessage("'Initial Supply' must be greater than or equal to 0.")
-                .LessThanOrEqualTo(v => v.TotalSupply).WithMessage("''Initial Supply' must be less than or equal to the 'Total Supply.'");
+                .LessThanOrEqualTo(v => v.TotalSupply).WithMessage("'Initial Supply' must be less than or equal to the 'Total Supply'.");
         }
     }
 }

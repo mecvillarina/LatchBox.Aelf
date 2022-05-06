@@ -71,7 +71,7 @@ namespace Client.Pages.Tokens
             StateHasChanged();
         }
 
-        private async Task InvokAddTokenModalAsync()
+        private async Task InvokeAddTokenModalAsync()
         {
             var dialog = DialogService.Show<AddExistingTokenModal>($"Add Existing Token");
             var dialogResult = await dialog.Result;

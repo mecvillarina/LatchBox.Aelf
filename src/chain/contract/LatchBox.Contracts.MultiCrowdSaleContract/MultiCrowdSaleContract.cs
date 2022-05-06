@@ -28,7 +28,7 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             return new Empty();
         }
 
-        public override Empty Create(CreateCrowdSaleInput input)
+        public override Empty Create(CreateInput input)
         {
             AssertContractHasBeenInitialized();
 
@@ -36,17 +36,26 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             Assert(!string.IsNullOrEmpty(input.Name), "The parameter name is required.");
             AssertSymbolIsExists(input.TokenSymbol);
             AssertSymbolIssuerAndCrowdSaleInitiatorMustBeTheSame(input.TokenSymbol, Context.Sender);
-            Assert(input.SoftCapNativeTokenAmount >= 0, "The parameter soft cap MUST be at least 0.");
-            Assert(input.SoftCapNativeTokenAmount <= input.HardCapNativeTokenAmount, "The parameter soft cap MUST be less than hard cap.");
+            Assert(input.SoftCapNativeTokenAmount > 0, "The parameter soft cap MUST be greater than 0.");
+            Assert(input.SoftCapNativeTokenAmount <= input.HardCapNativeTokenAmount, "The parameter hard cap must be greater than or equal to soft cap.");
             Assert(input.SaleEndDate.ToDateTime() > currentBlockTime.ToDateTime(), "The parameter sale end date MUST be future date.");
             Assert(input.TokenAmountPerNativeToken > 0, "The parameter token amount per native token MUST be greater than 0.");
-            Assert(input.NativeTokenLimitPerSale > 0, "The parameter native token limit per purchase MUST be greater than 0.");
-            Assert(input.UnlockDate == null || input.UnlockDate.ToDateTime() > input.SaleEndDate.ToDateTime(), "The parameter unlock date MUST be future date and MUST be later than sale end date.");
+            Assert(input.NativeTokenPurchaseLimitPerBuyerAddress > 0, "The parameter native token limit per buyer address MUST be greater than 0.");
+            Assert(input.NativeTokenPurchaseLimitPerBuyerAddress <= input.HardCapNativeTokenAmount, "The parameter token limit per buyer address MUST be less than the hard cap.");
+            Assert(input.LockUntilDurationInMinutes >= 60, "The parameter lock until duration MUST be at least 1 hour.");
 
             var nativeTokenInfo = GetNativeToken();
             var tokenInfo = State.TokenContract.GetTokenInfo.Call(new GetTokenInfoInput() { Symbol = input.TokenSymbol });
 
-            // Add Token Transfer,
+            var contHardCapNativeToken = input.HardCapNativeTokenAmount / Convert.ToInt64(SafeMath.Pow(10, nativeTokenInfo.Decimals).Value);
+            var totalAmount = input.TokenAmountPerNativeToken * contHardCapNativeToken;
+
+            State.TokenContract.TransferToContract.Call(new TransferToContractInput()
+            {
+                Memo = $"Crowd Sale: {input.Name}",
+                Amount = totalAmount,
+                Symbol = input.TokenSymbol
+            });
 
             var selfIncreasingId = State.SelfIncresingCrowdSaleId.Value;
 
@@ -59,22 +68,30 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
                 SoftCapNativeTokenAmount = input.SoftCapNativeTokenAmount,
                 HardCapNativeTokenAmount = input.HardCapNativeTokenAmount,
                 TokenAmountPerNativeToken = input.TokenAmountPerNativeToken,
-                NativeTokenLimitPerSale = input.NativeTokenLimitPerSale,
+                NativeTokenPurchaseLimitPerBuyerAddress = input.NativeTokenPurchaseLimitPerBuyerAddress,
                 SaleEndDate = input.SaleEndDate,
-                UnlockDate = input.UnlockDate,
-                Pausable = input.Pausable,
-                IsStarted = false,
-                IsPaused = false
+                LockUntilDurationInMinutes = input.LockUntilDurationInMinutes,
+                IsStarted = true,
+                IsPaused = false,
+                IsCancelled = false
             };
 
             State.CrowdSales[selfIncreasingId] = sale;
             State.CrowdSaleRaiseAmounts[selfIncreasingId] = 0;
 
+            var activeCrowdSaleIds = State.ActiveCrowdSales.Value;
+
+            if (!activeCrowdSaleIds.Ids.Contains(selfIncreasingId))
+            {
+                activeCrowdSaleIds.Ids.Add(selfIncreasingId);
+                State.ActiveCrowdSales.Value = activeCrowdSaleIds;
+            }
+
             var crowdSalesByInitiator = State.CrowdSalesByInitiator[Context.Sender];
 
             if (crowdSalesByInitiator == null)
             {
-                crowdSalesByInitiator = new CrowdSaleList();
+                crowdSalesByInitiator = new CrowdSaleIds();
             }
 
             crowdSalesByInitiator.Ids.Add(selfIncreasingId);
@@ -85,35 +102,7 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             return new Empty();
         }
 
-        public Empty Start(StartCrowdSaleInput input)
-        {
-            AssertContractHasBeenInitialized();
-
-            Assert(input.Id < State.SelfIncresingCrowdSaleId.Value, "Invalid Crowd Sale Id");
-
-            var crowdSale = State.CrowdSales[input.Id];
-
-            Assert(crowdSale.Initiator == Context.Sender || State.Admin.Value == Context.Sender, "No authorization.");
-            Assert(!crowdSale.IsStarted, "Crowd Sale has already started");
-
-            var crowdSaleId = input.Id;
-
-            crowdSale.IsStarted = true;
-            State.CrowdSales[crowdSale.Id] = crowdSale;
-
-            var activeCrowdSaleIds = State.ActiveCrowdSales.Value;
-
-            if (!activeCrowdSaleIds.Ids.Contains(crowdSaleId))
-            {
-                activeCrowdSaleIds.Ids.Add(crowdSale.Id);
-                State.ActiveCrowdSales.Value = activeCrowdSaleIds;
-            }
-
-
-            return new Empty();
-        }
-
-        public Empty Cancel(CancelCrowdSaleInput input)
+        public override Empty Cancel(CancelInput input)
         {
             AssertContractHasBeenInitialized();
 
@@ -143,67 +132,7 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             return new Empty();
         }
 
-        public Empty Pause(PauseCrowdSaleInput input)
-        {
-            AssertContractHasBeenInitialized();
-
-            Assert(input.Id < State.SelfIncresingCrowdSaleId.Value, "Invalid Crowd Sale Id");
-
-            var crowdSale = State.CrowdSales[input.Id];
-
-            Assert(crowdSale.Initiator == Context.Sender || State.Admin.Value == Context.Sender, "No authorization.");
-            Assert(crowdSale.IsStarted, "Crowd Sale is not yet started");
-            Assert(!crowdSale.IsCancelled, "Crowd Sale has been cancelled.");
-            Assert(crowdSale.SaleEndDate > Context.CurrentBlockTime, "Crowd Sale has already ended.");
-            Assert(!crowdSale.IsPaused, "Crowd Sale has already paused.");
-            Assert(crowdSale.Pausable, "Crowd Sale is not pausable.");
-
-            var crowdSaleId = input.Id;
-
-            crowdSale.IsPaused = true;
-            State.CrowdSales[crowdSaleId] = crowdSale;
-
-            var activeCrowdSaleIds = State.ActiveCrowdSales.Value;
-
-            if (activeCrowdSaleIds.Ids.Contains(crowdSaleId))
-            {
-                activeCrowdSaleIds.Ids.Remove(crowdSaleId);
-                State.ActiveCrowdSales.Value = activeCrowdSaleIds;
-            }
-
-            return new Empty();
-        }
-
-        public Empty Resume(ResumeCrowdSaleInput input)
-        {
-            AssertContractHasBeenInitialized();
-
-            Assert(input.Id < State.SelfIncresingCrowdSaleId.Value, "Invalid Crowd Sale Id");
-
-            var crowdSale = State.CrowdSales[input.Id];
-
-            Assert(crowdSale.Initiator == Context.Sender || Context.Sender == State.Admin.Value, "No authorization.");
-            Assert(crowdSale.IsStarted, "Crowd Sale is not yet started");
-            Assert(!crowdSale.IsCancelled, "Crowd Sale has been cancelled.");
-            Assert(crowdSale.SaleEndDate > Context.CurrentBlockTime, "Crowd Sale has already ended.");
-            Assert(crowdSale.IsPaused, "Crowd Sale has not been paused.");
-
-            var crowdSaleId = input.Id;
-            crowdSale.IsPaused = false;
-            State.CrowdSales[crowdSaleId] = crowdSale;
-
-            var activeCrowdSaleIds = State.ActiveCrowdSales.Value;
-
-            if (!activeCrowdSaleIds.Ids.Contains(crowdSaleId))
-            {
-                activeCrowdSaleIds.Ids.Add(crowdSale.Id);
-                State.ActiveCrowdSales.Value = activeCrowdSaleIds;
-            }
-
-            return new Empty();
-        }
-
-        public Empty Buy(CrowdSaleBuyInput input)
+        public Empty Buy(BuyInput input)
         {
             AssertContractHasBeenInitialized();
 
@@ -228,8 +157,8 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
                 currentPurchaseAmount = purchase.NativeTokenAmount;
             }
 
-            Assert(currentPurchaseAmount <= crowdSale.NativeTokenLimitPerSale, "You've reached the buy limit per Address. ");
-            Assert(currentPurchaseAmount + input.NativeTokenAmount <= crowdSale.NativeTokenLimitPerSale, "Your purchase will exceed the buy limit per address.");
+            Assert(currentPurchaseAmount <= crowdSale.NativeTokenPurchaseLimitPerBuyerAddress, "You've reached the buy limit. ");
+            Assert(currentPurchaseAmount + input.NativeTokenAmount <= crowdSale.NativeTokenPurchaseLimitPerBuyerAddress, "Your purchase will exceed the buy limit per address.");
             Assert(raiseAmount + input.NativeTokenAmount <= crowdSale.HardCapNativeTokenAmount, "Your purchase will exceed the crowd sale pool. ");
 
             if (purchase == null)
@@ -250,7 +179,7 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
 
             if (crowdSalesByReceiver == null)
             {
-                crowdSalesByReceiver = new CrowdSaleList();
+                crowdSalesByReceiver = new CrowdSaleIds();
             }
 
             if (!crowdSalesByReceiver.Ids.Contains(crowdSaleId))
@@ -263,7 +192,7 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
         }
 
         //TBC
-        public BoolValue Complete(CompleteCrowdSaleInput input)
+        public BoolValue Complete(CompleteInput input)
         {
             AssertContractHasBeenInitialized();
 

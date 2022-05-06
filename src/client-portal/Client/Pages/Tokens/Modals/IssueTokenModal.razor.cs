@@ -15,13 +15,11 @@ namespace Client.Pages.Tokens.Modals
         private FluentValidationValidator _fluentValidationValidator;
         private bool Validated => _fluentValidationValidator.Validate(options => { options.IncludeAllRuleSets(); });
         public bool IsProcessing { get; set; }
-        public bool IsLoaded { get; set; }
 
         private async Task SubmitAsync()
         {
             if (Validated)
             {
-
                 try
                 {
                     if (Model.Amount.CountDecimalPlaces() > Model.Decimals)
@@ -45,7 +43,7 @@ namespace Client.Pages.Tokens.Modals
 
                     if (cred.Item1 != null)
                     {
-                        var issueTokenResult = await TokenManager.IssueTokenAsync(cred.Item1, cred.Item2, Model.Symbol, amount, Model.Memo, Model.To);
+                        var issueTokenResult = await TokenManager.IssueAsync(cred.Item1, cred.Item2, Model.Symbol, amount, Model.Memo, Model.To);
 
                         if (!string.IsNullOrEmpty(issueTokenResult.Error))
                         {

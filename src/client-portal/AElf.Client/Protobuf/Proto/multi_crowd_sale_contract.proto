@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+import "client.proto";
+
+option csharp_namespace = "AElf.Client.LatchBox.MultiCrowdSale";
+
+message InitializeInput {
+}
+
+message CreateInput {
+    string name = 1;                            
+    string token_symbol = 2;                    // SYMB
+    int64 soft_cap_native_token_amount = 3;     //in ELF
+    int64 hard_cap_native_token_amount = 4;     //in ELF
+    int64 token_amount_per_native_token = 5;    //ex.  1000 SYMB rate (3)
+    int64 native_token_purchase_limit_per_buyer_address = 6;  // 1, 2, 3 ELF
+    google.protobuf.Timestamp sale_end_date = 7; 
+    int64 lock_until_duration_in_minutes = 8;
+}
+
+message CrowdSale {
+    int64 id = 1;
+    client.Address initiator = 2;
+    string name = 3;
+    string token_symbol = 4;
+    int64 soft_cap_native_token_amount = 5;
+    int64 hard_cap_native_token_amount = 6;
+    int64 token_amount_per_native_token = 7;
+    int64 native_token_limit_per_sale = 8;
+    google.protobuf.Timestamp sale_end_date = 9;
+    int64 lock_until_duration_in_minutes = 10;
+    bool is_started = 11;
+    bool is_paused = 12;
+    bool is_cancelled = 13;
+}
+
+message CrowdSaleListOutput {
+    repeated CrowdSale CrowdSales = 1;
+}
