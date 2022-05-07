@@ -26,7 +26,7 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
                 Symbol = symbol
             });
 
-            Assert(tokenInfo != null && !string.IsNullOrEmpty(tokenInfo.Symbol), "Token is not exists.");
+            Assert(tokenInfo != null && !string.IsNullOrEmpty(tokenInfo.Symbol), "Token doesn't exists.");
         }
 
         private void AssertSymbolIssuerAndCrowdSaleInitiatorMustBeTheSame(string symbol, Address creator)
@@ -36,8 +36,8 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
                 Symbol = symbol
             });
 
-            Assert(tokenInfo != null && !string.IsNullOrEmpty(tokenInfo.Symbol), "Token is not exists.");
-            Assert(tokenInfo.Issuer == creator, "Token issuer and crowd sale creator MUST be the same.");
+            Assert(tokenInfo != null && !string.IsNullOrEmpty(tokenInfo.Symbol), "Token doesn't exists.");
+            Assert(tokenInfo.Issuer == creator, "Only the issuer (creator) of the token can create a crowd sale.");
         }
 
         private TokenInfo GetNativeToken()
