@@ -14,7 +14,7 @@ namespace Client.Pages.CrowdFundings
 
         private (WalletInformation, string) _creds;
         public TokenInfo NativeTokenInfo { get; set; }
-        public List<AppCrowdSaleOutput> CrowdSaleList { get; set; } = new();
+        public List<MyCrowdSaleModel> CrowdSaleList { get; set; } = new();
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
@@ -41,7 +41,7 @@ namespace Client.Pages.CrowdFundings
             NativeTokenInfo = await TokenManager.GetNativeTokenInfoAsync(_creds.Item1, _creds.Item2);
             await MultiCrowdSaleManager.InitializeAsync(_creds.Item1, _creds.Item2);
             var output = await MultiCrowdSaleManager.GetCrowdSalesByInitiatorAsync(_creds.Item1, _creds.Item2, _creds.Item1.Address);
-            CrowdSaleList = output.CrowdSales.Select(x => new AppCrowdSaleOutput(x)).ToList();
+            CrowdSaleList = output.CrowdSales.Select(x => new MyCrowdSaleModel(x)).ToList();
 
             IsLoaded = true;
             StateHasChanged();
@@ -80,7 +80,7 @@ namespace Client.Pages.CrowdFundings
             }
         }
 
-        private async Task InvokeCancelCrowdSaleAsync(AppCrowdSaleOutput output)
+        private async Task InvokeCancelCrowdSaleAsync(MyCrowdSaleModel output)
         {
             var parameters = new DialogParameters()
             {

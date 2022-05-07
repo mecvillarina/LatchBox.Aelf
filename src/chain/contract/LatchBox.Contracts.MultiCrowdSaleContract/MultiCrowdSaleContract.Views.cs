@@ -5,20 +5,6 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
 {
     public partial class MultiCrowdSaleContract
     {
-        private CrowdSaleOutput GetCrowdSaleOutput(long crowdSaleId)
-        {
-            var crowdSale = State.CrowdSales[crowdSaleId];
-            var tokenInfo = GetTokenInfo(crowdSale.TokenSymbol);
-            return new CrowdSaleOutput()
-            {
-                CrowdSale = crowdSale,
-                RaisedAmount = State.CrowdSaleRaiseAmounts[crowdSaleId],
-                TokenName = tokenInfo.TokenName,
-                TokenDecimals = tokenInfo.Decimals,
-                TokenSymbol = tokenInfo.Symbol
-            };
-        }
-
         public override CrowdSaleListOutput GetCrowdSalesByInitiator(Address input)
         {
             var crowdSalesByInitiator = State.CrowdSalesByInitiator[input] ?? new CrowdSaleIds();

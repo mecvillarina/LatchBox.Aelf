@@ -3,7 +3,7 @@ using MudBlazor;
 
 namespace Client.Infrastructure.Models
 {
-    public class AppCrowdSaleOutput
+    public class MyCrowdSaleModel
     {
         public CrowdSale CrowdSale { get; }
         public long RaisedAmount { get; }
@@ -15,7 +15,8 @@ namespace Client.Infrastructure.Models
         public bool CanCancel { get; set; }
         public bool CanComplete { get; set; }
         public bool CanRefund { get; set; }
-        public AppCrowdSaleOutput(CrowdSaleOutput output)
+
+        public MyCrowdSaleModel(CrowdSaleOutput output)
         {
             CrowdSale = output.CrowdSale;
             RaisedAmount = output.RaisedAmount;

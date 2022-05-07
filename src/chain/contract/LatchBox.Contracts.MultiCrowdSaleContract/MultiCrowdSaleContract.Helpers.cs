@@ -68,5 +68,31 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
 
             return result;
         }
+
+        private void RemoveFromActiveCrowdSales(long crowdSaleId)
+        {
+            var activeCrowdSaleIds = State.ActiveCrowdSales.Value;
+
+            if (activeCrowdSaleIds.Ids.Contains(crowdSaleId))
+            {
+                activeCrowdSaleIds.Ids.Remove(crowdSaleId);
+                State.ActiveCrowdSales.Value = activeCrowdSaleIds;
+            }
+        }
+
+        private CrowdSaleOutput GetCrowdSaleOutput(long crowdSaleId)
+        {
+            var crowdSale = State.CrowdSales[crowdSaleId];
+            var tokenInfo = GetTokenInfo(crowdSale.TokenSymbol);
+            return new CrowdSaleOutput()
+            {
+                CrowdSale = crowdSale,
+                RaisedAmount = State.CrowdSaleRaiseAmounts[crowdSaleId],
+                TokenName = tokenInfo.TokenName,
+                TokenDecimals = tokenInfo.Decimals,
+                TokenSymbol = tokenInfo.Symbol
+            };
+        }
+
     }
 }

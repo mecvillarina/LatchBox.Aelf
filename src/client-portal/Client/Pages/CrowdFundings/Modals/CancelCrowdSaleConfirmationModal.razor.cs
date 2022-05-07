@@ -9,7 +9,7 @@ namespace Client.Pages.CrowdFundings.Modals
 {
     public partial class CancelCrowdSaleConfirmationModal
     {
-        [Parameter] public AppCrowdSaleOutput Model { get; set; }
+        [Parameter] public MyCrowdSaleModel Model { get; set; }
         [Parameter] public TokenInfo NativeTokenInfo { get; set; }
 
         [CascadingParameter] private MudDialogInstance MudDialog { get; set; }

@@ -151,7 +151,7 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             Assert(crowdSale.IsActive, "Crowd Sale is not active anymore.");
             Assert(!crowdSale.IsCancelled, "Crowd Sale has been cancelled.");
             Assert(crowdSale.SaleEndDate > Context.CurrentBlockTime, "Crowd Sale has already ended.");
-
+            Assert(crowdSale.Initiator != Context.Sender, "Only the non-issuer (creator) of the token can buy on a crowd sale.");
 
             var raiseAmount = State.CrowdSaleRaiseAmounts[crowdSaleId];
             var purchase = State.CrowdSalePurchases[crowdSaleId][Context.Sender];
@@ -222,15 +222,5 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             return new Empty();
         }
 
-        private void RemoveFromActiveCrowdSales(long crowdSaleId)
-        {
-            var activeCrowdSaleIds = State.ActiveCrowdSales.Value;
-
-            if (activeCrowdSaleIds.Ids.Contains(crowdSaleId))
-            {
-                activeCrowdSaleIds.Ids.Remove(crowdSaleId);
-                State.ActiveCrowdSales.Value = activeCrowdSaleIds;
-            }
-        }
     }
 }
