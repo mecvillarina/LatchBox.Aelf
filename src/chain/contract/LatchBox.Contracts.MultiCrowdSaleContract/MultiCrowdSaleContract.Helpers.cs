@@ -37,12 +37,34 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             });
 
             Assert(tokenInfo != null && !string.IsNullOrEmpty(tokenInfo.Symbol), "Token is not exists.");
-            Assert(tokenInfo.Issuer == creator, "Token Issuer and Crowd Sale Creator MUST be the same.");
+            Assert(tokenInfo.Issuer == creator, "Token issuer and crowd sale creator MUST be the same.");
         }
 
         private TokenInfo GetNativeToken()
         {
             return State.TokenContract.GetNativeTokenInfo.Call(new Empty()); 
+        }
+
+        private long GetChainAmount(long value, int decimals)
+        {
+            long result = 1;
+
+            if (decimals > 0)
+            {
+                for (int i = 1; i <= decimals; ++i)
+                {
+                    result *= value;
+                }
+            }
+            else if (decimals < 0)
+            {
+                for (int i = -1; i >= decimals; --i)
+                {
+                    result /= value;
+                }
+            }
+
+            return result;
         }
     }
 }

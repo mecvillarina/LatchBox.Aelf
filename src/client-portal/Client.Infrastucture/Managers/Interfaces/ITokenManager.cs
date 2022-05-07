@@ -18,6 +18,7 @@ namespace Client.Infrastructure.Managers.Interfaces
         Task<TransactionResultDto> CreateAsync(WalletInformation wallet, string password, string symbol, string tokenName, long totalSupply, int decimals, bool isBurnable);
         Task<TransactionResultDto> IssueAsync(WalletInformation wallet, string password, string symbol, long amount, string memo, string to);
         Task<TransactionResultDto> ApproveAsync(WalletInformation wallet, string password, string spender, string symbol, long amount);
+        Task<GetAllowanceOutput> GetAllowanceAsync(WalletInformation wallet, string password, string symbol, string owner, string spender);
 
         Task AddTokenSymbolToStorageAsync(string symbol);
         Task<List<string>> GetTokenSymbolsFromStorageAsync();

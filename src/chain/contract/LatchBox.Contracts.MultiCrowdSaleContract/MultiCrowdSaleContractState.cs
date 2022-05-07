@@ -10,12 +10,12 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
     /// </summary>
     public class MultiCrowdSaleContractState : ContractState
     {
-        //internal TokenContractContainer.TokenContractReferenceState TokenContract { get; set; }
+        internal TokenContractContainer.TokenContractReferenceState TokenContract { get; set; }
         internal AEDPoSContractContainer.AEDPoSContractReferenceState ConsensusContract { get; set; }
-        internal TokenContractImplContainer.TokenContractImplReferenceState TokenContract { get; set; }
+        //internal TokenContractImplContainer.TokenContractImplReferenceState TokenContract { get; set; }
 
         public SingletonState<Address> Admin { get; set; }
-        public StringState NativeToken { get; set; }
+        public SingletonState<NativeToken> NativeToken { get; set; }
         public SingletonState<long> SelfIncresingCrowdSaleId { get; set; }
 
         public MappedState<long, CrowdSale> CrowdSales { get; set; }

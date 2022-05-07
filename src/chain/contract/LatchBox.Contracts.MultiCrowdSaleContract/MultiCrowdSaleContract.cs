@@ -23,9 +23,17 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             State.TokenContract.Value = Context.GetContractAddressByName(SmartContractConstants.TokenContractSystemName);
             State.ConsensusContract.Value = Context.GetContractAddressByName(SmartContractConstants.ConsensusContractSystemName);
 
-            State.NativeToken.Value = State.TokenContract.GetNativeTokenInfo.Call(new Empty()).Symbol;
-            State.SelfIncresingCrowdSaleId.Value = 1;
+            var nativeToken = GetNativeToken();
 
+            State.NativeToken.Value = new NativeToken()
+            {
+                Symbol = nativeToken.Symbol,
+                TokenName = nativeToken.TokenName,
+                Decimals = nativeToken.Decimals
+            };
+
+            State.SelfIncresingCrowdSaleId.Value = 1;
+            State.ActiveCrowdSales.Value = new CrowdSaleIds();
             return new Empty();
         }
 
@@ -45,27 +53,28 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             Assert(input.NativeTokenPurchaseLimitPerBuyerAddress <= input.HardCapNativeTokenAmount, "The parameter token limit per buyer address MUST be less than the hard cap.");
             Assert(input.LockUntilDurationInMinutes >= 60, "The parameter lock until duration MUST be at least 1 hour.");
 
-            var nativeTokenInfo = GetNativeToken();
-            var tokenInfo = State.TokenContract.GetTokenInfo.Call(new GetTokenInfoInput() { Symbol = input.TokenSymbol });
+            var totalAmount = input.TokenAmountPerNativeToken * (input.HardCapNativeTokenAmount / GetChainAmount(10, State.NativeToken.Value.Decimals));
 
-            var contHardCapNativeToken = Convert.ToInt64(input.HardCapNativeTokenAmount);
-            var contHardCapNativeToken2 = ((BigIntValue)10).Pow(nativeTokenInfo.Decimals);
-            //var totalAmount = input.TokenAmountPerNativeToken * contHardCapNativeToken;
-            var totalAmount = 5000;
-            Assert(false, "Hay");
-
-            State.TokenContract.TransferToContract.Call(new TransferToContractInput()
+            State.TokenContract.TransferFrom.Send(new TransferFromInput()
             {
-                Memo = $"Crowd Sale: {input.Name}",
+                From = Context.Sender,
+                To = Context.Self, 
+                Symbol = input.TokenSymbol,
                 Amount = totalAmount,
-                Symbol = input.TokenSymbol
+                Memo = input.Name,
             });
+
+            Context.LogDebug(() => totalAmount.ToString());
+            Context.LogDebug(() => input.TokenSymbol);
+            Context.LogDebug(() => Context.Sender.ToBase58());
+            Context.LogDebug(() => Context.Self.ToBase58());
+            Context.LogDebug(() => Context.Origin.ToBase58());
 
             var selfIncreasingId = State.SelfIncresingCrowdSaleId.Value;
 
             CrowdSale sale = new CrowdSale()
             {
-                Id = State.SelfIncresingCrowdSaleId.Value,
+                Id = selfIncreasingId,
                 Initiator = Context.Sender,
                 Name = input.Name,
                 TokenSymbol = input.TokenSymbol,
@@ -170,7 +179,12 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
                 purchase = new CrowdSaleBuy();
             }
 
-            //Transfer
+            //State.TokenContract.TransferToContract.Call(new TransferToContractInput()
+            //{
+            //    Memo = $"Crowd Sale Id: {crowdSaleId}, Buy",
+            //    Amount = input.NativeTokenAmount,
+            //    Symbol = nativeTokenInfo.Symbol
+            //});
 
             purchase.NativeTokenAmount += input.NativeTokenAmount;
             purchase.Investor = Context.Sender;

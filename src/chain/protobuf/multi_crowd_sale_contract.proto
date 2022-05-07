@@ -52,6 +52,13 @@ message BuyInput {
     int64 native_token_amount = 2;
 }
 
+
+message NativeToken {
+    string symbol = 1;
+    string token_name = 2;
+    int32 decimals = 3;
+}
+
 message CrowdSale {
     int64 id = 1;
     aelf.Address initiator = 2;
@@ -85,9 +92,14 @@ message Refund {
 }
 
 message RefundList {
-    repeated Refund Refunds = 1;
+    repeated Refund refunds = 1;
+}
+
+message CrowdSaleOutput {
+    CrowdSale crowd_sale = 1;
+    int64 raised_Amount = 2;
 }
 
 message CrowdSaleListOutput {
-    repeated CrowdSale CrowdSales = 1;
+    repeated CrowdSaleOutput crowd_sales = 1;
 }

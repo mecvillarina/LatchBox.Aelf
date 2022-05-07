@@ -38,6 +38,8 @@ namespace Client.Pages.CrowdFundings.Modals
                         }
                         else
                         {
+                            var allowance = await TokenManager.GetAllowanceAsync(cred.Item1, cred.Item2, Model.TokenSymbol, cred.Item1.Address, MultiCrowdSaleManager.ContactAddress);
+
                             var saleEndDate = DateTime.SpecifyKind(Model.SaleEndDate.Value.Date.AddDays(1).AddMilliseconds(-1), DateTimeKind.Utc);
 
                             var input = new CreateCrowdSaleInputModel()
@@ -65,13 +67,13 @@ namespace Client.Pages.CrowdFundings.Modals
                             }
                         }
                     }
-                    IsProcessing = false;
                 }
                 catch (Exception ex)
                 {
                     AppDialogService.ShowError(ex.Message);
                 }
 
+                IsProcessing = false;
             }
         }
 

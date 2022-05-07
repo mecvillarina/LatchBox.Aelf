@@ -13,7 +13,11 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             foreach (var crowdSaleId in crowdSalesByInitiator.Ids)
             {
                 var crowdSale = State.CrowdSales[crowdSaleId];
-                output.CrowdSales.Add(crowdSale);
+                output.CrowdSales.Add(new CrowdSaleOutput()
+                {
+                    CrowdSale = crowdSale,
+                    RaisedAmount = State.CrowdSaleRaiseAmounts[crowdSaleId]
+                });
             }
 
             return output;
