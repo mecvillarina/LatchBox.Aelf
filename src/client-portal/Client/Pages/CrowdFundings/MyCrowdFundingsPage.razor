@@ -1,14 +1,14 @@
-﻿@page "/crowd-fundings/manage"
+﻿@page "/launchpads/manage"
 
 @attribute [Authorize]
 
 <MudContainer MaxWidth="MaxWidth.False">
     <div class="d-flex">
         <MudHidden Breakpoint="Breakpoint.SmAndUp">
-            <MudText Class="mr-2 align-self-center" Typo="Typo.h5" Color="Color.Primary" GutterBottom="false">My Crowd Fundings</MudText>
+            <MudText Class="mr-2 align-self-center" Typo="Typo.h5" Color="Color.Primary" GutterBottom="false">My launchpads</MudText>
         </MudHidden>
         <MudHidden Breakpoint="Breakpoint.Xs">
-            <MudText Class="mr-4 align-self-center" Typo="Typo.h4" Color="Color.Primary" GutterBottom="false">My Crowd Fundings</MudText>
+            <MudText Class="mr-4 align-self-center" Typo="Typo.h4" Color="Color.Primary" GutterBottom="false">My launchpads</MudText>
         </MudHidden>
 
         @if (IsLoaded)
@@ -31,10 +31,12 @@
             <MudTable Items="@CrowdSaleList" Class="mx-0 grey darken-4" FixedHeader="true" Breakpoint="Breakpoint.Sm">
                 <HeaderContent>
                     <MudTh>Id</MudTh>
+                    <MudTh>Name</MudTh>
                     <MudTh>Token</MudTh>
-                    <MudTh>Cap</MudTh>
+                    <MudTh>Soft Cap/Hard Cap</MudTh>
                     <MudTh>Sale Conversion</MudTh>
-                    <MudTh>Current Sale</MudTh>
+                    <MudTh>Raised Amount</MudTh>
+                    <MudTh>Sale Starts</MudTh>
                     <MudTh>Sale Ends</MudTh>
                     <MudTh>Status</MudTh>
                     <MudTh>Action</MudTh>
@@ -45,6 +47,9 @@
                             <b>@context.CrowdSale.Id</b>
                         </MudText>
                     </MudTd>
+                    <MudTd DataLabel="Name">
+                        <span>@context.CrowdSale.Name</span>
+                    </MudTd>
                     <MudTd DataLabel="Token">
                         <span>@context.CrowdSale.TokenSymbol</span>
                     </MudTd>
@@ -52,10 +57,16 @@
                         <span>@context.CrowdSale.SoftCapNativeTokenAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol - @context.CrowdSale.HardCapNativeTokenAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol</span>
                     </MudTd>
                     <MudTd DataLabel="Sale Conversion">
-                        <span>@context.CrowdSale.TokenAmountPerNativeToken.ToAmountDisplay(context.TokenDecimals) @context.CrowdSale.TokenSymbol = 1 @NativeTokenInfo.Symbol </span>
+                        <span>1 @NativeTokenInfo.Symbol - @context.CrowdSale.TokenAmountPerNativeToken.ToAmountDisplay(context.TokenDecimals) @context.CrowdSale.TokenSymbol </span>
                     </MudTd>
-                    <MudTd DataLabel="Current Sale">
-                        <span>@(context.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) * context.CrowdSale.TokenAmountPerNativeToken.ToAmount(context.TokenDecimals)) / @(context.CrowdSale.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) * context.CrowdSale.TokenAmountPerNativeToken.ToAmount(context.TokenDecimals)) @context.CrowdSale.TokenSymbol</span>
+                    @* <MudTd DataLabel="Current Sale">
+                <span>@(context.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) * context.CrowdSale.TokenAmountPerNativeToken.ToAmount(context.TokenDecimals)) / @(context.CrowdSale.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) * context.CrowdSale.TokenAmountPerNativeToken.ToAmount(context.TokenDecimals)) @context.CrowdSale.TokenSymbol</span>
+                </MudTd>*@
+                    <MudTd DataLabel="Raised Amount">
+                        <span>@context.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol / @context.CrowdSale.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol (@(context.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) / context.CrowdSale.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) * 100) %)</span>
+                    </MudTd>
+                    <MudTd DataLabel="Sale Starts">
+                        <span>@context.CrowdSale.SaleStartDate.ToDateTimeOffset().ToString(ClientConstants.LongDateTimeFormat)</span>
                     </MudTd>
                     <MudTd DataLabel="Sale Ends">
                         <span>@context.CrowdSale.SaleEndDate.ToDateTimeOffset().ToString(ClientConstants.LongDateTimeFormat)</span>

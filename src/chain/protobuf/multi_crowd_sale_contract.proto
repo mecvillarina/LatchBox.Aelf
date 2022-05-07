@@ -40,8 +40,9 @@ message CreateInput {
     int64 hard_cap_native_token_amount = 4;     //in ELF
     int64 token_amount_per_native_token = 5;    //ex.  1000 SYMB rate (3)
     int64 native_token_purchase_limit_per_buyer_address = 6;  // 1, 2, 3 ELF
-    google.protobuf.Timestamp sale_end_date = 7; 
-    int64 lock_until_duration_in_minutes = 8;
+    google.protobuf.Timestamp sale_start_date = 7; 
+    google.protobuf.Timestamp sale_end_date = 8; 
+    int64 lock_until_duration_in_minutes = 9;
 }
 
 message CancelInput {
@@ -73,10 +74,11 @@ message CrowdSale {
     int64 hard_cap_native_token_amount = 6;
     int64 token_amount_per_native_token = 7;
     int64 native_token_purchase_limit_per_buyer_address = 8;
-    google.protobuf.Timestamp sale_end_date = 9;
-    int64 lock_until_duration_in_minutes = 10;
-    bool is_active = 11;
-    bool is_cancelled = 12;
+    google.protobuf.Timestamp sale_start_date = 9;
+    google.protobuf.Timestamp sale_end_date = 10;
+    int64 lock_until_duration_in_minutes = 11;
+    bool is_active = 12;
+    bool is_cancelled = 13;
 }
 
 message CrowdSalePurchase {

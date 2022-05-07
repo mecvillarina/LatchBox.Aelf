@@ -47,7 +47,8 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             AssertSymbolIssuerAndCrowdSaleInitiatorMustBeTheSame(input.TokenSymbol, Context.Sender);
             Assert(input.SoftCapNativeTokenAmount > 0, "The parameter soft cap MUST be greater than 0.");
             Assert(input.SoftCapNativeTokenAmount <= input.HardCapNativeTokenAmount, "The parameter hard cap must be greater than or equal to soft cap.");
-            Assert(input.SaleEndDate.ToDateTime() > currentBlockTime.ToDateTime(), "The parameter sale end date MUST be future date.");
+            Assert(input.SaleStartDate.ToDateTime() > currentBlockTime.ToDateTime(), "The parameter sale start date MUST be future date.");
+            Assert(input.SaleEndDate.ToDateTime() > input.SaleStartDate.ToDateTime(), "The parameter sale end date MUST be later than sale start date.");
             Assert(input.TokenAmountPerNativeToken > 0, "The parameter token amount per native token MUST be greater than 0.");
             Assert(input.NativeTokenPurchaseLimitPerBuyerAddress > 0, "The parameter native token limit per buyer address MUST be greater than 0.");
             Assert(input.NativeTokenPurchaseLimitPerBuyerAddress <= input.HardCapNativeTokenAmount, "The parameter token limit per buyer address MUST be less than the hard cap.");
@@ -76,6 +77,7 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
                 HardCapNativeTokenAmount = input.HardCapNativeTokenAmount,
                 TokenAmountPerNativeToken = input.TokenAmountPerNativeToken,
                 NativeTokenPurchaseLimitPerBuyerAddress = input.NativeTokenPurchaseLimitPerBuyerAddress,
+                SaleStartDate = input.SaleStartDate,
                 SaleEndDate = input.SaleEndDate,
                 LockUntilDurationInMinutes = input.LockUntilDurationInMinutes,
                 IsActive = true,
@@ -112,15 +114,15 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
         {
             AssertContractHasBeenInitialized();
 
-            Assert(input.CrowdSaleId < State.SelfIncresingCrowdSaleId.Value, "Invalid Crowd Sale Id");
+            Assert(input.CrowdSaleId < State.SelfIncresingCrowdSaleId.Value, "Invalid Sale Id");
             
             var crowdSaleId = input.CrowdSaleId;
             var crowdSale = State.CrowdSales[crowdSaleId];
 
             Assert(crowdSale.Initiator == Context.Sender || State.Admin.Value == Context.Sender, "No authorization.");
-            Assert(crowdSale.IsActive, "Crowd Sale is not active anymore.");
-            Assert(crowdSale.SaleEndDate > Context.CurrentBlockTime, "Crowd Sale has already ended.");
-            Assert(!crowdSale.IsCancelled, "Crowd Sale has already cancelled.");
+            Assert(crowdSale.IsActive, "Sale is not active anymore.");
+            Assert(crowdSale.SaleEndDate > Context.CurrentBlockTime, "Sale has already ended.");
+            Assert(!crowdSale.IsCancelled, "Sale has already cancelled.");
 
             State.TokenContract.Transfer.Send(new TransferInput()
             {
@@ -144,18 +146,19 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
         {
             AssertContractHasBeenInitialized();
 
-            Assert(input.CrowdSaleId < State.SelfIncresingCrowdSaleId.Value, "Invalid Crowd Sale Id");
+            Assert(input.CrowdSaleId < State.SelfIncresingCrowdSaleId.Value, "Invalid Sale Id");
 
             var crowdSaleId = input.CrowdSaleId;
             var crowdSale = State.CrowdSales[crowdSaleId];
-            Assert(crowdSale.IsActive, "Crowd Sale is not active anymore.");
-            Assert(!crowdSale.IsCancelled, "Crowd Sale has been cancelled.");
-            Assert(crowdSale.SaleEndDate > Context.CurrentBlockTime, "Crowd Sale has already ended.");
+            Assert(crowdSale.IsActive, "Sale is not active anymore.");
+            Assert(!crowdSale.IsCancelled, "Sale has been cancelled.");
+            Assert(crowdSale.SaleStartDate > Context.CurrentBlockTime, "Sale is not yet started.");
+            Assert(crowdSale.SaleEndDate > Context.CurrentBlockTime, "Sale has already ended.");
             Assert(crowdSale.Initiator != Context.Sender, "Only the non-issuer (creator) of the token can buy on a crowd sale.");
 
             var raiseAmount = State.CrowdSaleRaiseAmounts[crowdSaleId];
             var purchase = State.CrowdSalePurchases[crowdSaleId][Context.Sender];
-            Assert(raiseAmount < crowdSale.HardCapNativeTokenAmount, "Crowd Sale Pool is already full.");
+            Assert(raiseAmount < crowdSale.HardCapNativeTokenAmount, "Sale Pool is already full.");
 
             long currentPurchaseAmount = purchase != null ? purchase.TokenAmount : 0;
 
@@ -205,17 +208,19 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
         {
             AssertContractHasBeenInitialized();
 
-            Assert(input.CrowdSaleId < State.SelfIncresingCrowdSaleId.Value, "Invalid Crowd Sale Id");
+            Assert(input.CrowdSaleId < State.SelfIncresingCrowdSaleId.Value, "Invalid Sale Id");
 
             var crowdSaleId = input.CrowdSaleId;
             var crowdSale = State.CrowdSales[crowdSaleId];
 
             Assert(crowdSale.Initiator == Context.Sender || Context.Sender == State.Admin.Value, "No authorization.");
-            Assert(crowdSale.IsActive, "Crowd Sale is not active anymore.");
-            Assert(!crowdSale.IsCancelled, "Crowd Sale has been cancelled.");
+            Assert(crowdSale.IsActive, "Sale is not active anymore.");
+            Assert(!crowdSale.IsCancelled, "Sale has been cancelled.");
+            Assert(crowdSale.SaleEndDate.ToDateTime() <= Context.CurrentBlockTime.ToDateTime(), "Sale is still on going.");
+
             var raiseAmount = State.CrowdSaleRaiseAmounts[crowdSaleId];
 
-            Assert(raiseAmount >= crowdSale.SoftCapNativeTokenAmount, "Crowd Sale doesn't met at least the soft cap goal.");
+            Assert(raiseAmount >= crowdSale.SoftCapNativeTokenAmount, "Sale doesn't met at least the soft cap goal.");
 
             RemoveFromActiveCrowdSales(crowdSaleId);
 

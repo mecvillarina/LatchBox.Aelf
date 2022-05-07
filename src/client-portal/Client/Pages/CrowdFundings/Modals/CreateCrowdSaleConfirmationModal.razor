@@ -7,7 +7,7 @@
                     <MudGrid Class="pt-0 pb-4" Spacing="1">
                         <MudItem xs="12">
                             <MudText Typo="Typo.body1" Class="text-white">
-                                You are about to create a crowd funding for your token <b>@Model.TokenSymbol</b>.
+                                You are about to create a launchpad for your token <b>@Model.TokenSymbol</b>.
                             </MudText>
                         </MudItem>
 
@@ -35,7 +35,7 @@
                         <MudItem xs="12">
                             <div>
                                 <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Token Sale Conversation</b></MudText>
-                                <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.TokenAmountPerNativeToken @Model.TokenSymbol = 1 @Model.NativeTokenSymbol</MudText>
+                                <MudText Typo="Typo.body1" Class="text-white mb-2">1 @Model.NativeTokenSymbol = @Model.TokenAmountPerNativeToken @Model.TokenSymbol</MudText>
                             </div>
                         </MudItem>
 
@@ -43,6 +43,13 @@
                             <div>
                                 <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Total Token Sale</b></MudText>
                                 <MudText Typo="Typo.body1" Class="text-white mb-2">@(Model.TokenAmountPerNativeToken * Model.HardCapNativeTokenAmount) @Model.TokenSymbol</MudText>
+                            </div>
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <div>
+                                <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Sale Starts</b></MudText>
+                                <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.SaleStartDate.Value.ToString(ClientConstants.LongDateFormat) 12:00 AM (GMT)</MudText>
                             </div>
                         </MudItem>
 

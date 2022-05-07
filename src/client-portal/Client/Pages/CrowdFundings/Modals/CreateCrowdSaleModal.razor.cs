@@ -23,6 +23,7 @@ namespace Client.Pages.CrowdFundings.Modals
             if (firstRender)
             {
                 MinDateValue = DateTime.Now;
+                Model.SaleStartDate = MinDateValue.AddDays(1);
                 Model.SaleEndDate = MinDateValue.AddDays(1);
                 StateHasChanged();
             }
@@ -90,7 +91,7 @@ namespace Client.Pages.CrowdFundings.Modals
                         { nameof(CreateCrowdSaleConfirmationModal.Model), Model}
                     };
 
-                var createCrowdSaleDialog = DialogService.Show<CreateCrowdSaleConfirmationModal>("Create Crowd Funding Confirmation", createCrowdSaleConfirmationParameters);
+                var createCrowdSaleDialog = DialogService.Show<CreateCrowdSaleConfirmationModal>("Create Launchpad Confirmation", createCrowdSaleConfirmationParameters);
                 var createCrowdSaleDialogResult = await createCrowdSaleDialog.Result;
 
                 if (!createCrowdSaleDialogResult.Cancelled)

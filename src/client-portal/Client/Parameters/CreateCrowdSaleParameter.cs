@@ -16,6 +16,7 @@ namespace Client.Parameters
         public double HardCapNativeTokenAmount { get; set; } = 10;
         public double TokenAmountPerNativeToken { get; set; } = 50;
         public double NativeTokenPurchaseLimitPerBuyerAddress { get; set; } = 1;
+        public DateTime? SaleStartDate { get; set; }
         public DateTime? SaleEndDate { get; set; }
         public long LockUntilDurationInMinutes { get; set; } = 60;
     }
@@ -45,7 +46,7 @@ namespace Client.Parameters
                 .LessThanOrEqualTo(v => v.HardCapNativeTokenAmount).WithMessage(v => $"'Token Purchase Limit ({v.NativeTokenSymbol}) per buyer address' must be less than or equal to the 'Hard Cap ({v.NativeTokenSymbol})'.");
 
             RuleFor(v => v.LockUntilDurationInMinutes)
-                .GreaterThanOrEqualTo(60).WithMessage("'Lock duration after crowd sale' must be at least 60 minutes or 1 hour.");
+                .GreaterThanOrEqualTo(60).WithMessage("'Lock duration after sale must be at least 60 minutes or 1 hour.");
 
         }
     }

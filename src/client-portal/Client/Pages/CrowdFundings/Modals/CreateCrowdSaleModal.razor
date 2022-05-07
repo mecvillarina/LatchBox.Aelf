@@ -11,7 +11,7 @@
                         </MudItem>
                         
                         <MudItem xs="12">
-                            <MudTextField Label="Crowd Funding Name" Variant="Variant.Outlined" Disabled="IsProcessing"
+                            <MudTextField Label="Launchpad Name" Variant="Variant.Outlined" Disabled="IsProcessing"
                                           @bind-Value="Model.Name" For="@(() => Model.Name)" />
                         </MudItem>
 
@@ -35,8 +35,13 @@
                                           @bind-Value="Model.TokenAmountPerNativeToken" For="@(() => Model.TokenAmountPerNativeToken)" />
                         </MudItem>
 
+                         <MudItem xs="12">
+                            <MudDatePicker Label="Sale Start Date (Start of the day in GMT)" For="@(() => Model.SaleStartDate)" Variant="Variant.Outlined" Disabled="IsProcessing" 
+                                MinDate="@MinDateValue" @bind-Date="Model.SaleStartDate" />
+                        </MudItem>
+
                         <MudItem xs="12">
-                            <MudDatePicker Label="Sale End Date (EOD in GMT)" For="@(() => Model.SaleEndDate)" Variant="Variant.Outlined" Disabled="IsProcessing" 
+                            <MudDatePicker Label="Sale End Date (End of the day in GMT)" For="@(() => Model.SaleEndDate)" Variant="Variant.Outlined" Disabled="IsProcessing" 
                                 MinDate="@MinDateValue" @bind-Date="Model.SaleEndDate" />
                         </MudItem>
 

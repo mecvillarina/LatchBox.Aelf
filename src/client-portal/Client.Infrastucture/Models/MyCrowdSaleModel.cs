@@ -28,20 +28,19 @@ namespace Client.Infrastructure.Models
             {
                 CanCancel = true;
 
+                if(CrowdSale.SaleStartDate.ToDateTimeOffset() > System.DateTimeOffset.UtcNow)
+                {
+                    Status = "UPCOMING";
+                    StatusColor = Color.Primary;
+                }
                 if (CrowdSale.SaleEndDate.ToDateTimeOffset() > System.DateTimeOffset.UtcNow)
                 {
                     Status = "ON SALE";
                     StatusColor = Color.Primary;
                 }
-                else if (CrowdSale.HardCapNativeTokenAmount == RaisedAmount)
+                else
                 {
-                    Status = "GOAL MET";
-                    StatusColor = Color.Info;
-                    CanComplete = true;
-                }
-                else if (RaisedAmount >= CrowdSale.SoftCapNativeTokenAmount)
-                {
-                    Status = "SOFT CAP MET";
+                    Status = "ENDED";
                     StatusColor = Color.Info;
                     CanComplete = true;
                 }

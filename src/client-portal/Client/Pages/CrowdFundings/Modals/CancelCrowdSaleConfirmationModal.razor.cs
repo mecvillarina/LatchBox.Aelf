@@ -34,7 +34,7 @@ namespace Client.Pages.CrowdFundings.Modals
                     }
                     else
                     {
-                        AppDialogService.ShowSuccess("Crowd funding cancellation success.");
+                        AppDialogService.ShowSuccess("Launchpad cancellation success.");
                         MudDialog.Close();
                     }
                 }

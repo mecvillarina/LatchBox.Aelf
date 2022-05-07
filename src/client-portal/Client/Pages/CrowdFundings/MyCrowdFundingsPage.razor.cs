@@ -70,7 +70,7 @@ namespace Client.Pages.CrowdFundings
                     }
                 };
 
-                var createCrowdSaleDialog = DialogService.Show<CreateCrowdSaleModal>("Create Crowd Funding", createCrowdSaleParameters);
+                var createCrowdSaleDialog = DialogService.Show<CreateCrowdSaleModal>("Create Launchpad", createCrowdSaleParameters);
                 var createCrowdSaleDialogResult = await createCrowdSaleDialog.Result;
 
                 if (!createCrowdSaleDialogResult.Cancelled)
@@ -88,7 +88,7 @@ namespace Client.Pages.CrowdFundings
                 { nameof(CancelCrowdSaleConfirmationModal.NativeTokenInfo), NativeTokenInfo}
             };
 
-            var dialog = DialogService.Show<CancelCrowdSaleConfirmationModal>("Cancel Crowd Funding Confirmation", parameters);
+            var dialog = DialogService.Show<CancelCrowdSaleConfirmationModal>("Cancel Launchpad Confirmation", parameters);
             var dialogResult = await dialog.Result;
 
             if (!dialogResult.Cancelled)

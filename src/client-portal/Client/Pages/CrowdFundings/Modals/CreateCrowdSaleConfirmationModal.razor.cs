@@ -40,6 +40,7 @@ namespace Client.Pages.CrowdFundings.Modals
                         {
                             var allowance = await TokenManager.GetAllowanceAsync(cred.Item1, cred.Item2, Model.TokenSymbol, cred.Item1.Address, MultiCrowdSaleManager.ContactAddress);
 
+                            var saleStartDate = DateTime.SpecifyKind(Model.SaleEndDate.Value.Date, DateTimeKind.Utc);
                             var saleEndDate = DateTime.SpecifyKind(Model.SaleEndDate.Value.Date.AddDays(1).AddMilliseconds(-1), DateTimeKind.Utc);
 
                             var input = new CreateCrowdSaleInputModel()
@@ -51,6 +52,7 @@ namespace Client.Pages.CrowdFundings.Modals
                                 NativeTokenPurchaseLimitPerBuyerAddress = Model.NativeTokenPurchaseLimitPerBuyerAddress.ToChainAmount(Model.NativeTokenDecimals),
                                 TokenAmountPerNativeToken = Model.TokenAmountPerNativeToken.ToChainAmount(Model.TokenDecimals),
                                 LockUntilDurationInMinutes = Model.LockUntilDurationInMinutes,
+                                SaleStartDate = saleStartDate,
                                 SaleEndDate = saleEndDate
                             };
 
@@ -62,7 +64,7 @@ namespace Client.Pages.CrowdFundings.Modals
                             }
                             else
                             {
-                                AppDialogService.ShowSuccess("Crowd funding creation success.");
+                                AppDialogService.ShowSuccess("Launchpad creation success.");
                                 MudDialog.Close();
                             }
                         }

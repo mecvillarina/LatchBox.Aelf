@@ -40,6 +40,7 @@ namespace Client.Infrastructure.Managers
                 HardCapNativeTokenAmount = model.HardCapNativeTokenAmount,
                 NativeTokenPurchaseLimitPerBuyerAddress = model.NativeTokenPurchaseLimitPerBuyerAddress,
                 TokenAmountPerNativeToken = model.TokenAmountPerNativeToken,
+                SaleStartDate = Timestamp.FromDateTime(model.SaleStartDate),
                 SaleEndDate = Timestamp.FromDateTime(model.SaleEndDate),
                 LockUntilDurationInMinutes = model.LockUntilDurationInMinutes
             };
@@ -64,6 +65,14 @@ namespace Client.Infrastructure.Managers
             var @params = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(initiator).Value };
 
             var result = await _blockChainService.CallTransactionAsync(wallet, password, ContactAddress, "GetCrowdSalesByInitiator", @params);
+            return CrowdSaleListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
+        }
+
+        public async Task<CrowdSaleListOutput> GetActiveCrowdSalesAsync(WalletInformation wallet, string password)
+        {
+            var @params = new Empty() { };
+
+            var result = await _blockChainService.CallTransactionAsync(wallet, password, ContactAddress, "GetActiveCrowdSales", @params);
             return CrowdSaleListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
     }
