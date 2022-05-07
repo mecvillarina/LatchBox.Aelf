@@ -23,8 +23,7 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
         public SingletonState<CrowdSaleIds> ActiveCrowdSales { get; set; }
 
         public MappedState<long, long> CrowdSaleRaiseAmounts { get; set; }
-        public MappedState<long, Address, CrowdSaleBuy> CrowdSalePurchases { get; set; }
+        public MappedState<long, Address, CrowdSalePurchase> CrowdSalePurchases { get; set; }
         public MappedState<Address, CrowdSaleIds> CrowdSalesByBuyer { get; set; }
-        public MappedState<Address, RefundList> Refunds { get; set; }
     }
 }

@@ -8,13 +8,14 @@ using MudBlazor;
 
 namespace Client.Pages.CrowdFundings
 {
-    public partial class CrowdFundingsPage
+    public partial class MyCrowdFundingsPage
     {
         public bool IsLoaded { get; set; }
-        public bool IsCompletelyLoaded { get; set; }
 
         private (WalletInformation, string) _creds;
-        private TokenInfo _nativeTokenInfo;
+        public TokenInfo NativeTokenInfo { get; set; }
+        public List<AppCrowdSaleOutput> CrowdSaleList { get; set; } = new();
+
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
@@ -35,28 +36,14 @@ namespace Client.Pages.CrowdFundings
         private async Task FetchDataAsync()
         {
             IsLoaded = false;
-            IsCompletelyLoaded = false;
             StateHasChanged();
 
-            _nativeTokenInfo = await TokenManager.GetNativeTokenInfoAsync(_creds.Item1, _creds.Item2);
+            NativeTokenInfo = await TokenManager.GetNativeTokenInfoAsync(_creds.Item1, _creds.Item2);
             await MultiCrowdSaleManager.InitializeAsync(_creds.Item1, _creds.Item2);
-            //var result = await MultiCrowdSaleManager.CreateAsync(_creds.Item1, _creds.Item2, new CreateCrowdSaleInputModel()
-            //{
-            //    Name = "PreSale - LATCH",
-            //    Pausable = true,
-            //    SoftCapNativeTokenAmount = 100000000,
-            //    HardCapNativeTokenAmount = 1000000000,
-            //    NativeTokenLimitPerSale = 50000000,
-            //    SaleEndDate = DateTime.UtcNow.AddDays(1),
-            //    UnlockDate = DateTime.UtcNow.AddDays(2),
-            //    TokenSymbol = "LATCH",
-            //    TokenAmountPerNativeToken = 10000000000
-            //});
+            var output = await MultiCrowdSaleManager.GetCrowdSalesByInitiatorAsync(_creds.Item1, _creds.Item2, _creds.Item1.Address);
+            CrowdSaleList = output.CrowdSales.Select(x => new AppCrowdSaleOutput(x)).ToList();
 
             IsLoaded = true;
-            StateHasChanged();
-
-            IsCompletelyLoaded = true;
             StateHasChanged();
         }
 
@@ -73,9 +60,9 @@ namespace Client.Pages.CrowdFundings
                 {
                     { nameof(CreateCrowdSaleModal.Model), new CreateCrowdSaleParameter()
                         {
-                           NativeTokenName = _nativeTokenInfo.TokenName,
-                           NativeTokenSymbol = _nativeTokenInfo.Symbol,
-                           NativeTokenDecimals = _nativeTokenInfo.Decimals,
+                           NativeTokenName = NativeTokenInfo.TokenName,
+                           NativeTokenSymbol = NativeTokenInfo.Symbol,
+                           NativeTokenDecimals = NativeTokenInfo.Decimals,
                            TokenName = data.TokenName,
                            TokenSymbol = data.Symbol,
                            TokenDecimals = data.Decimals
@@ -84,7 +71,29 @@ namespace Client.Pages.CrowdFundings
                 };
 
                 var createCrowdSaleDialog = DialogService.Show<CreateCrowdSaleModal>("Create Crowd Funding", createCrowdSaleParameters);
-                await createCrowdSaleDialog.Result;
+                var createCrowdSaleDialogResult = await createCrowdSaleDialog.Result;
+
+                if (!createCrowdSaleDialogResult.Cancelled)
+                {
+                    await FetchDataAsync();
+                }
+            }
+        }
+
+        private async Task InvokeCancelCrowdSaleAsync(AppCrowdSaleOutput output)
+        {
+            var parameters = new DialogParameters()
+            {
+                { nameof(CancelCrowdSaleConfirmationModal.Model), output},
+                { nameof(CancelCrowdSaleConfirmationModal.NativeTokenInfo), NativeTokenInfo}
+            };
+
+            var dialog = DialogService.Show<CancelCrowdSaleConfirmationModal>("Cancel Crowd Funding Confirmation", parameters);
+            var dialogResult = await dialog.Result;
+
+            if (!dialogResult.Cancelled)
+            {
+                await FetchDataAsync();
             }
         }
 

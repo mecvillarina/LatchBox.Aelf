@@ -21,6 +21,10 @@ message CreateInput {
     int64 lock_until_duration_in_minutes = 8;
 }
 
+message CancelInput {
+    int64 crowd_sale_id = 1;
+}
+
 message CrowdSale {
     int64 id = 1;
     client.Address initiator = 2;
@@ -29,14 +33,21 @@ message CrowdSale {
     int64 soft_cap_native_token_amount = 5;
     int64 hard_cap_native_token_amount = 6;
     int64 token_amount_per_native_token = 7;
-    int64 native_token_limit_per_sale = 8;
+    int64 native_token_purchase_limit_per_buyer_address = 8;
     google.protobuf.Timestamp sale_end_date = 9;
     int64 lock_until_duration_in_minutes = 10;
-    bool is_started = 11;
-    bool is_paused = 12;
-    bool is_cancelled = 13;
+    bool is_active = 11;
+    bool is_cancelled = 12;
+}
+
+message CrowdSaleOutput {
+    CrowdSale crowd_sale = 1;
+    int64 raised_amount = 2;
+    string token_name = 3;
+    string token_symbol = 4;
+    int32 token_decimals = 5;
 }
 
 message CrowdSaleListOutput {
-    repeated CrowdSale CrowdSales = 1;
+    repeated CrowdSaleOutput crowd_sales = 1;
 }

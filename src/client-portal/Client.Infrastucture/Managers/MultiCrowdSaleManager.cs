@@ -1,4 +1,5 @@
-﻿using AElf.Client.Dto;
+﻿using AElf;
+using AElf.Client.Dto;
 using AElf.Client.LatchBox.MultiCrowdSale;
 using Client.Infrastructure.Managers.Interfaces;
 using Client.Infrastructure.Models;
@@ -45,6 +46,25 @@ namespace Client.Infrastructure.Managers
 
             var txId = await _blockChainService.SendTransactionAsync(wallet, password, ContactAddress, "Create", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
+        }
+
+        public async Task<TransactionResultDto> CancelAsync(WalletInformation wallet, string password, long crowdSaleId)
+        {
+            CancelInput  @params = new CancelInput()
+            {
+                CrowdSaleId = crowdSaleId
+            };
+
+            var txId = await _blockChainService.SendTransactionAsync(wallet, password, ContactAddress, "Cancel", @params);
+            return await _blockChainService.CheckTransactionResultAsync(txId);
+        }
+
+        public async Task<CrowdSaleListOutput> GetCrowdSalesByInitiatorAsync(WalletInformation wallet, string password, string initiator)
+        {
+            var @params = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(initiator).Value };
+
+            var result = await _blockChainService.CallTransactionAsync(wallet, password, ContactAddress, "GetCrowdSalesByInitiator", @params);
+            return CrowdSaleListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
     }
 }

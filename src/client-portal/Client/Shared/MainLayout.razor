@@ -45,7 +45,13 @@
         <MudNavMenu Rounded="true" Margin="Margin.Dense">
             <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
             <MudNavLink Href="/assets" Disabled="@(!IsAuthenticated)" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Payments">Assets/Tokens</MudNavLink>
-            <MudNavLink Href="/crowd-fundings" Disabled="@(!IsAuthenticated)" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Payments">Crowd Funding</MudNavLink>
+            <MudNavGroup Title="Crowdings" Icon="@Icons.Material.Filled.LockClock" Disabled="@(!IsAuthenticated)" Expanded="IsAuthenticated">
+                <MudNavLink Href="/crowd-fundings" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Lock">Active Crowd Fundings</MudNavLink>
+                <MudNavLink Href="/crowd-fundings/manage" Disabled="@(!IsAuthenticated)" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.CurrencyBitcoin">My Crowd Fundings</MudNavLink>
+                <MudNavLink Href="/crowd-fundings/investment" Disabled="@(!IsAuthenticated)" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Lock">My Investments</MudNavLink>
+                <MudNavLink Href="/crowd-fundings/refunds" Disabled="@(!IsAuthenticated)" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.LockReset">My Refunds</MudNavLink>
+            </MudNavGroup>
+
             <MudNavGroup Title="Locks" Icon="@Icons.Material.Filled.LockClock" Disabled="@(!IsAuthenticated)" Expanded="IsAuthenticated">
                 <MudNavLink Href="/locks/assets" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.CurrencyBitcoin">Locked Tokens</MudNavLink>
                 <MudNavLink Href="/locks" Disabled="@(!IsAuthenticated)" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Lock">My Locks</MudNavLink>

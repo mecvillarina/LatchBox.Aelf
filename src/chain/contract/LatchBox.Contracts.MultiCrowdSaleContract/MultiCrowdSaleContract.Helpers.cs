@@ -26,23 +26,25 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
                 Symbol = symbol
             });
 
-            Assert(tokenInfo != null && !string.IsNullOrEmpty(tokenInfo.Symbol), "Token doesn't exists.");
+            Assert(tokenInfo != null && !string.IsNullOrEmpty(tokenInfo.Symbol), "Token not found.");
         }
 
         private void AssertSymbolIssuerAndCrowdSaleInitiatorMustBeTheSame(string symbol, Address creator)
         {
-            var tokenInfo = State.TokenContract.GetTokenInfo.Call(new GetTokenInfoInput()
-            {
-                Symbol = symbol
-            });
-
-            Assert(tokenInfo != null && !string.IsNullOrEmpty(tokenInfo.Symbol), "Token doesn't exists.");
+            var tokenInfo = GetTokenInfo(symbol);
+            
+            Assert(tokenInfo != null && !string.IsNullOrEmpty(tokenInfo.Symbol), "Token not found.");
             Assert(tokenInfo.Issuer == creator, "Only the issuer (creator) of the token can create a crowd sale.");
         }
 
         private TokenInfo GetNativeToken()
         {
             return State.TokenContract.GetNativeTokenInfo.Call(new Empty()); 
+        }
+
+        private TokenInfo GetTokenInfo(string symbol)
+        {
+            return State.TokenContract.GetTokenInfo.Call(new GetTokenInfoInput() { Symbol = symbol });
         }
 
         private long GetChainAmount(long value, int decimals)
