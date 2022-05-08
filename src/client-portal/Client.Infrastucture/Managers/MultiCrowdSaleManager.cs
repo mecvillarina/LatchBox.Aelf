@@ -51,7 +51,7 @@ namespace Client.Infrastructure.Managers
 
         public async Task<TransactionResultDto> CancelAsync(WalletInformation wallet, string password, long crowdSaleId)
         {
-            CancelInput  @params = new CancelInput()
+            CancelInput @params = new CancelInput()
             {
                 CrowdSaleId = crowdSaleId
             };
@@ -68,11 +68,15 @@ namespace Client.Infrastructure.Managers
             return CrowdSaleListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
-        public async Task<CrowdSaleListOutput> GetActiveCrowdSalesAsync(WalletInformation wallet, string password)
+        public async Task<CrowdSaleListOutput> GetCrowdSalesAsync(WalletInformation wallet, string password, bool isUpcoming, bool isOngoing)
         {
-            var @params = new Empty() { };
+            var @params = new GetCrowdSalesInput()
+            {
+                IsUpcoming = isUpcoming,
+                IsOngoing = isOngoing
+            };
 
-            var result = await _blockChainService.CallTransactionAsync(wallet, password, ContactAddress, "GetActiveCrowdSales", @params);
+            var result = await _blockChainService.CallTransactionAsync(wallet, password, ContactAddress, "GetCrowdSales", @params);
             return CrowdSaleListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
     }

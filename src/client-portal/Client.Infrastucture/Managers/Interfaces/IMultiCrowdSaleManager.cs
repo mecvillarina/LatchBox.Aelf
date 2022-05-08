@@ -13,6 +13,6 @@ namespace Client.Infrastructure.Managers.Interfaces
         Task<TransactionResultDto> CreateAsync(WalletInformation wallet, string password, CreateCrowdSaleInputModel model);
         Task<TransactionResultDto> CancelAsync(WalletInformation wallet, string password, long crowdSaleId);
         Task<CrowdSaleListOutput> GetCrowdSalesByInitiatorAsync(WalletInformation wallet, string password, string initiator);
-        Task<CrowdSaleListOutput> GetActiveCrowdSalesAsync(WalletInformation wallet, string password);
+        Task<CrowdSaleListOutput> GetCrowdSalesAsync(WalletInformation wallet, string password, bool isUpcoming, bool isOngoing);
     }
 }

@@ -26,6 +26,11 @@ message CancelInput {
     int64 crowd_sale_id = 1;
 }
 
+message GetCrowdSalesInput  {
+    bool is_upcoming = 1;
+    bool is_ongoing = 2;
+}
+
 message CrowdSale {
     int64 id = 1;
     client.Address initiator = 2;

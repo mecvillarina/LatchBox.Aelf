@@ -24,7 +24,7 @@ service MultiCrowdSaleContract {
         option (aelf.is_view) = true;
     }
 
-    rpc GetActiveCrowdSales (google.protobuf.Empty) returns (CrowdSaleListOutput) { 
+    rpc GetCrowdSales (GetCrowdSalesInput) returns (CrowdSaleListOutput) { 
         option (aelf.is_view) = true;
     }
 }
@@ -58,6 +58,10 @@ message BuyInput {
     int64 token_amount = 2;
 }
 
+message GetCrowdSalesInput  {
+    bool is_upcoming = 1;
+    bool is_ongoing = 2;
+}
 
 message NativeToken {
     string symbol = 1;

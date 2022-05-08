@@ -1,21 +1,17 @@
 ﻿using AElf.Client.MultiToken;
 using Client.Infrastructure.Models;
-using Client.Pages.CrowdFundings.Modals;
-using Client.Pages.Modals;
-using Client.Parameters;
 using Client.Services;
-using MudBlazor;
 
 namespace Client.Pages.CrowdFundings
 {
-    public partial class ActiveCrowdFundingsPage
+    public partial class CrowdFundingsPage
     {
         public bool IsLoaded { get; set; }
 
         private (WalletInformation, string) _creds;
         public TokenInfo NativeTokenInfo { get; set; }
-        public List<ActiveCrowdSaleModel> CrowdSaleList { get; set; } = new();
-
+        public List<CrowdSaleModel> CrowdSaleList { get; set; } = new();
+        public int LaunchpadStatus { get; set; }
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
@@ -38,13 +34,28 @@ namespace Client.Pages.CrowdFundings
             IsLoaded = false;
             StateHasChanged();
 
+            bool isUpcoming = false;
+            bool isOngoing = false;
+
+            switch (LaunchpadStatus)
+            {
+                case 1: isUpcoming = true;break;
+                case 2: isOngoing = true; break;
+                default: isUpcoming = isOngoing = false; break;
+            }
+
             NativeTokenInfo = await TokenManager.GetNativeTokenInfoAsync(_creds.Item1, _creds.Item2);
             await MultiCrowdSaleManager.InitializeAsync(_creds.Item1, _creds.Item2);
-            var output = await MultiCrowdSaleManager.GetActiveCrowdSalesAsync(_creds.Item1, _creds.Item2);
-            CrowdSaleList = output.CrowdSales.Select(x => new ActiveCrowdSaleModel(x, _creds.Item1)).ToList();
+            var output = await MultiCrowdSaleManager.GetCrowdSalesAsync(_creds.Item1, _creds.Item2, isUpcoming, isOngoing);
+            CrowdSaleList = output.CrowdSales.Select(x => new CrowdSaleModel(x, _creds.Item1)).ToList();
             IsLoaded = true;
             StateHasChanged();
         }
 
+        public async Task OnStatusChanged(int value)
+        {
+            LaunchpadStatus = value;
+            await FetchDataAsync();
+        }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using AElf.Types;
-using Google.Protobuf.WellKnownTypes;
+using Google.Protobuf.Collections;
 
 namespace LatchBox.Contracts.MultiCrowdSaleContract
 {
@@ -19,15 +19,35 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             return output;
         }
 
-        public override CrowdSaleListOutput GetActiveCrowdSales(Empty input)
+        public override CrowdSaleListOutput GetCrowdSales(GetCrowdSalesInput input)
         {
-            var crowdSaleIds = State.ActiveCrowdSales.Value.Ids;
-
             var output = new CrowdSaleListOutput();
+            var crowdSaleIds = new RepeatedField<long>();
 
-            foreach (var crowdSaleId in crowdSaleIds)
+            if (!input.IsUpcoming && !input.IsOngoing)
             {
-                output.CrowdSales.Add(GetCrowdSaleOutput(crowdSaleId));
+                for (int i = 1; i < State.SelfIncresingCrowdSaleId.Value; i++)
+                {
+                    var sale = GetCrowdSaleOutput(i);
+                    output.CrowdSales.Add(sale);
+                }
+            }
+            else
+            {
+                crowdSaleIds = State.ActiveCrowdSales.Value.Ids;
+
+                foreach (var crowdSaleId in crowdSaleIds)
+                {
+                    var sale = GetCrowdSaleOutput(crowdSaleId);
+                    if (input.IsUpcoming && sale.CrowdSale.SaleStartDate >= Context.CurrentBlockTime)
+                    {
+                        output.CrowdSales.Add(sale);
+                    }
+                    else if (input.IsOngoing && sale.CrowdSale.SaleStartDate < Context.CurrentBlockTime && sale.CrowdSale.SaleEndDate > Context.CurrentBlockTime)
+                    {
+                        output.CrowdSales.Add(sale);
+                    }
+                }
             }
 
             return output;

@@ -19,13 +19,26 @@
 </MudContainer>
 
 <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
+    <MudGrid Spacing="4">
+        <MudItem xs="12">
+            <MudSelect T="int" Label="Status" Variant="Variant.Outlined" MultiSelection="false" ValueChanged="OnStatusChanged">
+                <MudSelectItem Value="0">All</MudSelectItem>
+                <MudSelectItem Value="1">Upcoming</MudSelectItem>
+                <MudSelectItem Value="2">Ongoing</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+<MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
     @if (!IsLoaded)
     {
-        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="56px" Width="100%" />
+        @*<MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="56px" Width="100%" />*@
         <MudSkeleton Class="mt-2" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="280px" Width="100%" />
     }
     else
     {
+
         <MudGrid Spacing="4" Class="mt-4">
             @foreach (var output in CrowdSaleList)
             {
@@ -33,10 +46,25 @@
                     <MudCard Elevation="10" Class="grey darken-4">
                         <MudCardContent>
                             <div>
-                                <div class="mb-2">
-                                    <MudText Typo="Typo.h6" Color="Color.Primary"><b>@output.CrowdSale.Name.ToUpper()</b></MudText>
-                                    <MudText Typo="Typo.caption">1 @NativeTokenInfo.Symbol - @output.CrowdSale.TokenAmountPerNativeToken.ToAmountDisplay(output.TokenDecimals) @output.CrowdSale.TokenSymbol </MudText>
+                                <div class="mb-2 d-flex justify-space-between">
+                                    <div>
+                                        <MudText Typo="Typo.h6" Color="Color.Primary"><b>@output.CrowdSale.Name.ToUpper()</b></MudText>
+                                        <MudText Typo="Typo.caption">1 @NativeTokenInfo.Symbol - @output.CrowdSale.TokenAmountPerNativeToken.ToAmountDisplay(output.TokenDecimals) @output.CrowdSale.TokenSymbol </MudText>
+                                    </div>
+                                    <div class="d-flex flex-column">
+                                        <MudChip Color="output.StatusColor" Size="Size.Small" Variant="Variant.Filled" Class="align-self-end">
+                                            @output.Status
+                                        </MudChip>
+
+                                        <div>
+                                            @if (!string.IsNullOrEmpty(output.Substatus))
+                                            {
+                                                <MudText Typo="Typo.caption" Inline="false">@output.Substatus</MudText>
+                                            }
+                                        </div>
+                                    </div>
                                 </div>
+
 
                                 <div class="my-2">
                                     <MudText Typo="Typo.caption" Color="Color.Primary"><b>Soft/Hard Cap</b></MudText>
@@ -60,6 +88,8 @@
                                     <MudText Typo="Typo.caption" Color="Color.Primary"><b>Lockup Time</b></MudText>
                                     <MudText Typo="Typo.caption">@output.CrowdSale.LockUntilDurationInMinutes minutes</MudText>
                                 </div>
+
+
                             </div>
                             @* <div class="d-flex justify-space-between">
                     <MudText Typo="Typo.body1" Color="Color.Primary" Class="align-self-center text-limit-1">@course.ShortDescription</MudText>
