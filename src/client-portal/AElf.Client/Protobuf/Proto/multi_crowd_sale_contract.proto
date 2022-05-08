@@ -26,6 +26,15 @@ message CancelInput {
     int64 crowd_sale_id = 1;
 }
 
+message BuyInput {
+    int64 crowd_sale_id = 1;
+    int64 token_amount = 2;
+}
+
+message GetCrowdSaleInput  {
+    int64 crowd_sale_id = 1;
+}
+
 message GetCrowdSalesInput  {
     bool is_upcoming = 1;
     bool is_ongoing = 2;

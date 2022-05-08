@@ -154,12 +154,13 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             Assert(!crowdSale.IsCancelled, "Sale has been cancelled.");
             Assert(crowdSale.SaleStartDate > Context.CurrentBlockTime, "Sale is not yet started.");
             Assert(crowdSale.SaleEndDate > Context.CurrentBlockTime, "Sale has already ended.");
-            Assert(crowdSale.Initiator != Context.Sender, "Only the non-issuer (creator) of the token can buy on a crowd sale.");
+            //Assert(crowdSale.Initiator != Context.Sender, "Only the non-issuer (creator) of the token can buy on a crowd sale.");
 
             var raiseAmount = State.CrowdSaleRaiseAmounts[crowdSaleId];
-            var purchase = State.CrowdSalePurchases[crowdSaleId][Context.Sender];
+
             Assert(raiseAmount < crowdSale.HardCapNativeTokenAmount, "Sale Pool is already full.");
 
+            var purchase = State.CrowdSalePurchases[crowdSaleId][Context.Sender];
             long currentPurchaseAmount = purchase != null ? purchase.TokenAmount : 0;
 
             Assert(currentPurchaseAmount <= crowdSale.NativeTokenPurchaseLimitPerBuyerAddress, "You've reached the buy limit. ");

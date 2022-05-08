@@ -60,6 +60,29 @@ namespace Client.Infrastructure.Managers
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
+        public async Task<TransactionResultDto> BuyAsync(WalletInformation wallet, string password, long crowdSaleId, long amount)
+        {
+            BuyInput @params = new BuyInput()
+            {
+                CrowdSaleId = crowdSaleId,
+                TokenAmount = amount
+            };
+
+            var txId = await _blockChainService.SendTransactionAsync(wallet, password, ContactAddress, "Buy", @params);
+            return await _blockChainService.CheckTransactionResultAsync(txId);
+        }
+
+        public async Task<CrowdSaleOutput> GetCrowdSaleAsync(WalletInformation wallet, string password, long crowdSaleId)
+        {
+            var @params = new GetCrowdSaleInput()
+            {
+                CrowdSaleId = crowdSaleId
+            };
+
+            var result = await _blockChainService.CallTransactionAsync(wallet, password, ContactAddress, "GetCrowdSale", @params);
+            return CrowdSaleOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
+        }
+
         public async Task<CrowdSaleListOutput> GetCrowdSalesByInitiatorAsync(WalletInformation wallet, string password, string initiator)
         {
             var @params = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(initiator).Value };

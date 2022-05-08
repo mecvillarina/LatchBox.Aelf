@@ -17,7 +17,7 @@ namespace Client.Infrastructure.Models
         public Color StatusColor { get; set; }
         public bool CanBuy { get; set; }
 
-        public CrowdSaleModel(CrowdSaleOutput output, WalletInformation loggedWallet = null)
+        public CrowdSaleModel(CrowdSaleOutput output)
         {
             CrowdSale = output.CrowdSale;
             RaisedAmount = output.RaisedAmount;

@@ -5,6 +5,13 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
 {
     public partial class MultiCrowdSaleContract
     {
+        public override CrowdSaleOutput GetCrowdSale(GetCrowdSaleInput input)
+        {
+            Assert(input.CrowdSaleId < State.SelfIncresingCrowdSaleId.Value, "Invalid Sale Id");
+
+            return GetCrowdSaleOutput(input.CrowdSaleId);
+        }
+
         public override CrowdSaleListOutput GetCrowdSalesByInitiator(Address input)
         {
             var crowdSalesByInitiator = State.CrowdSalesByInitiator[input] ?? new CrowdSaleIds();
@@ -22,7 +29,6 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
         public override CrowdSaleListOutput GetCrowdSales(GetCrowdSalesInput input)
         {
             var output = new CrowdSaleListOutput();
-            var crowdSaleIds = new RepeatedField<long>();
 
             if (!input.IsUpcoming && !input.IsOngoing)
             {
@@ -34,7 +40,7 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             }
             else
             {
-                crowdSaleIds = State.ActiveCrowdSales.Value.Ids;
+                var crowdSaleIds = State.ActiveCrowdSales.Value.Ids;
 
                 foreach (var crowdSaleId in crowdSaleIds)
                 {

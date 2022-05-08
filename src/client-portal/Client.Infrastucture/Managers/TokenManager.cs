@@ -120,6 +120,19 @@ namespace Client.Infrastructure.Managers
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
+        public async Task<TransactionResultDto> UnApproveAsync(WalletInformation wallet, string password, string spender, string symbol, long amount)
+        {
+            var @params = new UnApproveInput
+            {
+                Spender = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(spender).Value },
+                Symbol = symbol,
+                Amount = amount,
+            };
+
+            var txId = await _blockChainService.SendTransactionAsync(wallet, password, ContactAddress, "UnApproveInput", @params);
+            return await _blockChainService.CheckTransactionResultAsync(txId);
+        }
+
         public async Task<GetAllowanceOutput> GetAllowanceAsync(WalletInformation wallet, string password, string symbol, string owner, string spender)
         {
             var @params = new GetAllowanceInput

@@ -30,43 +30,39 @@ namespace Client.Pages.CrowdFundings.Modals
 
                     if (cred.Item1 != null)
                     {
-                        var approveTokenResult = await TokenManager.ApproveAsync(cred.Item1, cred.Item2, MultiCrowdSaleManager.ContactAddress, Model.TokenSymbol, amount);
+                        var getAllowanceResult = await TokenManager.GetAllowanceAsync(cred.Item1, cred.Item2, Model.TokenSymbol, cred.Item1.Address, MultiCrowdSaleManager.ContactAddress);
 
-                        if (!string.IsNullOrEmpty(approveTokenResult.Error))
+                        if(getAllowanceResult.Allowance < amount)
                         {
-                            throw new GeneralException(approveTokenResult.Error);
+                            await TokenManager.ApproveAsync(cred.Item1, cred.Item2, MultiCrowdSaleManager.ContactAddress, Model.TokenSymbol, amount);
+                        }
+
+                        var saleStartDate = DateTime.SpecifyKind(Model.SaleEndDate.Value.Date, DateTimeKind.Utc);
+                        var saleEndDate = DateTime.SpecifyKind(Model.SaleEndDate.Value.Date.AddDays(1).AddMilliseconds(-1), DateTimeKind.Utc);
+
+                        var input = new CreateCrowdSaleInputModel()
+                        {
+                            Name = Model.Name,
+                            TokenSymbol = Model.TokenSymbol,
+                            SoftCapNativeTokenAmount = Model.SoftCapNativeTokenAmount.ToChainAmount(Model.NativeTokenDecimals),
+                            HardCapNativeTokenAmount = Model.HardCapNativeTokenAmount.ToChainAmount(Model.NativeTokenDecimals),
+                            NativeTokenPurchaseLimitPerBuyerAddress = Model.NativeTokenPurchaseLimitPerBuyerAddress.ToChainAmount(Model.NativeTokenDecimals),
+                            TokenAmountPerNativeToken = Model.TokenAmountPerNativeToken.ToChainAmount(Model.TokenDecimals),
+                            LockUntilDurationInMinutes = Model.LockUntilDurationInMinutes,
+                            SaleStartDate = saleStartDate,
+                            SaleEndDate = saleEndDate
+                        };
+
+                        var createCrowdSaleResult = await MultiCrowdSaleManager.CreateAsync(cred.Item1, cred.Item2, input);
+
+                        if (!string.IsNullOrEmpty(createCrowdSaleResult.Error))
+                        {
+                            throw new GeneralException(createCrowdSaleResult.Error);
                         }
                         else
                         {
-                            var allowance = await TokenManager.GetAllowanceAsync(cred.Item1, cred.Item2, Model.TokenSymbol, cred.Item1.Address, MultiCrowdSaleManager.ContactAddress);
-
-                            var saleStartDate = DateTime.SpecifyKind(Model.SaleEndDate.Value.Date, DateTimeKind.Utc);
-                            var saleEndDate = DateTime.SpecifyKind(Model.SaleEndDate.Value.Date.AddDays(1).AddMilliseconds(-1), DateTimeKind.Utc);
-
-                            var input = new CreateCrowdSaleInputModel()
-                            {
-                                Name = Model.Name,
-                                TokenSymbol = Model.TokenSymbol,
-                                SoftCapNativeTokenAmount = Model.SoftCapNativeTokenAmount.ToChainAmount(Model.NativeTokenDecimals),
-                                HardCapNativeTokenAmount = Model.HardCapNativeTokenAmount.ToChainAmount(Model.NativeTokenDecimals),
-                                NativeTokenPurchaseLimitPerBuyerAddress = Model.NativeTokenPurchaseLimitPerBuyerAddress.ToChainAmount(Model.NativeTokenDecimals),
-                                TokenAmountPerNativeToken = Model.TokenAmountPerNativeToken.ToChainAmount(Model.TokenDecimals),
-                                LockUntilDurationInMinutes = Model.LockUntilDurationInMinutes,
-                                SaleStartDate = saleStartDate,
-                                SaleEndDate = saleEndDate
-                            };
-
-                            var createCrowdSaleResult = await MultiCrowdSaleManager.CreateAsync(cred.Item1, cred.Item2, input);
-
-                            if (!string.IsNullOrEmpty(createCrowdSaleResult.Error))
-                            {
-                                throw new GeneralException(createCrowdSaleResult.Error);
-                            }
-                            else
-                            {
-                                AppDialogService.ShowSuccess("Launchpad creation success.");
-                                MudDialog.Close();
-                            }
+                            AppDialogService.ShowSuccess("Launchpad creation success.");
+                            MudDialog.Close();
                         }
                     }
                 }

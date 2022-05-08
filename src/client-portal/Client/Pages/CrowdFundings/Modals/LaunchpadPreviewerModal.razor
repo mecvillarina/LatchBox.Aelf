@@ -1,0 +1,72 @@
+﻿<MudContainer MaxWidth="MaxWidth.False" Style="max-height: 80vh; overflow-y: scroll">
+    <MudDialog DisableSidePadding="true" ClassActions="px-2 py-4" ClassContent="pt-0">
+        <DialogContent>
+            <MudGrid Class="pt-0 pb-4" Spacing="1">
+                @if (!IsLoaded)
+                {
+                    <MudItem xs="12">
+                        <MudSkeleton Height="100px" Width="100%" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" />
+                    </MudItem>
+                }
+                else
+                {
+                   <MudItem xs="12" md="6">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Sale Id</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.CrowdSale.Id</MudText>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Token</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.TokenName (@Model.TokenSymbol)</MudText>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Cap</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.CrowdSale.SoftCapNativeTokenAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol - @Model.CrowdSale.HardCapNativeTokenAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol</MudText>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Sale Conversion</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">1 @NativeTokenInfo.Symbol = @Model.CrowdSale.TokenAmountPerNativeToken.ToAmountDisplay(Model.TokenDecimals) @Model.CrowdSale.TokenSymbol</MudText>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Sale Starts</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.CrowdSale.SaleStartDate.ToDateTimeOffset().ToString(ClientConstants.LongDateTimeFormat)</MudText>
+                        </div>
+                    </MudItem>
+                    
+                    <MudItem xs="12" md="6">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Sale Ends</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.CrowdSale.SaleEndDate.ToDateTimeOffset().ToString(ClientConstants.LongDateTimeFormat)</MudText>
+                        </div>
+                    </MudItem>
+                    
+                     <MudItem xs="12" md="6">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Raised Amount</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol / @Model.CrowdSale.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol (@(Model.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) / Model.CrowdSale.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) * 100) %)</MudText>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Lock Duration after Sale</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.CrowdSale.LockUntilDurationInMinutes minutes</MudText>
+                        </div>
+                    </MudItem>
+                }
+            </MudGrid>
+        </DialogContent>
+    </MudDialog>
+</MudContainer>

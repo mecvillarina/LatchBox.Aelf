@@ -20,6 +20,10 @@ service MultiCrowdSaleContract {
     rpc Cancel (CancelInput) returns (google.protobuf.Empty) { }
     rpc Complete (CompleteInput) returns (google.protobuf.Empty) { }
 
+    rpc GetCrowdSale (GetCrowdSaleInput) returns (CrowdSaleOutput) { 
+        option (aelf.is_view) = true;
+    }
+
     rpc GetCrowdSalesByInitiator (aelf.Address) returns (CrowdSaleListOutput) { 
         option (aelf.is_view) = true;
     }
@@ -56,6 +60,10 @@ message CompleteInput {
 message BuyInput {
     int64 crowd_sale_id = 1;
     int64 token_amount = 2;
+}
+
+message GetCrowdSaleInput  {
+    int64 crowd_sale_id = 1;
 }
 
 message GetCrowdSalesInput  {
