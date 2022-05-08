@@ -267,3 +267,7 @@ message SideChainTokenInitialIssue{
     // The amount that will be issued.
     int64 amount = 2;
 }
+
+message BigIntValue {
+    string value = 1;
+}

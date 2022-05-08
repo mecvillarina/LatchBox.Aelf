@@ -152,3 +152,15 @@ message IssueInput {
     string memo = 3;
     client.Address to = 4;
 }
+
+message ApproveInput {
+    client.Address spender = 1;
+    string symbol = 2;
+    int64 amount = 3;
+}
+
+message UnApproveInput {
+    client.Address spender = 1;
+    string symbol = 2;
+    int64 amount = 3;
+}

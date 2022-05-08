@@ -9,8 +9,8 @@ namespace Client.Infrastructure.Services.Interfaces
     {
         Task<string> SendTransactionAsync(WalletInformation wallet, string password, string contract, string method, string @params = null);
         Task<string> SendTransactionAsync(WalletInformation wallet, string password, string contract, string method, IMessage @params);
-        Task<string> ExecuteTransactionAsync(WalletInformation wallet, string password, string contract, string method, string @params = null);
-        Task<string> ExecuteTransactionAsync(WalletInformation wallet, string password, string contract, string method, IMessage @params);
+        Task<string> CallTransactionAsync(WalletInformation wallet, string password, string contract, string method, string @params = null);
+        Task<string> CallTransactionAsync(WalletInformation wallet, string password, string contract, string method, IMessage @params);
         Task<TransactionResultDto> CheckTransactionResultAsync(string txId);
 
     }

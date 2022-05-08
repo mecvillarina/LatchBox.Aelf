@@ -126,7 +126,7 @@ namespace AElf.Client.Service
 
                 return transaction;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return null;
             }

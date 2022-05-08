@@ -24,6 +24,19 @@ namespace Client.Pages.Tokens
                     await InvokeAsync(async () =>
                     {
                         _creds = await WalletManager.GetWalletCredentialsAsync();
+                        try
+                        {
+                            var result = await TokenManager.CreateAsync(_creds.Item1, _creds.Item2, "LATCH", "LATCH", 300000000_00000000, 8, true);
+
+                            if (string.IsNullOrWhiteSpace(result.Error))
+                            {
+                                await TokenManager.IssueAsync(_creds.Item1, _creds.Item2, "LATCH", 10000000_00000000, "MINT1", _creds.Item1.Address);
+                            }
+                        }
+                        catch
+                        {
+
+                        }
                         await FetchDataAsync();
                     });
                 });
@@ -71,7 +84,7 @@ namespace Client.Pages.Tokens
             StateHasChanged();
         }
 
-        private async Task InvokAddTokenModalAsync()
+        private async Task InvokeAddTokenModalAsync()
         {
             var dialog = DialogService.Show<AddExistingTokenModal>($"Add Existing Token");
             var dialogResult = await dialog.Result;

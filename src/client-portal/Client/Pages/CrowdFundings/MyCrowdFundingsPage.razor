@@ -1,0 +1,88 @@
+﻿@page "/launchpads/manage"
+
+@attribute [Authorize]
+
+<MudContainer MaxWidth="MaxWidth.False">
+    <div class="d-flex">
+        <MudHidden Breakpoint="Breakpoint.SmAndUp">
+            <MudText Class="mr-2 align-self-center" Typo="Typo.h5" Color="Color.Primary" GutterBottom="false">My launchpads</MudText>
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.Xs">
+            <MudText Class="mr-4 align-self-center" Typo="Typo.h4" Color="Color.Primary" GutterBottom="false">My launchpads</MudText>
+        </MudHidden>
+
+        @if (IsLoaded)
+        {
+            <MudIconButton Class="align-self-center" Icon="@Icons.Material.Filled.Add" Color="Color.Secondary" Variant="Variant.Filled" Size="Size.Small" OnClick="InvokeAddTokenModalAsync" />
+            <MudIconButton Class="align-self-center mx-1" Icon="@Icons.Material.Filled.Refresh" Color="Color.Secondary" Variant="Variant.Filled" Size="Size.Small" OnClick="FetchDataAsync" />
+        }
+    </div>
+</MudContainer>
+
+<MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
+    @if (!IsLoaded)
+    {
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="56px" Width="100%" />
+        <MudSkeleton Class="mt-2" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="280px" Width="100%" />
+    }
+    else
+    {
+        <MudPaper Square="true" Elevation="10">
+            <MudTable Items="@CrowdSaleList" Class="mx-0 grey darken-4" FixedHeader="true" Breakpoint="Breakpoint.Sm">
+                <HeaderContent>
+                    <MudTh>Id</MudTh>
+                    <MudTh>Name</MudTh>
+                    <MudTh>Token</MudTh>
+                    <MudTh>Soft Cap/Hard Cap</MudTh>
+                    <MudTh>Sale Conversion</MudTh>
+                    <MudTh>Raised Amount</MudTh>
+                    <MudTh>Sale Duration</MudTh>
+                    <MudTh>Status</MudTh>
+                    <MudTh>Action</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Id">
+                        <MudText Typo="Typo.body1" Color="Color.Primary" Class="cursor-pointer">
+                            <b>@context.CrowdSale.Id</b>
+                        </MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Name">
+                        <span>@context.CrowdSale.Name</span>
+                    </MudTd>
+                    <MudTd DataLabel="Token">
+                        <span>@context.CrowdSale.TokenSymbol</span>
+                    </MudTd>
+                    <MudTd DataLabel="Cap">
+                        <span>@context.CrowdSale.SoftCapNativeTokenAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol - @context.CrowdSale.HardCapNativeTokenAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol</span>
+                    </MudTd>
+                    <MudTd DataLabel="Sale Conversion">
+                        <span>1 @NativeTokenInfo.Symbol - @context.CrowdSale.TokenAmountPerNativeToken.ToAmountDisplay(context.TokenDecimals) @context.CrowdSale.TokenSymbol </span>
+                    </MudTd>
+                    @* <MudTd DataLabel="Current Sale">
+                <span>@(context.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) * context.CrowdSale.TokenAmountPerNativeToken.ToAmount(context.TokenDecimals)) / @(context.CrowdSale.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) * context.CrowdSale.TokenAmountPerNativeToken.ToAmount(context.TokenDecimals)) @context.CrowdSale.TokenSymbol</span>
+                </MudTd>*@
+                    <MudTd DataLabel="Raised Amount">
+                        <span>@context.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol / @context.CrowdSale.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol (@(context.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) / context.CrowdSale.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) * 100) %)</span>
+                    </MudTd>
+                    <MudTd DataLabel="Sale Duration">
+                        <div>
+                            <span>@context.CrowdSale.SaleStartDate.ToDateTimeOffset().ToString(ClientConstants.LongDateTimeFormat)</span><br/>
+                            <span>@context.CrowdSale.SaleEndDate.ToDateTimeOffset().ToString(ClientConstants.LongDateTimeFormat)</span>
+                        </div>
+                    </MudTd>
+                    <MudTd DataLabel="Status">
+                        <MudChip Color="@context.StatusColor" Size="Size.Small">
+                            <b>@context.Status</b>
+                        </MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="Actions">
+                        <MudMenu Variant="Variant.Filled" Color="Color.Primary" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" DisableElevation="true" Icon="@Icons.Filled.MoreVert" IconColor="Color.Secondary" Direction="Direction.Left" OffsetX="true">
+                            <MudMenuItem Disabled="!context.CanCancel" OnClick="(() => InvokeCancelCrowdSaleAsync(context))">Cancel</MudMenuItem>
+                        </MudMenu>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudPaper>
+
+    }
+</MudContainer>

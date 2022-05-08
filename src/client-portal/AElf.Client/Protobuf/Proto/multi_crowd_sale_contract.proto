@@ -1,46 +1,13 @@
 syntax = "proto3";
 
-import "aelf/core.proto";
-import "aelf/options.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
 import "google/protobuf/timestamp.proto";
+import "client.proto";
 
-// the name of the C# namespace in which the contract code will be,
-// generated code will also be in this namespace.
-option csharp_namespace = "LatchBox.Contracts.MultiCrowdSaleContract";
-
-// the contract definition: a gRPC service definition.
-service MultiCrowdSaleContract {
-
-    option (aelf.csharp_state) = "LatchBox.Contracts.MultiCrowdSaleContract.MultiCrowdSaleContractState";
-
-    rpc Initialize (google.protobuf.Empty) returns (google.protobuf.Empty) { }
-    rpc Create (CreateInput) returns (google.protobuf.Empty) { }
-    rpc Cancel (CancelInput) returns (google.protobuf.Empty) { }
-    rpc Complete (CompleteInput) returns (google.protobuf.Empty) { }
-
-    rpc Invest (InvestInput) returns (google.protobuf.Empty) { }
-
-    rpc GetCrowdSale (GetCrowdSaleInput) returns (CrowdSaleOutput) { 
-        option (aelf.is_view) = true;
-    }
-
-    rpc GetCrowdSalesByInitiator (aelf.Address) returns (CrowdSaleListOutput) { 
-        option (aelf.is_view) = true;
-    }
-
-    rpc GetCrowdSales (GetCrowdSalesInput) returns (CrowdSaleListOutput) { 
-        option (aelf.is_view) = true;
-    }
-
-    rpc GetCrowdSaleInvestors (GetCrowdSaleInvestorsInput) returns (CrowdSaleInvestorListOutput) { 
-        option (aelf.is_view) = true;
-    }
-}
+option csharp_namespace = "AElf.Client.LatchBox.MultiCrowdSale";
 
 message InitializeInput {
-
 }
 
 message CreateInput {
@@ -56,10 +23,6 @@ message CreateInput {
 }
 
 message CancelInput {
-    int64 crowd_sale_id = 1;
-}
-
-message CompleteInput {
     int64 crowd_sale_id = 1;
 }
 
@@ -81,15 +44,9 @@ message GetCrowdSalesInput  {
     bool is_ongoing = 2;
 }
 
-message NativeToken {
-    string symbol = 1;
-    string token_name = 2;
-    int32 decimals = 3;
-}
-
 message CrowdSale {
     int64 id = 1;
-    aelf.Address initiator = 2;
+    client.Address initiator = 2;
     string name = 3;
     string token_symbol = 4;
     int64 soft_cap_native_token_amount = 5;
@@ -104,28 +61,10 @@ message CrowdSale {
 }
 
 message CrowdSalePurchase {
-    aelf.Address investor = 1;
+    client.Address investor = 1;
     int64 token_amount = 2;
     google.protobuf.Timestamp date_last_purchased = 3; 
     google.protobuf.Timestamp date_refunded = 4; 
-}
-
-message CrowdSaleIds {
-    repeated int64 ids = 1;
-}
-
-message CrowdSaleInvestors {
-    repeated aelf.Address investors = 1;
-}
-
-message Refund {
-    aelf.Address to = 1;
-    string token_symbol = 2;
-    int64 amount = 3;
-}
-
-message RefundList {
-    repeated Refund refunds = 1;
 }
 
 message CrowdSaleOutput {

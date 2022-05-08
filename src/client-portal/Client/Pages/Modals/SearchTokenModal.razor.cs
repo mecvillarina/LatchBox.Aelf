@@ -3,9 +3,9 @@ using Client.Parameters;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace Client.Pages.Tokens.Modals
+namespace Client.Pages.Modals
 {
-    public partial class AddExistingTokenModal
+    public partial class SearchTokenModal
     {
         [Parameter] public AddExistingTokenParameter Model { get; set; } = new();
         [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
@@ -13,6 +13,7 @@ namespace Client.Pages.Tokens.Modals
         private FluentValidationValidator _fluentValidationValidator;
         private bool Validated => _fluentValidationValidator.Validate(options => { options.IncludeAllRuleSets(); });
         public bool IsProcessing { get; set; }
+        public bool IsLoaded { get; set; }
 
         private async Task SubmitAsync()
         {
@@ -27,8 +28,7 @@ namespace Client.Pages.Tokens.Modals
 
                     if (!string.IsNullOrEmpty(tokenInfo.Symbol))
                     {
-                        await TokenManager.AddTokenSymbolToStorageAsync(Model.Symbol.ToUpper());
-                        MudDialog.Close();
+                        MudDialog.Close(DialogResult.Ok(tokenInfo));
                     }
                     else
                     {
