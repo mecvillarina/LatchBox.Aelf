@@ -68,6 +68,13 @@
 
                     <MudItem xs="12" md="6">
                         <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Status</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.Status</MudText>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <div>
                             <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Invest</b></MudText>
                             <MudButton OnClick="InvokeInvestOnCrowdSaleModalAsync">Invest</MudButton>
                         </div>
@@ -103,15 +110,15 @@
                                         <MudTd DataLabel="Status">
                                             @if (investmentContext.DateRefunded != null)
                                             {
-                                                <MudChip Color="Color.Info" Size="Size.Small">Refunded</MudChip>
+                                        <MudChip Color="Color.Info" Size="Size.Small">Refunded</MudChip>
                                             }
                                             else
                                             {
-                                                <MudChip Color="Color.Primary" Size="Size.Small">Succeeded</MudChip>
+                                        <MudChip Color="Color.Primary" Size="Size.Small">Succeeded</MudChip>
                                             }
-                                        </MudTd>
-                                    </RowTemplate>
-                                </MudTable>
+                                </MudTd>
+                            </RowTemplate>
+                        </MudTable>
                             }
 
                         </div>

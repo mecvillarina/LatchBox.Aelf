@@ -133,7 +133,30 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
                 Memo = "Refund"
             });
 
-            //Refund for Buyer
+            //Add Event 
+
+            var nativeTokenInfo = GetNativeToken();
+
+            var investors = State.CrowdSaleInvestors[input.CrowdSaleId].Investors;
+
+            foreach (var investor in investors)
+            {
+                var purchase = State.CrowdSalePurchases[crowdSaleId][investor];
+                if(purchase.DateRefunded == null)
+                {
+                    purchase.DateRefunded = Context.CurrentBlockTime;
+                    State.TokenContract.Transfer.Send(new TransferInput()
+                    {
+                        To = purchase.Investor,
+                        Amount = purchase.TokenAmount,
+                        Symbol = nativeTokenInfo.Symbol,
+                        Memo = "Refund"
+                    });
+                    State.CrowdSalePurchases[crowdSaleId][investor] = purchase;
+                    //Add Event
+                }
+            }
+
             crowdSale.IsCancelled = true;
             crowdSale.IsActive = false;
             State.CrowdSales[crowdSaleId] = crowdSale;
