@@ -44,11 +44,11 @@ namespace LatchBox.Contracts.LockTokenVaultContract
             return output;
         }
 
-        public override GetLockListOutput GetLocksByInitiator(Address initiator)
+        public override GetLockListOutput GetLocksByInitiator(Address input)
         {
             var output = new GetLockListOutput();
 
-            var lockIdList = State.LockListByInitiator[initiator];
+            var lockIdList = State.LockListByInitiator[input];
 
             if (lockIdList != null)
             {
@@ -62,11 +62,11 @@ namespace LatchBox.Contracts.LockTokenVaultContract
             return output;
         }
 
-        public override GetLockReceiverListOutput GetLocksForReceiver(Address receiver)
+        public override GetLockReceiverListOutput GetLocksForReceiver(Address input)
         {
             var output = new GetLockReceiverListOutput();
 
-            var lockIdList = State.LockListForReceiver[receiver];
+            var lockIdList = State.LockListForReceiver[input];
 
             if (lockIdList != null)
             {
@@ -75,7 +75,7 @@ namespace LatchBox.Contracts.LockTokenVaultContract
                     var itemOutput = new GetLockTransactionForReceiverOutput();
                     var lockObj = State.Locks[lockId];
                     itemOutput.Lock = lockObj;
-                    itemOutput.Receiver = State.LockReceivers[lockId][receiver];
+                    itemOutput.Receiver = State.LockReceivers[lockId][input];
                     output.LockTransactions.Add(itemOutput);
                 }
             }
@@ -105,7 +105,7 @@ namespace LatchBox.Contracts.LockTokenVaultContract
             return output;
         }
 
-        public override GetRefundListOutput GetRefundsOutput(Empty input)
+        public override GetRefundListOutput GetRefunds(Empty input)
         {
             var output = new GetRefundListOutput();
 

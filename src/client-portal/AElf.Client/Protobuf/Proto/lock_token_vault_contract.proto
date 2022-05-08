@@ -7,20 +7,8 @@ import "client.proto";
 
 option csharp_namespace = "AElf.Client.LatchBox.LockTokenVault";
 
+
 message InitializeInput {
-}
-
-message UpdatePaymentInput {
-    string token_symbol = 1;
-    int64 add_lock_payment_fee = 2;
-    int64 claim_lock_payment_fee = 3;
-    int64 revoke_lock_payment_fee = 4;
-}
-
-message UpdateTokenVaultSettingsInput {
-    client.Address foundation_address = 1;
-    client.Address staking_address = 2;
-    client.Address platform_address = 3;
 }
 
 message AddLockInput {
@@ -32,46 +20,49 @@ message AddLockInput {
 }
 
 message AddLockReceiverInput {
-    client.Address receiver_address = 1;
+    client.Address receiver = 1;
     int64 amount = 2;
 }
 
-message TokenVaultSettings {
-    client.Address foundation_address = 1;
-    client.Address staking_address = 2;
-    client.Address platform_address = 3;
+message ClaimLockInput {
+    int64 lock_id = 1;
 }
 
-message LatchBoxPayment {
-    string token_symbol = 1;
-    int64 add_lock_fee = 2;
-    int64 claim_lock_fee = 3;
-    int64 revoke_lock_fee = 4;
+message RevokeLockInput {
+    int64 lock_id = 1;
 }
 
-message LatchBoxLock {
-    string token_symbol = 1;
-    client.Address initiator_address = 2;
-    google.protobuf.Timestamp creation_time = 3;
-    google.protobuf.Timestamp start_time = 4;
-    google.protobuf.Timestamp unlock_time = 5;
+message ClaimRefundInput {
+    string token_symbol = 1 ;
+}
+
+message Lock {
+    int64 lock_id = 1;
+    string token_symbol = 2;
+    client.Address initiator = 3;
+    google.protobuf.Timestamp creation_time = 4;
+    google.protobuf.Timestamp start_time = 5;
+    google.protobuf.Timestamp unlock_time = 6;
     bool is_revocable = 7;
     bool is_revoked = 8;
     bool is_active = 9;
-    repeated LatchBoxLockReceiver receivers = 10;
 }
 
-
-message LatchBoxLockReceiver {
-    client.Address receiver_address = 1;
+message LockReceiver {
+    client.Address receiver = 1;
     int64 amount = 2;
     google.protobuf.Timestamp date_claimed = 3;
     google.protobuf.Timestamp date_revoked = 4;
     bool is_active = 5;
 }
 
-message LockIndexList {
-    repeated uint64 indexes = 1;
+message Refund {
+    string token_symbol = 1;
+    int64 amount = 2;
+}
+
+message RefundList {
+    repeated Refund refunds = 1;
 }
 
 message LockAssetCounter {
@@ -79,7 +70,46 @@ message LockAssetCounter {
     int64 unlocked_amount = 2;
 }
 
-message GetLatchBoxLockTransactionOutput {
-    uint64 Index = 1;
-    LatchBoxLock Lock = 2;
+message LockAssetCounterTokenSymbolList {
+    repeated string token_symbols = 1;
+}
+
+message LockIdList {
+    repeated int64 ids = 1;
+}
+
+message LockReceiverAddressList {
+    repeated client.Address receivers = 1;
+}
+
+message GetLockTransactionOutput {
+    Lock lock = 1;
+    repeated LockReceiver receivers = 2;
+}
+
+message GetLockListOutput {
+    repeated Lock locks = 1;
+}
+
+message GetLockTransactionForReceiverOutput {
+    Lock lock = 1;
+    LockReceiver receiver = 2;
+}
+
+message GetLockReceiverListOutput {
+    repeated GetLockTransactionForReceiverOutput lock_transactions = 1; 
+}
+
+message GetRefundListOutput {
+    repeated Refund refunds = 1;
+}
+
+message GetLockAssetCounterOutput {
+    string token_symbol = 1;    
+    int64 locked_amount = 2;
+    int64 unlocked_amount = 3; 
+}
+
+message GetLockAssetCounterListOutput {
+    repeated GetLockAssetCounterOutput assets = 1;
 }

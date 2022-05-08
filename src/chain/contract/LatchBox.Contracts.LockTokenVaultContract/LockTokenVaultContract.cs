@@ -94,6 +94,8 @@ namespace LatchBox.Contracts.LockTokenVaultContract
 
         public override Empty ClaimLock(ClaimLockInput input)
         {
+            AssertContractHasBeenInitialized();
+
             Assert(input.LockId < State.SelfIncresingLockId.Value, "Lock doesn't exists.");
 
             var lockObj = State.Locks[input.LockId];
@@ -154,6 +156,8 @@ namespace LatchBox.Contracts.LockTokenVaultContract
 
         public override Empty RevokeLock(RevokeLockInput input)
         {
+            AssertContractHasBeenInitialized();
+
             Assert(input.LockId < State.SelfIncresingLockId.Value, "Lock doesn't exists.");
 
             var lockObj = State.Locks[input.LockId];
@@ -195,6 +199,8 @@ namespace LatchBox.Contracts.LockTokenVaultContract
 
         public override Empty ClaimRefund(ClaimRefundInput input)
         {
+            AssertContractHasBeenInitialized();
+
             AssertSymbolExists(input.TokenSymbol);
 
             var refundsObj = State.Refunds[Context.Sender];

@@ -44,7 +44,7 @@ service LockTokenVaultContract {
         option (aelf.is_view) = true;
     }
 
-    rpc GetRefundsOutput(google.protobuf.Empty) returns (GetRefundListOutput) {
+    rpc GetRefunds(google.protobuf.Empty) returns (GetRefundListOutput) {
         option (aelf.is_view) = true;
     }
 
