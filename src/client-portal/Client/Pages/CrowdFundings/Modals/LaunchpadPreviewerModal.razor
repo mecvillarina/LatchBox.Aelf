@@ -10,7 +10,7 @@
                 }
                 else
                 {
-                   <MudItem xs="12" md="6">
+                    <MudItem xs="12" md="6">
                         <div>
                             <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Sale Id</b></MudText>
                             <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.CrowdSale.Id</MudText>
@@ -44,15 +44,15 @@
                             <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.CrowdSale.SaleStartDate.ToDateTimeOffset().ToString(ClientConstants.LongDateTimeFormat)</MudText>
                         </div>
                     </MudItem>
-                    
+
                     <MudItem xs="12" md="6">
                         <div>
                             <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Sale Ends</b></MudText>
                             <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.CrowdSale.SaleEndDate.ToDateTimeOffset().ToString(ClientConstants.LongDateTimeFormat)</MudText>
                         </div>
                     </MudItem>
-                    
-                     <MudItem xs="12" md="6">
+
+                    <MudItem xs="12" md="6">
                         <div>
                             <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Raised Amount</b></MudText>
                             <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol / @Model.CrowdSale.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol (@(Model.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) / Model.CrowdSale.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) * 100) %)</MudText>
@@ -72,6 +72,52 @@
                             <MudButton OnClick="InvokeInvestOnCrowdSaleModalAsync">Invest</MudButton>
                         </div>
                     </MudItem>
+
+                    <MudItem xs="12">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Investments</b></MudText>
+
+                            @if (!IsInvestmentsLoaded)
+                            {
+                                <MudSkeleton Class="mt-2" Height="100px" Width="100%" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" />
+                            }
+                            else
+                            {
+                                <MudTable Items="Investments" Class="mx-0 grey darken-4" Context="investmentContext" Elevation="10" Breakpoint="Breakpoint.Sm">
+                                    <HeaderContent>
+                                        <MudTh>Address</MudTh>
+                                        <MudTh>@($"Amount ({NativeTokenInfo.Symbol})")</MudTh>
+                                        <MudTh>@($"Token Equivalent ({Model.TokenSymbol})")</MudTh>
+                                        <MudTh>Status</MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        <MudTd DataLabel="Address">
+                                            @investmentContext.Investor.ToStringAddress().ToMask(6)
+                                        </MudTd>
+                                        <MudTd DataLabel="@($"Amount ({NativeTokenInfo.Symbol})")">
+                                            @investmentContext.TokenAmount.ToAmountDisplay(NativeTokenInfo.Decimals)
+                                        </MudTd>
+                                        <MudTd DataLabel="@($"Token Equivalent ({Model.TokenSymbol})")">
+                                            @(investmentContext.TokenAmount.ToAmount(NativeTokenInfo.Decimals) *  Model.CrowdSale.TokenAmountPerNativeToken.ToAmount(Model.TokenDecimals))
+                                        </MudTd>
+                                        <MudTd DataLabel="Status">
+                                            @if (investmentContext.DateRefunded != null)
+                                            {
+                                                <MudChip Color="Color.Info" Size="Size.Small">Refunded</MudChip>
+                                            }
+                                            else
+                                            {
+                                                <MudChip Color="Color.Primary" Size="Size.Small">Succeeded</MudChip>
+                                            }
+                                        </MudTd>
+                                    </RowTemplate>
+                                </MudTable>
+                            }
+
+                        </div>
+                    </MudItem>
+
+
                 }
             </MudGrid>
         </DialogContent>

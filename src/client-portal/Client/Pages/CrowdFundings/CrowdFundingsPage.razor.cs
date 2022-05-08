@@ -65,7 +65,7 @@ namespace Client.Pages.CrowdFundings
             var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
             var parameters = new DialogParameters()
             {
-                 { nameof(LaunchpadPreviewerModal.Model), model},
+                 { nameof(LaunchpadPreviewerModal.CrowdSaleId), model.CrowdSale.Id},
                  { nameof(LaunchpadPreviewerModal.NativeTokenInfo), NativeTokenInfo},
             };
 
