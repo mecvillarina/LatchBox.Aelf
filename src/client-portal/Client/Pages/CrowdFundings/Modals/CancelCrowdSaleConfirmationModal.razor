@@ -16,6 +16,13 @@
                         </div>
                     </MudItem>
 
+                     <MudItem xs="12">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Name</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.CrowdSale.Name</MudText>
+                        </div>
+                    </MudItem>
+
                     <MudItem xs="12">
                         <div>
                             <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Token</b></MudText>
@@ -76,7 +83,7 @@
         </DialogContent>
         <DialogActions>
             <MudButton DisableElevation Variant="Variant.Text" Disabled="IsProcessing" OnClick="Cancel">CANCEL</MudButton>
-            <MudButton DisableElevation Variant="Variant.Filled" Disabled="IsProcessing" ButtonType="ButtonType.Submit" Color="Color.Secondary" OnClick="SubmitAsync">
+            <MudButton DisableElevation Variant="Variant.Filled" Disabled="IsProcessing" Color="Color.Secondary" OnClick="SubmitAsync">
                 @if (IsProcessing)
                 {
                     <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />

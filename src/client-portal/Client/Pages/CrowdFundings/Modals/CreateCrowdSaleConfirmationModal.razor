@@ -20,6 +20,13 @@
 
                         <MudItem xs="12">
                             <div>
+                                <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Name</b></MudText>
+                                <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.Name</MudText>
+                            </div>
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <div>
                                 <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Soft Cap Goal</b></MudText>
                                 <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.SoftCapNativeTokenAmount @Model.NativeTokenSymbol</MudText>
                             </div>

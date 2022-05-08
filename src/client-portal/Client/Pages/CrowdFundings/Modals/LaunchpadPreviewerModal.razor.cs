@@ -1,8 +1,9 @@
 ﻿using AElf.Client.MultiToken;
+using Client.Infrastructure.Extensions;
 using Client.Infrastructure.Models;
+using Client.Parameters;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using System.Numerics;
 
 namespace Client.Pages.CrowdFundings.Modals
 {
@@ -30,25 +31,39 @@ namespace Client.Pages.CrowdFundings.Modals
 
         private async Task FetchDataAsync()
         {
-            try
-            {
-                var crowdSale = await MultiCrowdSaleManager.GetCrowdSaleAsync(_creds.Item1, _creds.Item2, Model.CrowdSale.Id);
-                Model = new CrowdSaleModel(crowdSale);
-                //ShareLink = $"{NavigationManager.BaseUri}view/locks/{LockIndex}";
-                IsLoaded = true;
-                StateHasChanged();
-            }
-            catch
-            {
-                //AppDialogService.ShowError("LatchBox Lock not found.");
-                MudDialog.Cancel();
-            }
+            IsLoaded = false;
+            StateHasChanged();
+
+            var crowdSale = await MultiCrowdSaleManager.GetCrowdSaleAsync(_creds.Item1, _creds.Item2, Model.CrowdSale.Id);
+            Model = new CrowdSaleModel(crowdSale);
+            
+            IsLoaded = true;
+            StateHasChanged();
         }
 
         private async Task OnCopyShareLinkAsync()
         {
             await ClipboardService.WriteTextAsync(ShareLink);
             AppDialogService.ShowSuccess("Link copied to clipboard.");
+        }
+
+        private async Task InvokeInvestOnCrowdSaleModalAsync()
+        {
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Small };
+            var parameters = new DialogParameters()
+            {
+                 { nameof(InvestOnCrowdSaleConfirmationModal.CrowdSaleModel), Model},
+                 { nameof(InvestOnCrowdSaleConfirmationModal.NativeTokenInfo), NativeTokenInfo},
+                 { nameof(InvestOnCrowdSaleConfirmationModal.Model), new InvestOnCrowdSaleParameter() { LimitAmount = (double)Model.CrowdSale.NativeTokenPurchaseLimitPerBuyerAddress.ToAmount(NativeTokenInfo.Decimals) } },
+            };
+
+            var dialog = DialogService.Show<InvestOnCrowdSaleConfirmationModal>($"{Model.CrowdSale.Name} invest confirmation", parameters, options);
+            var dialogResult = await dialog.Result;
+
+            if (!dialogResult.Cancelled)
+            {
+                await FetchDataAsync();
+            }
         }
     }
 }

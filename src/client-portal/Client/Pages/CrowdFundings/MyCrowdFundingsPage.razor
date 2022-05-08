@@ -36,8 +36,7 @@
                     <MudTh>Soft Cap/Hard Cap</MudTh>
                     <MudTh>Sale Conversion</MudTh>
                     <MudTh>Raised Amount</MudTh>
-                    <MudTh>Sale Starts</MudTh>
-                    <MudTh>Sale Ends</MudTh>
+                    <MudTh>Sale Duration</MudTh>
                     <MudTh>Status</MudTh>
                     <MudTh>Action</MudTh>
                 </HeaderContent>
@@ -65,11 +64,11 @@
                     <MudTd DataLabel="Raised Amount">
                         <span>@context.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol / @context.CrowdSale.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol (@(context.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) / context.CrowdSale.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) * 100) %)</span>
                     </MudTd>
-                    <MudTd DataLabel="Sale Starts">
-                        <span>@context.CrowdSale.SaleStartDate.ToDateTimeOffset().ToString(ClientConstants.LongDateTimeFormat)</span>
-                    </MudTd>
-                    <MudTd DataLabel="Sale Ends">
-                        <span>@context.CrowdSale.SaleEndDate.ToDateTimeOffset().ToString(ClientConstants.LongDateTimeFormat)</span>
+                    <MudTd DataLabel="Sale Duration">
+                        <div>
+                            <span>@context.CrowdSale.SaleStartDate.ToDateTimeOffset().ToString(ClientConstants.LongDateTimeFormat)</span><br/>
+                            <span>@context.CrowdSale.SaleEndDate.ToDateTimeOffset().ToString(ClientConstants.LongDateTimeFormat)</span>
+                        </div>
                     </MudTd>
                     <MudTd DataLabel="Status">
                         <MudChip Color="@context.StatusColor" Size="Size.Small">

@@ -25,11 +25,12 @@ namespace Client.Pages.CrowdFundings.Modals
                 {
                     IsProcessing = true;
 
-                    var amount = (long)(Model.TokenAmountPerNativeToken.ToChainAmount(Model.TokenDecimals) * Model.HardCapNativeTokenAmount);
                     var cred = await AppDialogService.ShowConfirmWalletTransactionAsync();
 
                     if (cred.Item1 != null)
                     {
+                        var amount = (long)(Model.TokenAmountPerNativeToken.ToChainAmount(Model.TokenDecimals) * Model.HardCapNativeTokenAmount);
+
                         var getAllowanceResult = await TokenManager.GetAllowanceAsync(cred.Item1, cred.Item2, Model.TokenSymbol, cred.Item1.Address, MultiCrowdSaleManager.ContactAddress);
 
                         if(getAllowanceResult.Allowance < amount)

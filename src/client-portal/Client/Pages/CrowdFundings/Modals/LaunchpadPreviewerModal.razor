@@ -65,6 +65,13 @@
                             <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.CrowdSale.LockUntilDurationInMinutes minutes</MudText>
                         </div>
                     </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Invest</b></MudText>
+                            <MudButton OnClick="InvokeInvestOnCrowdSaleModalAsync">Invest</MudButton>
+                        </div>
+                    </MudItem>
                 }
             </MudGrid>
         </DialogContent>

@@ -59,17 +59,17 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             State.TokenContract.TransferFrom.Send(new TransferFromInput()
             {
                 From = Context.Sender,
-                To = Context.Self, 
+                To = Context.Self,
                 Symbol = input.TokenSymbol,
                 Amount = totalAmount,
                 Memo = input.Name,
             });
 
-            var selfIncreasingId = State.SelfIncresingCrowdSaleId.Value;
+            var crowdSaleId = State.SelfIncresingCrowdSaleId.Value;
 
             CrowdSale sale = new CrowdSale()
             {
-                Id = selfIncreasingId,
+                Id = crowdSaleId,
                 Initiator = Context.Sender,
                 Name = input.Name,
                 TokenSymbol = input.TokenSymbol,
@@ -84,14 +84,15 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
                 IsCancelled = false
             };
 
-            State.CrowdSales[selfIncreasingId] = sale;
-            State.CrowdSaleRaiseAmounts[selfIncreasingId] = 0;
+            State.CrowdSales[crowdSaleId] = sale;
+            State.CrowdSaleRaiseAmounts[crowdSaleId] = 0;
+            State.CrowdSaleInvestors[crowdSaleId] = new CrowdSaleInvestors();
 
             var activeCrowdSaleIds = State.ActiveCrowdSales.Value;
 
-            if (!activeCrowdSaleIds.Ids.Contains(selfIncreasingId))
+            if (!activeCrowdSaleIds.Ids.Contains(crowdSaleId))
             {
-                activeCrowdSaleIds.Ids.Add(selfIncreasingId);
+                activeCrowdSaleIds.Ids.Add(crowdSaleId);
                 State.ActiveCrowdSales.Value = activeCrowdSaleIds;
             }
 
@@ -102,10 +103,10 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
                 crowdSalesByInitiator = new CrowdSaleIds();
             }
 
-            crowdSalesByInitiator.Ids.Add(selfIncreasingId);
+            crowdSalesByInitiator.Ids.Add(crowdSaleId);
             State.CrowdSalesByInitiator[Context.Sender] = crowdSalesByInitiator;
 
-            State.SelfIncresingCrowdSaleId.Value = selfIncreasingId.Add(1);
+            State.SelfIncresingCrowdSaleId.Value = crowdSaleId.Add(1);
 
             return new Empty();
         }
@@ -115,7 +116,7 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             AssertContractHasBeenInitialized();
 
             Assert(input.CrowdSaleId < State.SelfIncresingCrowdSaleId.Value, "Invalid Sale Id");
-            
+
             var crowdSaleId = input.CrowdSaleId;
             var crowdSale = State.CrowdSales[crowdSaleId];
 
@@ -142,7 +143,7 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             return new Empty();
         }
 
-        public Empty Buy(BuyInput input)
+        public override Empty Invest(InvestInput input)
         {
             AssertContractHasBeenInitialized();
 
@@ -152,8 +153,8 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             var crowdSale = State.CrowdSales[crowdSaleId];
             Assert(crowdSale.IsActive, "Sale is not active anymore.");
             Assert(!crowdSale.IsCancelled, "Sale has been cancelled.");
-            Assert(crowdSale.SaleStartDate > Context.CurrentBlockTime, "Sale is not yet started.");
-            Assert(crowdSale.SaleEndDate > Context.CurrentBlockTime, "Sale has already ended.");
+            //Assert(Context.CurrentBlockTime > crowdSale.SaleStartDate, "Sale is not yet started.");
+            //Assert(Context.CurrentBlockTime > crowdSale.SaleEndDate, "Sale has already ended.");
             //Assert(crowdSale.Initiator != Context.Sender, "Only the non-issuer (creator) of the token can buy on a crowd sale.");
 
             var raiseAmount = State.CrowdSaleRaiseAmounts[crowdSaleId];
@@ -167,38 +168,49 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             Assert(currentPurchaseAmount + input.TokenAmount <= crowdSale.NativeTokenPurchaseLimitPerBuyerAddress, "Your purchase will exceed the buy limit per address.");
             Assert(raiseAmount + input.TokenAmount <= crowdSale.HardCapNativeTokenAmount, "Your purchase will exceed the crowd sale pool. ");
 
+            var nativeTokenInfo = GetNativeToken();
+
+            var isNewInvestor = false;
             if (purchase == null)
             {
                 purchase = new CrowdSalePurchase();
+                isNewInvestor = true;
             }
 
             State.TokenContract.TransferFrom.Send(new TransferFromInput()
             {
                 From = Context.Sender,
                 To = Context.Self,
-                Symbol = crowdSale.TokenSymbol,
+                Symbol = nativeTokenInfo.Symbol,
                 Amount = input.TokenAmount,
-                Memo = $"{crowdSaleId}"
+                Memo = $"Invest: {crowdSaleId}"
             });
 
             purchase.TokenAmount += input.TokenAmount;
             purchase.Investor = Context.Sender;
             purchase.DateLastPurchased = Context.CurrentBlockTime;
-            
+
             State.CrowdSalePurchases[crowdSaleId][Context.Sender] = purchase;
             State.CrowdSaleRaiseAmounts[crowdSaleId] = State.CrowdSaleRaiseAmounts[crowdSaleId] + input.TokenAmount;
 
-            var crowdSalesByReceiver = State.CrowdSalesByBuyer[Context.Sender];
-
-            if (crowdSalesByReceiver == null)
+            if (isNewInvestor)
             {
-                crowdSalesByReceiver = new CrowdSaleIds();
+                var investorList = State.CrowdSaleInvestors[crowdSaleId];
+                investorList.Investors.Add(Context.Sender);
+                State.CrowdSaleInvestors[crowdSaleId] = investorList;
             }
 
-            if (!crowdSalesByReceiver.Ids.Contains(crowdSaleId))
+            var crowdSalesByBuyer = State.CrowdSalesByBuyer[Context.Sender];
+
+            if (crowdSalesByBuyer == null)
             {
-                crowdSalesByReceiver.Ids.Add(crowdSaleId);
-                State.CrowdSalesByBuyer[Context.Sender] = crowdSalesByReceiver;
+                crowdSalesByBuyer = new CrowdSaleIds();
+            }
+
+            if (!crowdSalesByBuyer.Ids.Contains(crowdSaleId))
+            {
+                crowdSalesByBuyer.Ids.Add(crowdSaleId);
+                State.CrowdSalesByBuyer[Context.Sender] = crowdSalesByBuyer;
             }
 
             return new Empty();
@@ -217,7 +229,8 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             Assert(crowdSale.Initiator == Context.Sender || Context.Sender == State.Admin.Value, "No authorization.");
             Assert(crowdSale.IsActive, "Sale is not active anymore.");
             Assert(!crowdSale.IsCancelled, "Sale has been cancelled.");
-            Assert(crowdSale.SaleEndDate.ToDateTime() <= Context.CurrentBlockTime.ToDateTime(), "Sale is still on going.");
+            //Assert(Context.CurrentBlockTime > crowdSale.SaleStartDate, "Sale is not yet started.");
+            //Assert(Context.CurrentBlockTime < crowdSale.SaleEndDate, "Sale is still ongoing not yet ended.");
 
             var raiseAmount = State.CrowdSaleRaiseAmounts[crowdSaleId];
 

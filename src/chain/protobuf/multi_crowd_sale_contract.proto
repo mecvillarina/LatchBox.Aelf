@@ -20,6 +20,8 @@ service MultiCrowdSaleContract {
     rpc Cancel (CancelInput) returns (google.protobuf.Empty) { }
     rpc Complete (CompleteInput) returns (google.protobuf.Empty) { }
 
+    rpc Invest (InvestInput) returns (google.protobuf.Empty) { }
+
     rpc GetCrowdSale (GetCrowdSaleInput) returns (CrowdSaleOutput) { 
         option (aelf.is_view) = true;
     }
@@ -29,6 +31,10 @@ service MultiCrowdSaleContract {
     }
 
     rpc GetCrowdSales (GetCrowdSalesInput) returns (CrowdSaleListOutput) { 
+        option (aelf.is_view) = true;
+    }
+
+    rpc GetCrowdSaleInvestors (GetCrowdSaleInvestorsInput) returns (CrowdSaleInvestorListOutput) { 
         option (aelf.is_view) = true;
     }
 }
@@ -57,12 +63,16 @@ message CompleteInput {
     int64 crowd_sale_id = 1;
 }
 
-message BuyInput {
+message InvestInput {
     int64 crowd_sale_id = 1;
     int64 token_amount = 2;
 }
 
 message GetCrowdSaleInput  {
+    int64 crowd_sale_id = 1;
+}
+
+message GetCrowdSaleInvestorsInput  {
     int64 crowd_sale_id = 1;
 }
 
@@ -97,10 +107,15 @@ message CrowdSalePurchase {
     aelf.Address investor = 1;
     int64 token_amount = 2;
     google.protobuf.Timestamp date_last_purchased = 3; 
+    google.protobuf.Timestamp date_refunded = 4; 
 }
 
 message CrowdSaleIds {
     repeated int64 ids = 1;
+}
+
+message CrowdSaleInvestors {
+    repeated aelf.Address investors = 1;
 }
 
 message Refund {
@@ -123,4 +138,8 @@ message CrowdSaleOutput {
 
 message CrowdSaleListOutput {
     repeated CrowdSaleOutput crowd_sales = 1;
+}
+
+message CrowdSaleInvestorListOutput {
+    repeated CrowdSalePurchase purchases = 1;
 }

@@ -24,6 +24,7 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
 
         public MappedState<long, long> CrowdSaleRaiseAmounts { get; set; }
         public MappedState<long, Address, CrowdSalePurchase> CrowdSalePurchases { get; set; }
+        public MappedState<long, CrowdSaleInvestors> CrowdSaleInvestors { get; set; }
         public MappedState<Address, CrowdSaleIds> CrowdSalesByBuyer { get; set; }
     }
 }

@@ -32,7 +32,7 @@ namespace Client.Infrastructure.Managers
 
         public async Task<TransactionResultDto> CreateAsync(WalletInformation wallet, string password, CreateCrowdSaleInputModel model)
         {
-            CreateInput @params = new CreateInput()
+            var @params = new CreateInput()
             {
                 Name = model.Name,
                 TokenSymbol = model.TokenSymbol,
@@ -51,7 +51,7 @@ namespace Client.Infrastructure.Managers
 
         public async Task<TransactionResultDto> CancelAsync(WalletInformation wallet, string password, long crowdSaleId)
         {
-            CancelInput @params = new CancelInput()
+            var @params = new CancelInput()
             {
                 CrowdSaleId = crowdSaleId
             };
@@ -60,15 +60,15 @@ namespace Client.Infrastructure.Managers
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
-        public async Task<TransactionResultDto> BuyAsync(WalletInformation wallet, string password, long crowdSaleId, long amount)
+        public async Task<TransactionResultDto> InvestAsync(WalletInformation wallet, string password, long crowdSaleId, long amount)
         {
-            BuyInput @params = new BuyInput()
+            var @params = new InvestInput()
             {
                 CrowdSaleId = crowdSaleId,
                 TokenAmount = amount
             };
 
-            var txId = await _blockChainService.SendTransactionAsync(wallet, password, ContactAddress, "Buy", @params);
+            var txId = await _blockChainService.SendTransactionAsync(wallet, password, ContactAddress, "Invest", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
@@ -81,6 +81,17 @@ namespace Client.Infrastructure.Managers
 
             var result = await _blockChainService.CallTransactionAsync(wallet, password, ContactAddress, "GetCrowdSale", @params);
             return CrowdSaleOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
+        }
+
+        public async Task<CrowdSaleInvestorListOutput> GetCrowdSaleInvestorsAsync(WalletInformation wallet, string password, long crowdSaleId)
+        {
+            var @params = new GetCrowdSaleInvestorsInput()
+            {
+                CrowdSaleId = crowdSaleId
+            };
+
+            var result = await _blockChainService.CallTransactionAsync(wallet, password, ContactAddress, "GetCrowdSaleInvestors", @params);
+            return CrowdSaleInvestorListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<CrowdSaleListOutput> GetCrowdSalesByInitiatorAsync(WalletInformation wallet, string password, string initiator)

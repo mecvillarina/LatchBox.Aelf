@@ -1,5 +1,4 @@
 ﻿using AElf.Types;
-using Google.Protobuf.Collections;
 
 namespace LatchBox.Contracts.MultiCrowdSaleContract
 {
@@ -54,6 +53,24 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
                         output.CrowdSales.Add(sale);
                     }
                 }
+            }
+
+            return output;
+        }
+
+        public override CrowdSaleInvestorListOutput GetCrowdSaleInvestors(GetCrowdSaleInvestorsInput input)
+        {
+            Assert(input.CrowdSaleId < State.SelfIncresingCrowdSaleId.Value, "Invalid Sale Id");
+
+            var crowdSaleId = input.CrowdSaleId;
+            var output = new CrowdSaleInvestorListOutput();
+
+            var investors = State.CrowdSaleInvestors[input.CrowdSaleId].Investors;
+
+            foreach (var investor in investors)
+            {
+                var purchase = State.CrowdSalePurchases[crowdSaleId][investor];
+                output.Purchases.Add(purchase);
             }
 
             return output;
