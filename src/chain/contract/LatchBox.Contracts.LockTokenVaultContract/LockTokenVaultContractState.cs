@@ -14,15 +14,17 @@ namespace LatchBox.Contracts.LockTokenVaultContract
         internal AEDPoSContractContainer.AEDPoSContractReferenceState ConsensusContract { get; set; }
 
         public SingletonState<Address> Admin { get; set; }
-        public SingletonState<TokenVaultSettings> TokenVaultSettings { get; set; }
-        public SingletonState<LatchBoxPayment> Payment { get; set; }
+        public SingletonState<long> SelfIncresingLockId { get; set; }
 
-        public UInt64State LockIndex { get; set; }
+        public MappedState<long, Lock> Locks { get; set; }
+        public MappedState<long, Address, LockReceiver> LockReceivers { get; set; }
+        public MappedState<long, LockReceiverAddressList> LockReceiverList { get; set; }
 
-        public MappedState<ulong, LatchBoxLock> Locks { get; set; }
-        public MappedState<Address, LockIndexList> LockInitiatorIndexes { get; set; }
-        public MappedState<Address, LockIndexList> LockReceiverIndexes { get; set; }
-        public MappedState<string, LockIndexList> LockAssetIndexes { get; set; }
+        public MappedState<Address, LockIdList> LockListByInitiator { get; set; }
+        public MappedState<Address, LockIdList> LockListForReceiver { get; set; }
+        public MappedState<string, LockIdList> LockAssetIdList { get; set; }
         public MappedState<string, LockAssetCounter> AssetCounter { get; set; }
+        public SingletonState<LockAssetCounterTokenSymbolList> AssetCounterList { get; set; }
+        public MappedState<Address, RefundList> Refunds { get; set; }
     }
 }

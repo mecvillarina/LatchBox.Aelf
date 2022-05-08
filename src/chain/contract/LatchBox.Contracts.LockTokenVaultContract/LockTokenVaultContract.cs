@@ -1,14 +1,11 @@
+using AElf.Contracts.MultiToken;
 using AElf.Sdk.CSharp;
 using AElf.Types;
 using Google.Protobuf.WellKnownTypes;
+using System.Linq;
 
 namespace LatchBox.Contracts.LockTokenVaultContract
 {
-    /// <summary>
-    /// The C# implementation of the contract defined in lock_token_vault_contract.proto that is located in the "protobuf"
-    /// folder.
-    /// Notice that it inherits from the protobuf generated code. 
-    /// </summary>
     public partial class LockTokenVaultContract : LockTokenVaultContractContainer.LockTokenVaultContractBase
     {
         public override Empty Initialize(InitializeInput input)
@@ -20,58 +17,40 @@ namespace LatchBox.Contracts.LockTokenVaultContract
             State.TokenContract.Value = Context.GetContractAddressByName(SmartContractConstants.TokenContractSystemName);
             State.ConsensusContract.Value = Context.GetContractAddressByName(SmartContractConstants.ConsensusContractSystemName);
 
-            State.LockIndex.Value = 0;
-
-            return new Empty();
-        }
-
-        public override Empty UpdateTokenVaultSettings(UpdateTokenVaultSettingsInput input)
-        {
-            AssertContractHasBeenInitialized();
-            AssertSenderIsAdmin();
-
-            State.TokenVaultSettings.Value = new TokenVaultSettings();
-            State.TokenVaultSettings.Value.FoundationAddress = input.FoundationAddress;
-            State.TokenVaultSettings.Value.PlatformAddress = input.PlatformAddress;
-            State.TokenVaultSettings.Value.StakingAddress = input.StakingAddress;
-
-            return new Empty();
-        }
-
-        public override Empty UpdatePayment(UpdatePaymentInput input)
-        {
-            AssertContractHasBeenInitialized();
-            AssertSenderIsAdmin();
-
-            State.Payment.Value = new LatchBoxPayment();
-            State.Payment.Value.TokenSymbol = input.TokenSymbol;
-            State.Payment.Value.AddLockFee = input.AddLockPaymentFee;
-            State.Payment.Value.ClaimLockFee = input.ClaimLockPaymentFee;
-            State.Payment.Value.RevokeLockFee = input.RevokeLockPaymentFee;
+            State.SelfIncresingLockId.Value = 1;
 
             return new Empty();
         }
 
         public override Empty AddLock(AddLockInput input)
         {
+            AssertContractHasBeenInitialized();
+
             var currentBlockTime = Context.CurrentBlockTime;
 
-            AssertContractHasBeenInitialized();
-            Assert(input.TotalAmount > 0, "The input Total Amount MUST be greater than 0.");
-            Assert(input.UnlockTime.ToDateTime().DayOfYear >= currentBlockTime.ToDateTime().DayOfYear, "The input Unlock Time MUST be at least 1 day.");
-            ValidateLockReceiverInputData(input.Receivers, input.TotalAmount);
+            AssertSymbolExists(input.TokenSymbol);
+            Assert(input.TotalAmount > 0, "The parameter total amount MUST be greater than 0.");
+            Assert(input.UnlockTime.ToDateTime() >= currentBlockTime.ToDateTime(), "The parameter unlock time MUST be future date.");
+            AssertValidLockReceiverInputData(input.Receivers, input.TotalAmount);
 
-            //Add Token Transfers here.
+            State.TokenContract.TransferFrom.Send(new TransferFromInput()
+            {
+                From = Context.Sender,
+                To = Context.Self,
+                Symbol = input.TokenSymbol,
+                Amount = input.TotalAmount,
+                Memo = $"{nameof(LockTokenVaultContract)}: Add Lock",
+            });
 
-            var lockIdx = State.LockIndex.Value;
-            State.LockIndex.Value = lockIdx + 1;
+            var lockId = State.SelfIncresingLockId.Value;
+            State.SelfIncresingLockId.Value = lockId + 1;
 
             var initiator = Context.Sender;
 
-            var lbLock = new LatchBoxLock
+            var lockObj = new Lock
             {
                 TokenSymbol = input.TokenSymbol,
-                InitiatorAddress = initiator,
+                Initiator = initiator,
                 CreationTime = currentBlockTime,
                 StartTime = currentBlockTime,
                 UnlockTime = input.UnlockTime,
@@ -80,72 +59,236 @@ namespace LatchBox.Contracts.LockTokenVaultContract
                 IsRevoked = false
             };
 
+            State.Locks[lockId] = lockObj;
+            UpdateLockInitiatorIds(initiator, lockId);
+
+            var receiverAddressList = new LockReceiverAddressList();
+
             foreach (var receiverInput in input.Receivers)
             {
-                LatchBoxLockReceiver receiver = new LatchBoxLockReceiver
+                LockReceiver lockReceiver = new LockReceiver
                 {
-                    ReceiverAddress = receiverInput.ReceiverAddress,
+                    Receiver = receiverInput.Receiver,
                     Amount = receiverInput.Amount,
                     DateClaimed = null,
                     DateRevoked = null,
                     IsActive = true
                 };
-                lbLock.Receivers.Add(receiver);
+
+                State.LockReceivers[lockId][receiverInput.Receiver] = lockReceiver;
+                UpdateLockReceiversIds(lockReceiver.Receiver, lockId);
+                receiverAddressList.Receivers.Add(lockReceiver.Receiver);
             }
 
-            State.Locks[lockIdx] = lbLock;
+            State.LockReceiverList[lockId] = receiverAddressList;
 
-            UpdateLockInitiatorIndexes(initiator, lockIdx);
-
-            foreach (var receiver in lbLock.Receivers)
-            {
-                UpdateLockReceiversIndexes(receiver.ReceiverAddress, lockIdx);
-            }
-
-            UpdateLockAssetIndexes(input.TokenSymbol, lockIdx);
+            UpdateLockAssetIds(input.TokenSymbol, lockId);
             IncrementAssetLockedCounter(input.TokenSymbol, input.TotalAmount);
             Context.Fire(new OnCreatedLockEvent
             {
-                LockIdx = lockIdx
+                LockId = lockId
             });
 
             return new Empty();
         }
 
-        private void UpdateLockInitiatorIndexes(Address initiator, ulong lockIdx)
+        public override Empty ClaimLock(ClaimLockInput input)
         {
-            if (State.LockInitiatorIndexes[initiator] == null)
+            Assert(input.LockId < State.SelfIncresingLockId.Value, "Lock doesn't exists.");
+
+            var lockObj = State.Locks[input.LockId];
+
+            var receiverObj = State.LockReceivers[lockObj.LockId][Context.Sender];
+            Assert(receiverObj != null, "No authorization.");
+
+            Assert(!lockObj.IsRevoked, "Lock has been already revoked by the initiator");
+            Assert(receiverObj.IsActive && receiverObj.DateRevoked == null, "Lock has been already revoked by the initiator");
+
+            Assert(lockObj.IsActive, "Lock is not active anymore");
+
+            Assert(receiverObj.IsActive && receiverObj.DateClaimed == null, "Lock has been claimed.");
+
+            //Assert(Context.CurrentBlockTime > lockObj.UnlockTime, "Lock is not yet ready to be claimwd");
+
+            State.TokenContract.Transfer.Send(new TransferInput()
             {
-                State.LockInitiatorIndexes[initiator] = new LockIndexList();
+                To = receiverObj.Receiver,
+                Amount = receiverObj.Amount,
+                Memo = $"{nameof(LockTokenVaultContract)}: Claim Lock",
+                Symbol = lockObj.TokenSymbol
+            });
+
+            receiverObj.DateClaimed = Context.CurrentBlockTime;
+            receiverObj.IsActive = false;
+
+            State.LockReceivers[lockObj.LockId][Context.Sender] = receiverObj;
+            IncrementAssetUnlockedCounter(lockObj.TokenSymbol, receiverObj.Amount);
+
+            var receiverAddressList = State.LockReceiverList[lockObj.LockId].Receivers.ToList();
+            bool isAllClaimed = true;
+            foreach (var receiverAddress in receiverAddressList)
+            {
+                var receiver = State.LockReceivers[lockObj.LockId][receiverAddress];
+                if (receiver.IsActive && receiver.DateClaimed == null)
+                {
+                    isAllClaimed = false;
+                    break;
+                }
             }
 
-            var currentIndexes = State.LockInitiatorIndexes[initiator];
-            currentIndexes.Indexes.Add(lockIdx);
-            State.LockInitiatorIndexes[initiator] = currentIndexes;
+            if (isAllClaimed)
+            {
+                lockObj.IsActive = false;
+                State.Locks[lockObj.LockId] = lockObj;
+            }
+
+            Context.Fire(new OnClaimedLockEvent
+            {
+                LockId = lockObj.LockId,
+                Receiver = receiverObj.Receiver,
+                ClaimedAmount = receiverObj.Amount
+            });
+
+            return new Empty();
         }
 
-        private void UpdateLockReceiversIndexes(Address receiver, ulong lockIdx)
+        public override Empty RevokeLock(RevokeLockInput input)
         {
-            if (State.LockReceiverIndexes[receiver] == null)
+            Assert(input.LockId < State.SelfIncresingLockId.Value, "Lock doesn't exists.");
+
+            var lockObj = State.Locks[input.LockId];
+
+            Assert(lockObj.Initiator == Context.Sender, "No authorization.");
+            Assert(!lockObj.IsRevoked, "Lock has been already revoked by the initiator.");
+            Assert(lockObj.IsActive, "Lock is not active anymore.");
+            Assert(lockObj.IsRevocable, "Lock is irrevocable.");
+
+            lockObj.IsRevoked = true;
+            lockObj.IsActive = false;
+
+            State.Locks[lockObj.LockId] = lockObj;
+
+            long totalRefundAmount = 0;
+
+            var receiverAddressList = State.LockReceiverList[lockObj.LockId].Receivers.ToList();
+            foreach (var receiverAddress in receiverAddressList)
             {
-                State.LockReceiverIndexes[receiver] = new LockIndexList();
+                var lockReceiver = State.LockReceivers[lockObj.LockId][receiverAddress];
+                if (lockReceiver.DateClaimed == null && lockReceiver.DateRevoked == null)
+                {
+                    lockReceiver.DateRevoked = Context.CurrentBlockTime;
+                    lockReceiver.IsActive = false;
+                    totalRefundAmount += lockReceiver.Amount;
+                    UpdateRefunds(lockObj.Initiator, lockObj.TokenSymbol, lockReceiver.Amount);
+                    State.LockReceivers[lockObj.LockId][receiverAddress] = lockReceiver;
+                }
             }
 
-            var currentIndexes = State.LockReceiverIndexes[receiver];
-            currentIndexes.Indexes.Add(lockIdx);
-            State.LockReceiverIndexes[receiver] = currentIndexes;
+            Context.Fire(new OnRevokeLockEvent
+            {
+                LockId = lockObj.LockId,
+                UnlockedAmount = totalRefundAmount
+            });
+
+            return new Empty();
         }
 
-        private void UpdateLockAssetIndexes(string tokenSymbol, ulong lockIdx)
+        public override Empty ClaimRefund(ClaimRefundInput input)
         {
-            if (State.LockAssetIndexes[tokenSymbol] == null)
+            AssertSymbolExists(input.TokenSymbol);
+
+            var refundsObj = State.Refunds[Context.Sender];
+
+            Assert(refundsObj != null, "No refund found.");
+
+            var refund = refundsObj.Refunds.FirstOrDefault(x => x.TokenSymbol == input.TokenSymbol);
+
+            Assert(refund != null, "No refund found.");
+            State.TokenContract.Transfer.Send(new TransferInput()
             {
-                State.LockAssetIndexes[tokenSymbol] = new LockIndexList();
+                To = Context.Sender,
+                Amount = refund.Amount,
+                Memo = $"{nameof(LockTokenVaultContract)}: Claim Refund",
+                Symbol = refund.TokenSymbol
+            });
+
+            refundsObj.Refunds.Remove(refund);
+            State.Refunds[Context.Sender] = refundsObj;
+
+            IncrementAssetUnlockedCounter(input.TokenSymbol, refund.Amount);
+
+            Context.Fire(new OnClaimedRefundEvent
+            {
+                Recipient = Context.Sender,
+                TokenSymbol = refund.TokenSymbol,
+                RefundedAmount = refund.Amount
+            });
+
+            return new Empty();
+        }
+
+        private void UpdateRefunds(Address initiator, string tokenSymbol, long amount)
+        {
+            var refundsObj = State.Refunds[initiator];
+
+            if (refundsObj == null)
+            {
+                refundsObj = new RefundList();
             }
 
-            var currentIndexes = State.LockAssetIndexes[tokenSymbol];
-            currentIndexes.Indexes.Add(lockIdx);
-            State.LockAssetIndexes[tokenSymbol] = currentIndexes;
+            var refund = refundsObj.Refunds.FirstOrDefault(x => x.TokenSymbol == tokenSymbol);
+
+            if (refund != null)
+            {
+                refund.Amount += amount;
+            }
+            else
+            {
+                refund = new Refund()
+                {
+                    TokenSymbol = tokenSymbol,
+                    Amount = amount
+                };
+                refundsObj.Refunds.Add(refund);
+            }
+
+            State.Refunds[initiator] = refundsObj;
+        }
+
+        private void UpdateLockInitiatorIds(Address initiator, long lockId)
+        {
+            if (State.LockListByInitiator[initiator] == null)
+            {
+                State.LockListByInitiator[initiator] = new LockIdList();
+            }
+
+            var currentList = State.LockListByInitiator[initiator];
+            currentList.Ids.Add(lockId);
+            State.LockListByInitiator[initiator] = currentList;
+        }
+
+        private void UpdateLockReceiversIds(Address receiver, long lockId)
+        {
+            if (State.LockListForReceiver[receiver] == null)
+            {
+                State.LockListForReceiver[receiver] = new LockIdList();
+            }
+
+            var currentList = State.LockListForReceiver[receiver];
+            currentList.Ids.Add(lockId);
+            State.LockListForReceiver[receiver] = currentList;
+        }
+
+        private void UpdateLockAssetIds(string tokenSymbol, long lockId)
+        {
+            if (State.LockAssetIdList[tokenSymbol] == null)
+            {
+                State.LockAssetIdList[tokenSymbol] = new LockIdList();
+            }
+
+            var currentList = State.LockAssetIdList[tokenSymbol];
+            currentList.Ids.Add(lockId);
+            State.LockAssetIdList[tokenSymbol] = currentList;
         }
 
         private void IncrementAssetLockedCounter(string tokenSymbol, long amount)
@@ -158,6 +301,20 @@ namespace LatchBox.Contracts.LockTokenVaultContract
             var assetCounter = State.AssetCounter[tokenSymbol];
             assetCounter.LockedAmount += amount;
             State.AssetCounter[tokenSymbol] = assetCounter;
+
+            var assetCounterListObj = State.AssetCounterList.Value;
+
+            if (assetCounterListObj == null)
+            {
+                assetCounterListObj = new LockAssetCounterTokenSymbolList();
+            }
+
+            var tokenSymbols = assetCounterListObj.TokenSymbols;
+            if (!tokenSymbols.Any(x => x == tokenSymbol))
+            {
+                assetCounterListObj.TokenSymbols.Add(tokenSymbols);
+                State.AssetCounterList.Value = assetCounterListObj;
+            }
         }
 
         private void IncrementAssetUnlockedCounter(string tokenSymbol, long amount)
