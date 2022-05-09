@@ -49,22 +49,6 @@ namespace Client.Infrastructure.Services
             return rawTransactionResult.TransactionId;
         }
 
-
-        public async Task<string> CallTransactionAsync(WalletInformation wallet, string password, string contract, string method, string @params = null)
-        {
-            var contractAddress = await GetContractAddressAsync(contract);
-            var rawTransaction = await GenerateRawTransactionAsync(wallet.Address, contractAddress, method, FormatParams(@params));
-            var signature = await GetSignatureAsync(wallet.Filename, password, rawTransaction);
-
-            var rawTransactionResult = await _aelfClientFactory.CreateClient().ExecuteRawTransactionAsync(new ExecuteRawTransactionDto()
-            {
-                RawTransaction = rawTransaction,
-                Signature = signature,
-            });
-
-            return rawTransactionResult;
-        }
-
         public async Task<string> CallTransactionAsync(WalletInformation wallet, string password, string contract, string method, IMessage @params)
         {
             var contractAddress = await GetContractAddressAsync(contract);
