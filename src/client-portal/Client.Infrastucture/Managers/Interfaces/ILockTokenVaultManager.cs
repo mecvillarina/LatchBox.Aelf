@@ -9,6 +9,7 @@ namespace Client.Infrastructure.Managers.Interfaces
 {
     public interface ILockTokenVaultManager : IManager
     {
+        string ContactAddress { get; }
         Task<TransactionResultDto> InitializeAsync(WalletInformation wallet, string password);
         Task<TransactionResultDto> AddLockAsync(WalletInformation wallet, string password, AddLockInputModel model);
         Task<TransactionResultDto> ClaimLockAsync(WalletInformation wallet, string password, long lockId);

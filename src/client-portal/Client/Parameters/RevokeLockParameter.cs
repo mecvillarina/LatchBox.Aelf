@@ -4,6 +4,6 @@ namespace Client.Parameters
 {
     public class RevokeLockParameter
     {
-        public ulong LockIndex { get; set; }
+        public long LockId { get; set; }
     }
 }

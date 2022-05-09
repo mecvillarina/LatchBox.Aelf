@@ -12,7 +12,7 @@ namespace Client.Pages.Launchpads
     {
         public bool IsLoaded { get; set; }
 
-        private (WalletInformation, string) _creds;
+        private (WalletInformation, string) _cred;
         public TokenInfo NativeTokenInfo { get; set; }
         public List<MyLaunchpadModel> LaunchpadList { get; set; } = new();
 
@@ -26,7 +26,7 @@ namespace Client.Pages.Launchpads
 
                     await InvokeAsync(async () =>
                     {
-                        _creds = await WalletManager.GetWalletCredentialsAsync();
+                        _cred = await WalletManager.GetWalletCredentialsAsync();
                         await FetchDataAsync();
                     });
                 });
@@ -38,9 +38,9 @@ namespace Client.Pages.Launchpads
             IsLoaded = false;
             StateHasChanged();
 
-            NativeTokenInfo = await TokenManager.GetNativeTokenInfoAsync(_creds.Item1, _creds.Item2);
-            await MultiCrowdSaleManager.InitializeAsync(_creds.Item1, _creds.Item2);
-            var output = await MultiCrowdSaleManager.GetCrowdSalesByInitiatorAsync(_creds.Item1, _creds.Item2, _creds.Item1.Address);
+            NativeTokenInfo = await TokenManager.GetNativeTokenInfoAsync(_cred.Item1, _cred.Item2);
+            await MultiCrowdSaleManager.InitializeAsync(_cred.Item1, _cred.Item2);
+            var output = await MultiCrowdSaleManager.GetCrowdSalesByInitiatorAsync(_cred.Item1, _cred.Item2, _cred.Item1.Address);
             LaunchpadList = output.CrowdSales.Select(x => new MyLaunchpadModel(x)).ToList();
 
             IsLoaded = true;

@@ -18,6 +18,7 @@ namespace LatchBox.Contracts.LockTokenVaultContract
             State.ConsensusContract.Value = Context.GetContractAddressByName(SmartContractConstants.ConsensusContractSystemName);
 
             State.SelfIncresingLockId.Value = 1;
+            State.AssetCounterList.Value = new LockAssetCounterTokenSymbolList();
 
             return new Empty();
         }
@@ -49,8 +50,10 @@ namespace LatchBox.Contracts.LockTokenVaultContract
 
             var lockObj = new Lock
             {
+                LockId = lockId,
                 TokenSymbol = input.TokenSymbol,
                 Initiator = initiator,
+                TotalAmount = input.TotalAmount,
                 CreationTime = currentBlockTime,
                 StartTime = currentBlockTime,
                 UnlockTime = input.UnlockTime,
@@ -103,12 +106,11 @@ namespace LatchBox.Contracts.LockTokenVaultContract
             var receiverObj = State.LockReceivers[lockObj.LockId][Context.Sender];
             Assert(receiverObj != null, "No authorization.");
 
-            Assert(!lockObj.IsRevoked, "Lock has been already revoked by the initiator");
-            Assert(receiverObj.IsActive && receiverObj.DateRevoked == null, "Lock has been already revoked by the initiator");
+            if (lockObj.IsRevoked || (!receiverObj.IsActive && receiverObj.DateRevoked != null)) throw new AssertionException("Lock has been already revoked by the initiator.");
 
             Assert(lockObj.IsActive, "Lock is not active anymore");
 
-            Assert(receiverObj.IsActive && receiverObj.DateClaimed == null, "Lock has been claimed.");
+            if (!receiverObj.IsActive && receiverObj.DateClaimed != null) throw new AssertionException("Lock has been already claimed.");
 
             //Assert(Context.CurrentBlockTime > lockObj.UnlockTime, "Lock is not yet ready to be claimwd");
 
@@ -310,15 +312,9 @@ namespace LatchBox.Contracts.LockTokenVaultContract
 
             var assetCounterListObj = State.AssetCounterList.Value;
 
-            if (assetCounterListObj == null)
+            if (!assetCounterListObj.TokenSymbols.Any(x => x == tokenSymbol))
             {
-                assetCounterListObj = new LockAssetCounterTokenSymbolList();
-            }
-
-            var tokenSymbols = assetCounterListObj.TokenSymbols;
-            if (!tokenSymbols.Any(x => x == tokenSymbol))
-            {
-                assetCounterListObj.TokenSymbols.Add(tokenSymbols);
+                assetCounterListObj.TokenSymbols.Add(tokenSymbol);
                 State.AssetCounterList.Value = assetCounterListObj;
             }
         }

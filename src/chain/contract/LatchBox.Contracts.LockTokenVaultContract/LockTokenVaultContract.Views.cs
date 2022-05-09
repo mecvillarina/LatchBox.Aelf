@@ -124,20 +124,15 @@ namespace LatchBox.Contracts.LockTokenVaultContract
         {
             var output = new GetLockAssetCounterListOutput();
 
-            var assetCountersObj = State.AssetCounterList.Value;
-
-            if (assetCountersObj != null)
+            foreach (var tokenSymbol in State.AssetCounterList.Value.TokenSymbols)
             {
-                foreach (var tokenSymbol in assetCountersObj.TokenSymbols)
+                var assetCounter = State.AssetCounter[tokenSymbol];
+                output.Assets.Add(new GetLockAssetCounterOutput()
                 {
-                    var assetCounter = State.AssetCounter[tokenSymbol];
-                    output.Assets.Add(new GetLockAssetCounterOutput()
-                    {
-                        TokenSymbol = tokenSymbol,
-                        LockedAmount = assetCounter.LockedAmount,
-                        UnlockedAmount = assetCounter.UnlockedAmount
-                    });
-                }
+                    TokenSymbol = tokenSymbol,
+                    LockedAmount = assetCounter.LockedAmount,
+                    UnlockedAmount = assetCounter.UnlockedAmount
+                });
             }
 
             return output;

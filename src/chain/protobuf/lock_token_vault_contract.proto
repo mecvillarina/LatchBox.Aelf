@@ -85,12 +85,13 @@ message Lock {
     int64 lock_id = 1;
     string token_symbol = 2;
     aelf.Address initiator = 3;
-    google.protobuf.Timestamp creation_time = 4;
-    google.protobuf.Timestamp start_time = 5;
-    google.protobuf.Timestamp unlock_time = 6;
-    bool is_revocable = 7;
-    bool is_revoked = 8;
-    bool is_active = 9;
+    int64 total_amount = 4;
+    google.protobuf.Timestamp creation_time = 5;
+    google.protobuf.Timestamp start_time = 6;
+    google.protobuf.Timestamp unlock_time = 7;
+    bool is_revocable = 8;
+    bool is_revoked = 9;
+    bool is_active = 10;
 }
 
 message LockReceiver {
