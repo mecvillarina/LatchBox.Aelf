@@ -22,7 +22,17 @@ namespace Client.Parameters
             RuleFor(v => v.To)
                 .NotNull().WithMessage("'To' must not be empty.")
                 .NotEmpty().WithMessage("'To' must not be empty.")
-                .Must(x => AddressHelper.VerifyFormattedAddress(x)).WithMessage("Invalid 'To' Address format.");
+                .Must(x =>
+                {
+                    try
+                    {
+                        return AddressHelper.VerifyFormattedAddress(x);
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                }).WithMessage("Invalid 'To' Address format.");
 
             RuleFor(v => v.Amount)
                .GreaterThan(0.0).WithMessage("'Amount' must be greater than 0.");
