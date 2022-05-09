@@ -6,6 +6,6 @@ namespace Client.Infrastructure.Managers.Interfaces
 {
     public interface IFaucetManager : IManager
     {
-        Task<TransactionResultDto> TakeAsync(WalletInformation wallet, string password, string symbol, long amount);
+        Task<TransactionResultDto> TakeAsync(string symbol, long amount);
     }
 }

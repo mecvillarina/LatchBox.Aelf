@@ -4,7 +4,6 @@ using Client.Models;
 using Client.Pages.Locks.Modals;
 using Client.Parameters;
 using MudBlazor;
-using System.Numerics;
 
 namespace Client.Pages.Locks
 {
@@ -12,8 +11,8 @@ namespace Client.Pages.Locks
     {
         public bool IsLoaded { get; set; }
         public bool IsCompletelyLoaded { get; set; }
+        public WalletInformation Wallet { get; set; }
 
-        private (WalletInformation, string) _cred;
         public List<LockForReceiverModel> LockTransactions { get; set; } = new();
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
@@ -26,7 +25,7 @@ namespace Client.Pages.Locks
 
                     await InvokeAsync(async () =>
                     {
-                        _cred = await WalletManager.GetWalletCredentialsAsync();
+                        Wallet = await WalletManager.GetWalletInformationAsync();
                         await FetchDataAsync();
                     });
                 });
@@ -42,7 +41,7 @@ namespace Client.Pages.Locks
 
             LockTransactions.Clear();
 
-            var lockListOutput = await LockTokenVaultManager.GetLocksForReceiverAsync(_cred.Item1, _cred.Item2, _cred.Item1.Address);
+            var lockListOutput = await LockTokenVaultManager.GetLocksForReceiverAsync(Wallet.Address);
 
             foreach (var lockTransaction in lockListOutput.LockTransactions)
             {
@@ -56,7 +55,7 @@ namespace Client.Pages.Locks
 
             foreach (var lockTransaction in LockTransactions)
             {
-                var tokenInfo = await TokenManager.GetTokenInfoAsync(_cred.Item1, _cred.Item2, lockTransaction.Lock.TokenSymbol);
+                var tokenInfo = await TokenManager.GetTokenInfoAsync(lockTransaction.Lock.TokenSymbol);
                 lockTransaction.SetTokenInfo(tokenInfo);
             }
 

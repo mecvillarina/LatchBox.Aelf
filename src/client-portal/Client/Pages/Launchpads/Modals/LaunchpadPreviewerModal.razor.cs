@@ -19,7 +19,6 @@ namespace Client.Pages.Launchpads.Modals
         public LaunchpadModel Model { get; set; }
         public List<CrowdSalePurchase> Investments { get; set; }
         public string ShareLink { get; set; }
-        private (WalletInformation, string) _cred;
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -27,7 +26,6 @@ namespace Client.Pages.Launchpads.Modals
             {
                 await InvokeAsync(async () =>
                 {
-                    _cred = await WalletManager.GetWalletCredentialsAsync();
                     await FetchDataAsync();
                 });
             }
@@ -39,13 +37,13 @@ namespace Client.Pages.Launchpads.Modals
             IsInvestmentsLoaded = false;
             StateHasChanged();
 
-            var launchpad = await MultiCrowdSaleManager.GetCrowdSaleAsync(_cred.Item1, _cred.Item2, CrowdSaleId);
+            var launchpad = await MultiCrowdSaleManager.GetCrowdSaleAsync(CrowdSaleId);
             Model = new LaunchpadModel(launchpad);
             
             IsLoaded = true;
             StateHasChanged();
 
-            var investors = await MultiCrowdSaleManager.GetCrowdSaleInvestorsAsync(_cred.Item1, _cred.Item2, CrowdSaleId);
+            var investors = await MultiCrowdSaleManager.GetCrowdSaleInvestorsAsync(CrowdSaleId);
             Investments = investors.Purchases.ToList();
             IsInvestmentsLoaded = true;
             StateHasChanged();

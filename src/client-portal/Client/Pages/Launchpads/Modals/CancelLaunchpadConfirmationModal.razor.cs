@@ -22,11 +22,11 @@ namespace Client.Pages.Launchpads.Modals
             {
                 IsProcessing = true;
 
-                var cred = await AppDialogService.ShowConfirmWalletTransactionAsync();
+                var authenticated = await AppDialogService.ShowConfirmWalletTransactionAsync();
 
-                if (cred.Item1 != null)
+                if (authenticated)
                 {
-                    var cancelResult = await MultiCrowdSaleManager.CancelAsync(cred.Item1, cred.Item2, Model.Launchpad.Id);
+                    var cancelResult = await MultiCrowdSaleManager.CancelAsync(Model.Launchpad.Id);
 
                     if (!string.IsNullOrEmpty(cancelResult.Error))
                     {

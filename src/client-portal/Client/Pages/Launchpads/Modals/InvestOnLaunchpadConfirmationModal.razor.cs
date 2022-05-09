@@ -42,20 +42,21 @@ namespace Client.Pages.Launchpads.Modals
                 {
                     IsProcessing = true;
 
-                    var cred = await AppDialogService.ShowConfirmWalletTransactionAsync();
+                    var authenticated = await AppDialogService.ShowConfirmWalletTransactionAsync();
 
-                    if (cred.Item1 != null)
+                    if (authenticated)
                     {
+                        var wallet = await WalletManager.GetWalletInformationAsync();
                         var amount = Model.Amount.ToChainAmount(NativeTokenInfo.Decimals);
 
-                        var getAllowanceResult = await TokenManager.GetAllowanceAsync(cred.Item1, cred.Item2, NativeTokenInfo.Symbol, cred.Item1.Address, MultiCrowdSaleManager.ContactAddress);
+                        var getAllowanceResult = await TokenManager.GetAllowanceAsync(NativeTokenInfo.Symbol, wallet.Address, MultiCrowdSaleManager.ContactAddress);
 
                         if (getAllowanceResult.Allowance < amount)
                         {
-                            await TokenManager.ApproveAsync(cred.Item1, cred.Item2, MultiCrowdSaleManager.ContactAddress, NativeTokenInfo.Symbol, amount);
+                            await TokenManager.ApproveAsync(MultiCrowdSaleManager.ContactAddress, NativeTokenInfo.Symbol, amount);
                         }
 
-                        var investResult = await MultiCrowdSaleManager.InvestAsync(cred.Item1, cred.Item2, LaunchpadModel.Launchpad.Id, amount);
+                        var investResult = await MultiCrowdSaleManager.InvestAsync(LaunchpadModel.Launchpad.Id, amount);
                         if (!string.IsNullOrEmpty(investResult.Error))
                         {
                             throw new GeneralException(investResult.Error);

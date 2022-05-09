@@ -20,36 +20,27 @@ namespace Client.Pages
         {
             if (firstRender)
             {
-                if (LockId.HasValue && LockId.Value >= 0)
+                await PageService.EnsureAuthenticatedAsync(async (authenticated) =>
                 {
-                    InvokeLockPreviewerModal(LockId.Value);
-                }
-                //else if (VestingIndex.HasValue && VestingIndex.Value >= 0)
-                //{
-                //    InvokeVestingPreviewerModal(VestingIndex.Value);
-                //}
+                    if (!authenticated) return;
 
-                await InvokeAsync(async () =>
-                {
-                    await FetchDataAsync();
+                    if (LockId.HasValue && LockId.Value >= 0)
+                    {
+                        InvokeLockPreviewerModal(LockId.Value);
+                    }
+
+                    await InvokeAsync(async () =>
+                    {
+                        await FetchDataAsync();
+                    });
                 });
+              
             }
         }
 
         private async Task FetchDataAsync()
         {
             IsLoaded = false;
-
-            var authenticated = await AuthManager.IsAuthenticated();
-
-            if (authenticated)
-            {
-                var cred = await WalletManager.GetWalletCredentialsAsync();
-                //var nativeToken = await TokenManager.GetNativeTokenInfoAsync(cred.Item1, cred.Item2);
-                //var tokenList = await TokenManager.GetTokenInfoListAsync(cred.Item1, cred.Item2);
-                //await TokenManager.CreateTokenAsync(cred.Item1, cred.Item2);
-                //var token = await TokenManager.GetTokenInfoAsync(cred.Item1, cred.Item2, "LATCHH");
-            }
 
             IsLoaded = true;
             StateHasChanged();

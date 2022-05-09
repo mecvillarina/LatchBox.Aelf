@@ -39,11 +39,11 @@ namespace Client.Pages.Tokens.Modals
                     IsProcessing = true;
 
                     var amount = Model.Amount.ToChainAmount(Model.Decimals);
-                    var cred = await AppDialogService.ShowConfirmWalletTransactionAsync();
+                    var authenticated = await AppDialogService.ShowConfirmWalletTransactionAsync();
 
-                    if (cred.Item1 != null)
+                    if (authenticated)
                     {
-                        var issueTokenResult = await TokenManager.IssueAsync(cred.Item1, cred.Item2, Model.Symbol, amount, Model.Memo, Model.To);
+                        var issueTokenResult = await TokenManager.IssueAsync(Model.Symbol, amount, Model.Memo, Model.To);
 
                         if (!string.IsNullOrEmpty(issueTokenResult.Error))
                         {

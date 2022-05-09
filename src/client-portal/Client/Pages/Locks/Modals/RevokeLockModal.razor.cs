@@ -35,11 +35,11 @@ namespace Client.Pages.Locks.Modals
 
                 try
                 {
-                    var cred = await AppDialogService.ShowConfirmWalletTransactionAsync();
+                    var authenticated = await AppDialogService.ShowConfirmWalletTransactionAsync();
 
-                    if (cred.Item1 != null)
+                    if (authenticated)
                     {
-                        var revokeLockResult = await LockTokenVaultManager.RevokeLockAsync(cred.Item1, cred.Item2, Model.LockId);
+                        var revokeLockResult = await LockTokenVaultManager.RevokeLockAsync(Model.LockId);
 
                         if (!string.IsNullOrEmpty(revokeLockResult.Error))
                         {

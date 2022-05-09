@@ -10,7 +10,6 @@ namespace Client.Pages.Locks
         public bool IsLoaded { get; set; }
         public bool IsCompletelyLoaded { get; set; }
 
-        private (WalletInformation, string) _cred;
         public List<AssetCounterModel> AssetCounters { get; set; } = new();
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
@@ -22,7 +21,6 @@ namespace Client.Pages.Locks
                     if (!authenticated) return;
                     await InvokeAsync(async () =>
                     {
-                        _cred = await WalletManager.GetWalletCredentialsAsync();
                         await FetchDataAsync();
                     });
                 });
@@ -36,7 +34,7 @@ namespace Client.Pages.Locks
             StateHasChanged();
             AssetCounters.Clear();
 
-            var assetsCounterOutput = await LockTokenVaultManager.GetAssetsCounterAsync(_cred.Item1, _cred.Item2);
+            var assetsCounterOutput = await LockTokenVaultManager.GetAssetsCounterAsync();
 
             foreach (var assetCounter in assetsCounterOutput.Assets)
             {
@@ -48,7 +46,7 @@ namespace Client.Pages.Locks
 
             foreach (var assetCounter in AssetCounters)
             {
-                var tokenInfo = await TokenManager.GetTokenInfoAsync(_cred.Item1, _cred.Item2, assetCounter.TokenSymbol);
+                var tokenInfo = await TokenManager.GetTokenInfoAsync(assetCounter.TokenSymbol);
                 assetCounter.SetTokenInfo(tokenInfo);
             }
 

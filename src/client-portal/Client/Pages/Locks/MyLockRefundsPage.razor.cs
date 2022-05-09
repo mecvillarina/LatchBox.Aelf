@@ -1,5 +1,4 @@
-﻿using Client.Infrastructure.Models;
-using Client.Models;
+﻿using Client.Models;
 using Client.Pages.Locks.Modals;
 using MudBlazor;
 
@@ -10,7 +9,6 @@ namespace Client.Pages.Locks
         public bool IsLoaded { get; set; }
         public bool IsCompletelyLoaded { get; set; }
 
-        private (WalletInformation, string) _cred;
         public List<AssetRefundModel> Refunds { get; set; } = new();
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
@@ -23,7 +21,6 @@ namespace Client.Pages.Locks
 
                     await InvokeAsync(async () =>
                     {
-                        _cred = await WalletManager.GetWalletCredentialsAsync();
                         await FetchDataAsync();
                     });
                 });
@@ -38,7 +35,7 @@ namespace Client.Pages.Locks
 
             Refunds.Clear();
 
-            var refundsOutput = await LockTokenVaultManager.GetRefundsAsync(_cred.Item1, _cred.Item2);
+            var refundsOutput = await LockTokenVaultManager.GetRefundsAsync();
 
             foreach (var refund in refundsOutput.Refunds)
             {
@@ -50,7 +47,7 @@ namespace Client.Pages.Locks
 
             foreach (var refund in Refunds)
             {
-                var tokenInfo = await TokenManager.GetTokenInfoAsync(_cred.Item1, _cred.Item2, refund.Refund.TokenSymbol);
+                var tokenInfo = await TokenManager.GetTokenInfoAsync(refund.Refund.TokenSymbol);
                 refund.SetTokenInfo(tokenInfo);
             }
 

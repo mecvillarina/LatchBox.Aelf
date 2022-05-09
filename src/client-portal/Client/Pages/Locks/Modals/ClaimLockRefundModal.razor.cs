@@ -23,11 +23,11 @@ namespace Client.Pages.Locks.Modals
 
                 try
                 {
-                    var cred = await AppDialogService.ShowConfirmWalletTransactionAsync();
+                    var authenticated = await AppDialogService.ShowConfirmWalletTransactionAsync();
 
-                    if (cred.Item1 != null)
+                    if (authenticated)
                     {
-                        var claimRefundResult = await LockTokenVaultManager.ClaimRefundAsync(cred.Item1, cred.Item2, Model.Refund.TokenSymbol);
+                        var claimRefundResult = await LockTokenVaultManager.ClaimRefundAsync(Model.Refund.TokenSymbol);
 
                         if (!string.IsNullOrEmpty(claimRefundResult.Error))
                         {

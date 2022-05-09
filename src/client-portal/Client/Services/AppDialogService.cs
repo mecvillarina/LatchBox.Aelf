@@ -41,7 +41,7 @@ namespace Client.Services
             }
         }
 
-        public async Task<(WalletInformation, string)> ShowConfirmWalletTransactionAsync()
+        public async Task<bool> ShowConfirmWalletTransactionAsync()
         {
             var options = new DialogOptions() { MaxWidth = MaxWidth.ExtraSmall, Position = DialogPosition.TopRight };
             var parameters = new DialogParameters();
@@ -49,10 +49,10 @@ namespace Client.Services
             var dialogResult = await dialog.Result;
             if (!dialogResult.Cancelled)
             {
-                return ((WalletInformation, string)) dialogResult.Data;
+                return Convert.ToBoolean(dialogResult.Data);
             }
 
-            return (null, null);
+            return false;
         }
     }
 }

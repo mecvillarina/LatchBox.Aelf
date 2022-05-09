@@ -2,7 +2,6 @@
 using Blazored.FluentValidation;
 using Client.Infrastructure.Exceptions;
 using Client.Infrastructure.Extensions;
-using Client.Infrastructure.Models;
 using Client.Infrastructure.Models.Inputs;
 using Client.Parameters;
 using Microsoft.AspNetCore.Components;
@@ -21,7 +20,6 @@ namespace Client.Pages.Locks.Modals
         public bool IsProcessing { get; set; }
         public bool IsLoaded { get; set; }
         public DateTime MinDateValue { get; set; }
-        private (WalletInformation, string) _cred;
         public string TokenBalanceDisplay { get; set; }
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
@@ -34,8 +32,7 @@ namespace Client.Pages.Locks.Modals
                     MinDateValue = DateTime.Now;
                     Model.UnlockDate = MinDateValue.AddDays(1);
                     Model.IsRevocable = true;
-                    _cred = await WalletManager.GetWalletCredentialsAsync();
-                    var balanceOutput = await TokenManager.GetBalanceAsync(_cred.Item1, _cred.Item2, TokenInfo.Symbol);
+                    var balanceOutput = await TokenManager.GetBalanceAsync(TokenInfo.Symbol);
                     TokenBalanceDisplay = $"{balanceOutput.Balance.ToAmountDisplay(TokenInfo.Decimals)} {TokenInfo.Symbol}";
                     IsLoaded = true;
                     StateHasChanged();
@@ -57,7 +54,7 @@ namespace Client.Pages.Locks.Modals
 
                     try
                     {
-                        var token = await TokenManager.GetBalanceAsync(_cred.Item1, _cred.Item2, TokenInfo.Symbol);
+                        var token = await TokenManager.GetBalanceAsync(TokenInfo.Symbol);
 
                         if (token.Balance.ToAmount(TokenInfo.Decimals) < Convert.ToDecimal(Model.Receivers.Sum(x => x.Amount)))
                         {
@@ -65,10 +62,12 @@ namespace Client.Pages.Locks.Modals
                         }
                         else
                         {
-                            var cred = await AppDialogService.ShowConfirmWalletTransactionAsync();
+                            var authenticated = await AppDialogService.ShowConfirmWalletTransactionAsync();
 
-                            if (cred.Item1 != null)
+                            if (authenticated)
                             {
+                                var wallet = await WalletManager.GetWalletInformationAsync();
+
                                 long totalAmount = 0;
 
                                 var inputReceivers = new List<AddLockReceiverInputModel>();
@@ -96,14 +95,14 @@ namespace Client.Pages.Locks.Modals
                                     UnlockTime = unlockTime
                                 };
 
-                                var getAllowanceResult = await TokenManager.GetAllowanceAsync(cred.Item1, cred.Item2, Model.TokenSymbol, cred.Item1.Address, LockTokenVaultManager.ContactAddress);
+                                var getAllowanceResult = await TokenManager.GetAllowanceAsync(Model.TokenSymbol, wallet.Address, LockTokenVaultManager.ContactAddress);
 
                                 if (getAllowanceResult.Allowance < totalAmount)
                                 {
-                                    await TokenManager.ApproveAsync(cred.Item1, cred.Item2, LockTokenVaultManager.ContactAddress, Model.TokenSymbol, totalAmount);
+                                    await TokenManager.ApproveAsync(LockTokenVaultManager.ContactAddress, Model.TokenSymbol, totalAmount);
                                 }
 
-                                var addLockResult = await LockTokenVaultManager.AddLockAsync(cred.Item1, cred.Item2, inputModel);
+                                var addLockResult = await LockTokenVaultManager.AddLockAsync(inputModel);
 
                                 if (!string.IsNullOrEmpty(addLockResult.Error))
                                 {

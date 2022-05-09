@@ -11,7 +11,6 @@ namespace Client.Pages.Locks.Modals
         [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
 
         public bool IsLoaded { get; set; }
-        private (WalletInformation, string) _cred;
         public LockTransactionModel Model { get; set; }
         public string ShareLink { get; set; }
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -20,26 +19,8 @@ namespace Client.Pages.Locks.Modals
             {
                 await InvokeAsync(async () =>
                 {
-                    await FetchWalletAsync(async (cred) =>
-                    {
-                        _cred = cred;
-                        await FetchDataAsync();
-                    });
+                    await FetchDataAsync();
                 });
-            }
-        }
-
-        private async Task FetchWalletAsync(Action<(WalletInformation, string)> action)
-        {
-            try
-            {
-                var cred = await WalletManager.GetWalletCredentialsAsync();
-                action?.Invoke(cred);
-            }
-            catch (Exception ex)
-            {
-                AppDialogService.ShowError(ex.Message);
-                MudDialog.Cancel();
             }
         }
 
@@ -47,8 +28,8 @@ namespace Client.Pages.Locks.Modals
         {
             try
             {
-                var transactionOutput = await LockTokenVaultManager.GetLockTransactionAsync(_cred.Item1, _cred.Item2, LockId);
-                var tokenInfo = await TokenManager.GetTokenInfoAsync(_cred.Item1, _cred.Item2, transactionOutput.Lock.TokenSymbol);
+                var transactionOutput = await LockTokenVaultManager.GetLockTransactionAsync(LockId);
+                var tokenInfo = await TokenManager.GetTokenInfoAsync(transactionOutput.Lock.TokenSymbol);
 
                 Model = new LockTransactionModel(transactionOutput.Lock, transactionOutput.Receivers.ToList(), tokenInfo);
                 ShareLink = $"{NavigationManager.BaseUri}view/locks/{LockId}";

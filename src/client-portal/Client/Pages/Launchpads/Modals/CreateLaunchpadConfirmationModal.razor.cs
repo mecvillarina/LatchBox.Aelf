@@ -25,17 +25,19 @@ namespace Client.Pages.Launchpads.Modals
                 {
                     IsProcessing = true;
 
-                    var cred = await AppDialogService.ShowConfirmWalletTransactionAsync();
+                    var authenticated = await AppDialogService.ShowConfirmWalletTransactionAsync();
 
-                    if (cred.Item1 != null)
+                    if (authenticated)
                     {
+                        var wallet = await WalletManager.GetWalletInformationAsync();
+
                         var amount = (long)(Model.TokenAmountPerNativeToken.ToChainAmount(Model.TokenDecimals) * Model.HardCapNativeTokenAmount);
 
-                        var getAllowanceResult = await TokenManager.GetAllowanceAsync(cred.Item1, cred.Item2, Model.TokenSymbol, cred.Item1.Address, MultiCrowdSaleManager.ContactAddress);
+                        var getAllowanceResult = await TokenManager.GetAllowanceAsync(Model.TokenSymbol, wallet.Address, MultiCrowdSaleManager.ContactAddress);
 
-                        if(getAllowanceResult.Allowance < amount)
+                        if (getAllowanceResult.Allowance < amount)
                         {
-                            await TokenManager.ApproveAsync(cred.Item1, cred.Item2, MultiCrowdSaleManager.ContactAddress, Model.TokenSymbol, amount);
+                            await TokenManager.ApproveAsync(MultiCrowdSaleManager.ContactAddress, Model.TokenSymbol, amount);
                         }
 
                         var saleStartDate = DateTime.SpecifyKind(Model.SaleEndDate.Value.Date, DateTimeKind.Utc);
@@ -54,7 +56,7 @@ namespace Client.Pages.Launchpads.Modals
                             SaleEndDate = saleEndDate
                         };
 
-                        var createResult = await MultiCrowdSaleManager.CreateAsync(cred.Item1, cred.Item2, input);
+                        var createResult = await MultiCrowdSaleManager.CreateAsync(input);
 
                         if (!string.IsNullOrEmpty(createResult.Error))
                         {

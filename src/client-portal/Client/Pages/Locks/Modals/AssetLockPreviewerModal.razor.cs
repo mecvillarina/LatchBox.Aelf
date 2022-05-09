@@ -13,7 +13,6 @@ namespace Client.Pages.Locks.Modals
         [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
 
         public bool IsLoaded { get; set; }
-        private (WalletInformation, string) _cred;
 
         public TokenInfo TokenInfo { get; set; }
         public List<LockModel> Locks { get; set; }
@@ -24,7 +23,6 @@ namespace Client.Pages.Locks.Modals
                 await InvokeAsync(async () =>
                 {
                     TokenInfo = AssetCounterModel.TokenInfo;
-                    _cred = await WalletManager.GetWalletCredentialsAsync();
                     await FetchDataAsync();
                 });
             }
@@ -38,7 +36,7 @@ namespace Client.Pages.Locks.Modals
 
             Locks = new();
 
-            var lockListOutput = await LockTokenVaultManager.GetLocksByAssetAsync(_cred.Item1, _cred.Item2, TokenInfo.Symbol);
+            var lockListOutput = await LockTokenVaultManager.GetLocksByAssetAsync(TokenInfo.Symbol);
 
             foreach (var @lock in lockListOutput.Locks)
             {

@@ -12,8 +12,7 @@ namespace Client.Pages.Locks
     {
         public bool IsLoaded { get; set; }
         public bool IsCompletelyLoaded { get; set; }
-
-        private (WalletInformation, string) _cred;
+        public WalletInformation Wallet { get; set; }
         public List<LockModel> Locks { get; set; } = new();
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
@@ -26,7 +25,7 @@ namespace Client.Pages.Locks
 
                     await InvokeAsync(async () =>
                     {
-                        _cred = await WalletManager.GetWalletCredentialsAsync();
+                        Wallet = await WalletManager.GetWalletInformationAsync();
                         await FetchDataAsync();
                     });
                 });
@@ -41,8 +40,8 @@ namespace Client.Pages.Locks
 
             Locks.Clear();
 
-            var result = await LockTokenVaultManager.InitializeAsync(_cred.Item1, _cred.Item2);
-            var lockListOutput = await LockTokenVaultManager.GetLocksByInitiatorAsync(_cred.Item1, _cred.Item2, _cred.Item1.Address);
+            var result = await LockTokenVaultManager.InitializeAsync();
+            var lockListOutput = await LockTokenVaultManager.GetLocksByInitiatorAsync(Wallet.Address);
 
             foreach (var @lock in lockListOutput.Locks)
             {
@@ -56,7 +55,7 @@ namespace Client.Pages.Locks
 
             foreach (var @lock in Locks)
             {
-                var tokenInfo = await TokenManager.GetTokenInfoAsync(_cred.Item1, _cred.Item2, @lock.Lock.TokenSymbol);
+                var tokenInfo = await TokenManager.GetTokenInfoAsync(@lock.Lock.TokenSymbol);
                 @lock.SetTokenInfo(tokenInfo);
             }
 
