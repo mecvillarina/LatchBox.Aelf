@@ -22,6 +22,8 @@ namespace Client.Pages.Tokens
 
                     await InvokeAsync(async () =>
                     {
+                        Wallet = await WalletManager.GetWalletInformationAsync();
+                        await FetchDataAsync();
                         try
                         {
                             var result = await TokenManager.CreateAsync("LATCH", "LATCH", 300000000_00000000, 8, true);
@@ -35,7 +37,6 @@ namespace Client.Pages.Tokens
                         {
 
                         }
-                        await FetchDataAsync();
                     });
                 });
             }
