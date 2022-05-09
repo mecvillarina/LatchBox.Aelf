@@ -14,7 +14,7 @@ service LockTokenVaultContract {
 
     option (aelf.csharp_state) = "LatchBox.Contracts.LockTokenVaultContract.LockTokenVaultContractState";
 
-    rpc Initialize (InitializeInput) returns (google.protobuf.Empty) { }
+    rpc Initialize (google.protobuf.Empty) returns (google.protobuf.Empty) { }
     rpc AddLock (AddLockInput) returns (google.protobuf.Empty) { }
     rpc RevokeLock (RevokeLockInput) returns (google.protobuf.Empty) { }
     rpc ClaimLock (ClaimLockInput) returns (google.protobuf.Empty) { }
@@ -51,9 +51,6 @@ service LockTokenVaultContract {
     rpc GetAssetsCounter(google.protobuf.Empty) returns (GetLockAssetCounterListOutput) {
         option (aelf.is_view) = true;
     }
-}
-
-message InitializeInput {
 }
 
 message AddLockInput {

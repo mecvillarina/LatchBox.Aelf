@@ -26,7 +26,7 @@ namespace Client.Infrastructure.Managers
         {
             var cred = await _walletManager.GetWalletCredentialsAsync();
 
-            var @params = new InitializeInput { };
+            var @params = new Empty();
 
             var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "Initialize", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);

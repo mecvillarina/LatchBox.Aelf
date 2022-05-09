@@ -8,7 +8,7 @@ namespace LatchBox.Contracts.LockTokenVaultContract
 {
     public partial class LockTokenVaultContract : LockTokenVaultContractContainer.LockTokenVaultContractBase
     {
-        public override Empty Initialize(InitializeInput input)
+        public override Empty Initialize(Empty empty)
         {
             Assert(State.Admin.Value == null, "Already initialized");
 

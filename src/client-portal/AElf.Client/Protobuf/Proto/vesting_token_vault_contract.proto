@@ -1,0 +1,131 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+import "client.proto";
+
+option csharp_namespace = "AElf.Client.LatchBox.VestingTokenVault";
+
+
+message AddVestingInput {
+    string token_symbol = 1;
+    int64 total_amount = 2;
+    bool is_revocable = 3;
+    repeated AddVestingPeriodInput periods = 4;
+}
+
+message AddVestingPeriodInput {
+    string name = 1;
+    int64 total_amount = 2;
+    google.protobuf.Timestamp unlock_time = 3;
+    repeated AddVestingReceiverInput receivers = 4;
+}
+
+message AddVestingReceiverInput {
+    string name = 1;
+    client.Address address = 2;
+    int64 amount = 3;
+}
+
+message ClaimVestingInput {
+    int64 vesting_id = 1;
+    int64 period_id = 2;
+}
+
+message RevokeVestingInput {
+    int64 vesting_id = 1;
+}
+
+message ClaimRefundInput {
+    string token_symbol = 1 ;
+}
+
+message Vesting {
+    int64 vesting_id = 1;
+    string token_symbol = 2;
+    client.Address initiator = 3;
+    int64 total_amount = 4;
+    google.protobuf.Timestamp creation_time = 5;
+    bool is_revocable = 6;
+    bool is_revoked = 7;
+    bool is_active = 8;
+}
+
+message VestingPeriod {
+    int64 period_id = 1;
+    string name = 2;
+    int64 total_amount = 3;
+    google.protobuf.Timestamp unlock_time = 4;
+}
+
+message VestingReceiver {
+    string name = 1;
+    client.Address address = 2;
+    int64 amount = 3;
+    google.protobuf.Timestamp date_claimed = 4;
+    google.protobuf.Timestamp date_revoked = 5;
+}
+
+message Refund {
+    string token_symbol = 1;
+    int64 amount = 2;
+}
+
+message RefundList {
+    repeated Refund refunds = 1;
+}
+
+message VestingPeriodIdList {
+    repeated int64 period_ids = 1;
+}
+
+message VestingReceiverAddressList {
+    repeated client.Address receivers = 1;
+}
+
+message VestingIdList {
+    repeated int64 ids = 1;
+}
+
+message VestingReceiverPeriod {
+    int64 vesting_id = 1;
+    int64 period_id = 2;
+}
+
+message VestingReceiverPeriodList {
+    repeated VestingReceiverPeriod list = 1;
+}
+
+message VestingTransactionPeriodOutput {
+    VestingPeriod period = 1;
+    repeated VestingReceiver receivers = 2;
+}
+
+message GetVestingTransactionOutput {
+    Vesting vesting = 1;
+    repeated VestingTransactionPeriodOutput periods = 2;
+}
+
+message GetVestingOutput {
+    Vesting vesting = 1;
+    repeated VestingPeriod periods = 2;
+}
+
+message GetVestingListOutput {
+    repeated GetVestingOutput transactions = 1;
+}
+
+message GetVestingTransactionForReceiverOutput {
+    Vesting vesting = 1;
+    VestingPeriod period = 2;
+    VestingReceiver receiver = 3;
+}
+
+message GetVestingReceiverListOutput {
+    repeated GetVestingTransactionForReceiverOutput transactions = 1; 
+}
+
+message GetRefundListOutput {
+    repeated Refund refunds = 1;
+}

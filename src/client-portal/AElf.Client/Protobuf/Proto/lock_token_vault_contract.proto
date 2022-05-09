@@ -7,10 +7,6 @@ import "client.proto";
 
 option csharp_namespace = "AElf.Client.LatchBox.LockTokenVault";
 
-
-message InitializeInput {
-}
-
 message AddLockInput {
     string token_symbol = 1;
     int64 total_amount = 2;
