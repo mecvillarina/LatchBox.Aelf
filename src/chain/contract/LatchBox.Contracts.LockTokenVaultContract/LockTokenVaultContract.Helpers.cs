@@ -30,7 +30,7 @@ namespace LatchBox.Contracts.LockTokenVaultContract
 
         private void AssertValidLockReceiverInputData(RepeatedField<AddLockReceiverInput> receivers, long totalAmount)
         {
-            Assert(receivers != null && receivers.Count > 0, "LatchBox Lock MUST have at least one receiver.");
+            Assert(receivers != null && receivers.Count > 0, "Lock MUST have at least one receiver.");
 
             long totalAmountCheck = 0;
             foreach (var receiver in receivers)
@@ -41,11 +41,5 @@ namespace LatchBox.Contracts.LockTokenVaultContract
 
             Assert(totalAmountCheck == totalAmount, "The total amount is not equal to the summation receivers' amounts.");
         }
-
-        private TokenInfo GetTokenInfo(string symbol)
-        {
-            return State.TokenContract.GetTokenInfo.Call(new GetTokenInfoInput() { Symbol = symbol });
-        }
-
     }
 }
