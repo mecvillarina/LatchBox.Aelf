@@ -1,5 +1,7 @@
 ﻿using Client.Infrastructure.Models;
 using Client.Models;
+using Client.Pages.Locks.Modals;
+using MudBlazor;
 
 namespace Client.Pages.Locks
 {
@@ -57,13 +59,13 @@ namespace Client.Pages.Locks
 
         private void InvokeAssetLockPreviewerModal(AssetCounterModel model)
         {
-            //var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
-            //var parameters = new DialogParameters()
-            //{
-            //     { nameof(AssetLockPreviewerModal.AssetCounterModel), model},
-            //};
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
+            var parameters = new DialogParameters()
+            {
+                 { nameof(AssetLockPreviewerModal.AssetCounterModel), model},
+            };
 
-            //DialogService.Show<AssetLockPreviewerModal>($"{model.AssetToken.Symbol}'s Locks", parameters, options);
+            DialogService.Show<AssetLockPreviewerModal>($"{model.TokenInfo.Symbol}'s Locks", parameters, options);
         }
 
         private async Task OnTextToClipboardAsync(string text)

@@ -68,7 +68,7 @@
                             @context.Receiver.Receiver.ToStringAddress().ToMask(6)
                         </MudHidden>
                         <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
-                            @context.Receiver.Receiver.ToStringAddress()
+                            @context.Receiver.Receiver.ToStringAddress().ToMask(10)
                         </MudHidden>
                     </MudTd>
                     <MudTd DataLabel="Date Unlock">@context.Lock.UnlockTime.ToDateTime().ToString(ClientConstants.LongDateTimeFormat)</MudTd>

@@ -37,11 +37,11 @@
                         <div>
                             <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Initiator</b></MudText>
                             <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
-                                <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.InitiatorAddressDisplay.ToMask(10)</MudText>
+                                <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.InitiatorAddressDisplay.ToMask(6)</MudText>
 
                             </MudHidden>
                             <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
-                                <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.InitiatorAddressDisplay</MudText>
+                                <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.InitiatorAddressDisplay.ToMask(10)</MudText>
 
                             </MudHidden>
                         </div>
@@ -94,10 +94,10 @@
                                 <RowTemplate>
                                     <MudTd DataLabel="Address">
                                         <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
-                                            @receiverContext.Receiver.ToStringAddress().ToMask(10)
+                                            @receiverContext.Receiver.ToStringAddress().ToMask(6)
                                         </MudHidden>
                                         <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
-                                             @receiverContext.Receiver.ToStringAddress().ToMask(6)
+                                             @receiverContext.Receiver.ToStringAddress().ToMask(10)
                                         </MudHidden>
                                     </MudTd>
                                     <MudTd DataLabel="Amount">@receiverContext.Amount.ToAmount(Model.TokenInfo.Decimals).ToAmountDisplay(Model.TokenInfo.Decimals) @Model.TokenInfo.Symbol</MudTd>

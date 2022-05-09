@@ -63,7 +63,7 @@
                                 @context.Token.Issuer.ToStringAddress().ToMask(6)
                             </MudHidden>
                             <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
-                                @context.Token.Issuer.ToStringAddress()
+                                @context.Token.Issuer.ToStringAddress().ToMask(10)
                             </MudHidden>
 
                             @if (_cred.Item1.Address == @context.Token.Issuer.ToStringAddress())

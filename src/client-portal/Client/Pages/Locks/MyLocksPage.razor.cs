@@ -14,7 +14,7 @@ namespace Client.Pages.Locks
         public bool IsCompletelyLoaded { get; set; }
 
         private (WalletInformation, string) _cred;
-        public List<LockByInitiatorModel> Locks { get; set; } = new();
+        public List<LockModel> Locks { get; set; } = new();
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
@@ -46,7 +46,7 @@ namespace Client.Pages.Locks
 
             foreach (var @lock in lockListOutput.Locks)
             {
-                Locks.Add(new LockByInitiatorModel(@lock));
+                Locks.Add(new LockModel(@lock));
             }
 
             Locks = Locks.OrderByDescending(x => x.Lock.StartTime).ToList();
@@ -86,7 +86,7 @@ namespace Client.Pages.Locks
             }
         }
 
-        private async Task InvokeRevokeLockModalAsync(LockByInitiatorModel lockModel)
+        private async Task InvokeRevokeLockModalAsync(LockModel lockModel)
         {
             var lockId = lockModel.Lock.LockId;
 

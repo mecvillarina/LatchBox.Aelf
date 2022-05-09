@@ -7,7 +7,7 @@ using System.Numerics;
 
 namespace Client.Models
 {
-    public class LockByInitiatorModel
+    public class LockModel
     {
         public TokenInfo TokenInfo { get; private set; }
         public Lock Lock { get; private set; }
@@ -18,7 +18,7 @@ namespace Client.Models
 
         public bool IsRevocable { get; private set; }
 
-        public LockByInitiatorModel(Lock @lock)
+        public LockModel(Lock @lock)
         {
             Lock = @lock;
 
