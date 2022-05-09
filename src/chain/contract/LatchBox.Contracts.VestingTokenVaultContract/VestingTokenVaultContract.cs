@@ -50,6 +50,7 @@ namespace LatchBox.Contracts.VestingTokenVaultContract
                 VestingId = vestingId,
                 TokenSymbol = input.TokenSymbol,
                 CreationTime = currentBlockTime,
+                TotalAmount = input.TotalAmount, 
                 Initiator = Context.Sender,
                 IsRevocable = input.IsRevocable,
                 IsActive = true,

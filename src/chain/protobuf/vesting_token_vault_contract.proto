@@ -21,6 +21,25 @@ service VestingTokenVaultContract {
     rpc RevokeVesting (RevokeVestingInput) returns (google.protobuf.Empty) { }
     rpc ClaimRefund (ClaimRefundInput) returns (google.protobuf.Empty) { }
 
+    rpc GetVestingsCount(google.protobuf.Empty) returns (google.protobuf.Int64Value) {
+        option (aelf.is_view) = true;
+    }
+
+    rpc GetVestingTransaction(google.protobuf.Int64Value) returns (GetVestingTransactionOutput) {
+        option (aelf.is_view) = true;
+    }
+
+    rpc GetVestingsByInitiator(aelf.Address) returns (GetVestingListOutput) {
+        option (aelf.is_view) = true;
+    }
+
+    rpc GetVestingsForReceiver(aelf.Address) returns (GetVestingReceiverListOutput) {
+        option (aelf.is_view) = true;
+    }
+
+    rpc GetRefunds(google.protobuf.Empty) returns (GetRefundListOutput) {
+        option (aelf.is_view) = true;
+    }
 }
 
 message AddVestingInput {
@@ -60,10 +79,11 @@ message Vesting {
     int64 vesting_id = 1;
     string token_symbol = 2;
     aelf.Address initiator = 3;
-    google.protobuf.Timestamp creation_time = 4;
-    bool is_revocable = 5;
-    bool is_revoked = 6;
-    bool is_active = 7;
+    int64 total_amount = 4;
+    google.protobuf.Timestamp creation_time = 5;
+    bool is_revocable = 6;
+    bool is_revoked = 7;
+    bool is_active = 8;
 }
 
 message VestingPeriod {
@@ -109,6 +129,39 @@ message VestingReceiverPeriod {
 
 message VestingReceiverPeriodList {
     repeated VestingReceiverPeriod list = 1;
+}
+
+message VestingTransactionPeriodOutput {
+    VestingPeriod period = 1;
+    repeated VestingReceiver receivers = 2;
+}
+
+message GetVestingTransactionOutput {
+    Vesting vesting = 1;
+    repeated VestingTransactionPeriodOutput periods = 2;
+}
+
+message GetVestingOutput {
+    Vesting vesting = 1;
+    repeated VestingPeriod periods = 2;
+}
+
+message GetVestingListOutput {
+    repeated GetVestingOutput transactions = 1;
+}
+
+message GetVestingTransactionForReceiverOutput {
+    Vesting vesting = 1;
+    VestingPeriod period = 2;
+    VestingReceiver receiver = 3;
+}
+
+message GetVestingReceiverListOutput {
+    repeated GetVestingTransactionForReceiverOutput transactions = 1; 
+}
+
+message GetRefundListOutput {
+    repeated Refund refunds = 1;
 }
 
 message OnCreatedVestingEvent {
