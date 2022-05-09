@@ -20,7 +20,17 @@ namespace Client.Parameters
             RuleFor(v => v.ReceiverAddress)
                 .NotNull().WithMessage("'Receiver Address' must not be empty.")
                 .NotEmpty().WithMessage("'Receiver Address' must not be empty.")
-                .Must(x => AddressHelper.VerifyFormattedAddress(x)).WithMessage("Invalid 'Receiver Address' format.");
+                .Must(x =>
+                {
+                    try
+                    {
+                        return AddressHelper.VerifyFormattedAddress(x);
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                }).WithMessage("Invalid 'Receiver Address' format.");
 
             RuleFor(v => v.Amount)
                 .GreaterThan(0.0).WithMessage("'Amount' must be greater than 0");
