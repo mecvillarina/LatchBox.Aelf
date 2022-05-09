@@ -17,7 +17,7 @@ namespace Client.Infrastructure.Managers.Interfaces
         Task<TransactionResultDto> ClaimRefundAsync(WalletInformation wallet, string password, string tokenSymbol);
 
         Task<Int64Value> GetLocksCountAsync(WalletInformation wallet, string password);
-        Task<GetLockTransactionOutput> GetLocksCountAsync(WalletInformation wallet, string password, long lockId);
+        Task<GetLockTransactionOutput> GetLockTransactionAsync(WalletInformation wallet, string password, long lockId);
         Task<GetLockListOutput> GetLocksAsync(WalletInformation wallet, string password);
         Task<GetLockListOutput> GetLocksByInitiatorAsync(WalletInformation wallet, string password, string initiator);
         Task<GetLockReceiverListOutput> GetLocksForReceiverAsync(WalletInformation wallet, string password, string receiver);

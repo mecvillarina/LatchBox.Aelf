@@ -28,8 +28,13 @@
                             </MudItem>
 
                             <MudItem xs="12">
-                                <MudTextField Label="Token Decimals" Variant="Variant.Outlined" Disabled="true"
+                                <MudTextField Label="Decimals" Variant="Variant.Outlined" Disabled="true"
                                           @bind-Value="TokenInfo.Decimals" For="@(() => TokenInfo.Decimals)" />
+                            </MudItem>
+
+                            <MudItem xs="12">
+                                <MudTextField Label="Balance" Variant="Variant.Outlined" Disabled="true"
+                                          Value="TokenBalanceDisplay" For="@(() => TokenBalanceDisplay)" />
                             </MudItem>
 
                             <MudItem xs="12">

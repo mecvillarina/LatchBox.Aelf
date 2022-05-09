@@ -53,6 +53,7 @@ namespace Client.Pages.Locks.Modals
                 catch (Exception ex)
                 {
                     AppDialogService.ShowError(ex.Message);
+                    MudDialog.Cancel();
                 }
 
                 IsProcessing = false;

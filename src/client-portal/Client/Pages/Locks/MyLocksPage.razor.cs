@@ -106,13 +106,13 @@ namespace Client.Pages.Locks
 
         private void InvokeLockPreviewerModal(long lockId)
         {
-            //var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
-            //var parameters = new DialogParameters()
-            //{
-            //     { nameof(LockPreviewerModal.LockIndex), lockIndex},
-            //};
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
+            var parameters = new DialogParameters()
+            {
+                 { nameof(LockPreviewerModal.LockId), lockId},
+            };
 
-            //DialogService.Show<LockPreviewerModal>($"Lock #{lockIndex}", parameters, options);
+            DialogService.Show<LockPreviewerModal>($"Lock #{lockId}", parameters, options);
         }
 
 

@@ -22,6 +22,7 @@ namespace Client.Pages.Locks.Modals
         public bool IsLoaded { get; set; }
         public DateTime MinDateValue { get; set; }
         private (WalletInformation, string) _cred;
+        public string TokenBalanceDisplay { get; set; }
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
@@ -34,6 +35,8 @@ namespace Client.Pages.Locks.Modals
                     Model.UnlockDate = MinDateValue.AddDays(1);
                     Model.IsRevocable = true;
                     _cred = await WalletManager.GetWalletCredentialsAsync();
+                    var balanceOutput = await TokenManager.GetBalanceAsync(_cred.Item1, _cred.Item2, TokenInfo.Symbol);
+                    TokenBalanceDisplay = $"{balanceOutput.Balance.ToAmountDisplay(TokenInfo.Decimals)} {TokenInfo.Symbol}";
                     IsLoaded = true;
                     StateHasChanged();
                 });
@@ -114,7 +117,7 @@ namespace Client.Pages.Locks.Modals
                             }
                         }
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         AppDialogService.ShowError(ex.Message);
                     }

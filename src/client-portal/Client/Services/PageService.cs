@@ -1,5 +1,7 @@
 ﻿using Client.Infrastructure.Managers.Interfaces;
+using Client.Infrastructure.Models;
 using Microsoft.AspNetCore.Components;
+using MudBlazor;
 
 namespace Client.Services
 {
@@ -24,5 +26,6 @@ namespace Client.Services
 
             callback?.Invoke(isAuthenticated);
         }
+
     }
 }

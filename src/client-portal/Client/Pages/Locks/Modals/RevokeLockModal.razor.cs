@@ -1,7 +1,6 @@
 ﻿using AElf.Client.LatchBox.LockTokenVault;
 using Blazored.FluentValidation;
 using Client.Infrastructure.Exceptions;
-using Client.Infrastructure.Extensions;
 using Client.Parameters;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -56,6 +55,7 @@ namespace Client.Pages.Locks.Modals
                 catch (Exception ex)
                 {
                     AppDialogService.ShowError(ex.Message);
+                    MudDialog.Cancel();
                 }
 
                 IsProcessing = false;

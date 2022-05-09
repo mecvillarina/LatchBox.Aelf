@@ -93,7 +93,7 @@ namespace Client.Infrastructure.Managers
             return Int64Value.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
-        public async Task<GetLockTransactionOutput> GetLocksCountAsync(WalletInformation wallet, string password, long lockId)
+        public async Task<GetLockTransactionOutput> GetLockTransactionAsync(WalletInformation wallet, string password, long lockId)
         {
             var @params = new Int64Value() { Value = lockId };
 
