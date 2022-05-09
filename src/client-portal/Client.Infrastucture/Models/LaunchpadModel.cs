@@ -5,9 +5,9 @@ using System;
 
 namespace Client.Infrastructure.Models
 {
-    public class CrowdSaleModel
+    public class LaunchpadModel
     {
-        public CrowdSale CrowdSale { get; }
+        public CrowdSale Launchpad { get; }
         public long RaisedAmount { get; }
         public string TokenName { get; }
         public string TokenSymbol { get; }
@@ -17,37 +17,37 @@ namespace Client.Infrastructure.Models
         public Color StatusColor { get; set; }
         public bool CanBuy { get; set; }
 
-        public CrowdSaleModel(CrowdSaleOutput output)
+        public LaunchpadModel(CrowdSaleOutput output)
         {
-            CrowdSale = output.CrowdSale;
+            Launchpad = output.CrowdSale;
             RaisedAmount = output.RaisedAmount;
             TokenName = output.TokenName;
             TokenSymbol = output.TokenSymbol;
             TokenDecimals = output.TokenDecimals;
 
-            if (CrowdSale.IsActive)
+            if (Launchpad.IsActive)
             {
-                if (CrowdSale.SaleStartDate.ToDateTimeOffset() > System.DateTimeOffset.UtcNow)
+                if (Launchpad.SaleStartDate.ToDateTimeOffset() > System.DateTimeOffset.UtcNow)
                 {
                     Status = "UPCOMING";
                     StatusColor = Color.Info;
                 }
 
-                if (CrowdSale.SaleEndDate.ToDateTimeOffset() < System.DateTimeOffset.UtcNow)
+                if (Launchpad.SaleEndDate.ToDateTimeOffset() < System.DateTimeOffset.UtcNow)
                 {
                     Status = "ENDED";
                     StatusColor = Color.Success;
                 }
 
-                if (CrowdSale.SaleStartDate.ToDateTimeOffset() < System.DateTimeOffset.UtcNow && CrowdSale.SaleEndDate.ToDateTimeOffset() > System.DateTimeOffset.UtcNow)
+                if (Launchpad.SaleStartDate.ToDateTimeOffset() < System.DateTimeOffset.UtcNow && Launchpad.SaleEndDate.ToDateTimeOffset() > System.DateTimeOffset.UtcNow)
                 {
                     Status = "ONGOING";
-                    Substatus = $"{Environment.NewLine} {CrowdSale.SaleEndDate.ToDateTimeOffset().Subtract(System.DateTimeOffset.UtcNow).Humanize(3)}";
+                    Substatus = $"{Environment.NewLine} {Launchpad.SaleEndDate.ToDateTimeOffset().Subtract(System.DateTimeOffset.UtcNow).Humanize(3)}";
                 }
             }
             else
             {
-                if (!CrowdSale.IsCancelled)
+                if (!Launchpad.IsCancelled)
                 {
                     Status = "ENDED";
                     StatusColor = Color.Success;

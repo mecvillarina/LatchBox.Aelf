@@ -28,7 +28,7 @@
     else
     {
         <MudPaper Square="true" Elevation="10">
-            <MudTable Items="@CrowdSaleList" Class="mx-0 grey darken-4" FixedHeader="true" Breakpoint="Breakpoint.Sm">
+            <MudTable Items="@LaunchpadList" Class="mx-0 grey darken-4" FixedHeader="true" Breakpoint="Breakpoint.Sm">
                 <HeaderContent>
                     <MudTh>Id</MudTh>
                     <MudTh>Name</MudTh>
@@ -43,31 +43,28 @@
                 <RowTemplate>
                     <MudTd DataLabel="Id">
                         <MudText Typo="Typo.body1" Color="Color.Primary" Class="cursor-pointer">
-                            <b>@context.CrowdSale.Id</b>
+                            <b>@context.Launchpad.Id</b>
                         </MudText>
                     </MudTd>
                     <MudTd DataLabel="Name">
-                        <span>@context.CrowdSale.Name</span>
+                        <span>@context.Launchpad.Name</span>
                     </MudTd>
                     <MudTd DataLabel="Token">
-                        <span>@context.CrowdSale.TokenSymbol</span>
+                        <span>@context.Launchpad.TokenSymbol</span>
                     </MudTd>
                     <MudTd DataLabel="Cap">
-                        <span>@context.CrowdSale.SoftCapNativeTokenAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol - @context.CrowdSale.HardCapNativeTokenAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol</span>
+                        <span>@context.Launchpad.SoftCapNativeTokenAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol - @context.Launchpad.HardCapNativeTokenAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol</span>
                     </MudTd>
                     <MudTd DataLabel="Sale Conversion">
-                        <span>1 @NativeTokenInfo.Symbol - @context.CrowdSale.TokenAmountPerNativeToken.ToAmountDisplay(context.TokenDecimals) @context.CrowdSale.TokenSymbol </span>
+                        <span>1 @NativeTokenInfo.Symbol - @context.Launchpad.TokenAmountPerNativeToken.ToAmountDisplay(context.TokenDecimals) @context.Launchpad.TokenSymbol </span>
                     </MudTd>
-                    @* <MudTd DataLabel="Current Sale">
-                <span>@(context.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) * context.CrowdSale.TokenAmountPerNativeToken.ToAmount(context.TokenDecimals)) / @(context.CrowdSale.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) * context.CrowdSale.TokenAmountPerNativeToken.ToAmount(context.TokenDecimals)) @context.CrowdSale.TokenSymbol</span>
-                </MudTd>*@
                     <MudTd DataLabel="Raised Amount">
-                        <span>@context.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol / @context.CrowdSale.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol (@(context.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) / context.CrowdSale.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) * 100) %)</span>
+                        <span>@context.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol / @context.Launchpad.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol (@(context.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) / context.Launchpad.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) * 100) %)</span>
                     </MudTd>
                     <MudTd DataLabel="Sale Duration">
                         <div>
-                            <span>@context.CrowdSale.SaleStartDate.ToDateTimeOffset().ToString(ClientConstants.LongDateTimeFormat)</span><br/>
-                            <span>@context.CrowdSale.SaleEndDate.ToDateTimeOffset().ToString(ClientConstants.LongDateTimeFormat)</span>
+                            <span>@context.Launchpad.SaleStartDate.ToDateTimeOffset().ToString(ClientConstants.LongDateTimeFormat)</span><br/>
+                            <span>@context.Launchpad.SaleEndDate.ToDateTimeOffset().ToString(ClientConstants.LongDateTimeFormat)</span>
                         </div>
                     </MudTd>
                     <MudTd DataLabel="Status">
@@ -77,7 +74,7 @@
                     </MudTd>
                     <MudTd DataLabel="Actions">
                         <MudMenu Variant="Variant.Filled" Color="Color.Primary" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" DisableElevation="true" Icon="@Icons.Filled.MoreVert" IconColor="Color.Secondary" Direction="Direction.Left" OffsetX="true">
-                            <MudMenuItem Disabled="!context.CanCancel" OnClick="(() => InvokeCancelCrowdSaleAsync(context))">Cancel</MudMenuItem>
+                            <MudMenuItem Disabled="!context.CanCancel" OnClick="(() => InvokeCancelLaunchpadConfirmationAsync(context))">Cancel</MudMenuItem>
                         </MudMenu>
                     </MudTd>
                 </RowTemplate>

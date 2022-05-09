@@ -5,11 +5,11 @@ using Client.Infrastructure.Models;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace Client.Pages.CrowdFundings.Modals
+namespace Client.Pages.Launchpads.Modals
 {
-    public partial class CancelCrowdSaleConfirmationModal
+    public partial class CancelLaunchpadConfirmationModal
     {
-        [Parameter] public MyCrowdSaleModel Model { get; set; }
+        [Parameter] public MyLaunchpadModel Model { get; set; }
         [Parameter] public TokenInfo NativeTokenInfo { get; set; }
 
         [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
@@ -26,11 +26,11 @@ namespace Client.Pages.CrowdFundings.Modals
 
                 if (cred.Item1 != null)
                 {
-                    var createCrowdSaleResult = await MultiCrowdSaleManager.CancelAsync(cred.Item1, cred.Item2, Model.CrowdSale.Id);
+                    var cancelResult = await MultiCrowdSaleManager.CancelAsync(cred.Item1, cred.Item2, Model.Launchpad.Id);
 
-                    if (!string.IsNullOrEmpty(createCrowdSaleResult.Error))
+                    if (!string.IsNullOrEmpty(cancelResult.Error))
                     {
-                        throw new GeneralException(createCrowdSaleResult.Error);
+                        throw new GeneralException(cancelResult.Error);
                     }
                     else
                     {

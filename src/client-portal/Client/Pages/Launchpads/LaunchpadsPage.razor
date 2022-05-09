@@ -40,7 +40,7 @@
     {
 
         <MudGrid Spacing="4" Class="mt-4">
-            @foreach (var output in CrowdSaleList)
+            @foreach (var output in LaunchpadList)
             {
                 <MudItem xs="12" md="6" xl="3">
                     <MudCard Elevation="10" Class="grey darken-4">
@@ -48,8 +48,8 @@
                             <div>
                                 <div class="mb-2 d-flex justify-space-between">
                                     <div>
-                                        <MudText Typo="Typo.h6" Color="Color.Primary"><b>@output.CrowdSale.Name.ToUpper()</b></MudText>
-                                        <MudText Typo="Typo.caption">1 @NativeTokenInfo.Symbol - @output.CrowdSale.TokenAmountPerNativeToken.ToAmountDisplay(output.TokenDecimals) @output.CrowdSale.TokenSymbol </MudText>
+                                        <MudText Typo="Typo.h6" Color="Color.Primary"><b>@output.Launchpad.Name.ToUpper()</b></MudText>
+                                        <MudText Typo="Typo.caption">1 @NativeTokenInfo.Symbol - @output.Launchpad.TokenAmountPerNativeToken.ToAmountDisplay(output.TokenDecimals) @output.Launchpad.TokenSymbol </MudText>
                                     </div>
                                     <div class="d-flex flex-column">
                                         <MudChip Color="output.StatusColor" Size="Size.Small" Variant="Variant.Filled" Class="align-self-end">
@@ -68,7 +68,7 @@
                                 <div class="my-2 d-flex justify-space-between">
                                     <div>
                                         <MudText Typo="Typo.caption" Class="text-white"><b>Soft/Hard Cap</b></MudText>
-                                        <MudText Typo="Typo.h6">@output.CrowdSale.SoftCapNativeTokenAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol - @output.CrowdSale.HardCapNativeTokenAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol</MudText>
+                                        <MudText Typo="Typo.h6">@output.Launchpad.SoftCapNativeTokenAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol - @output.Launchpad.HardCapNativeTokenAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol</MudText>
                                     </div>
 
                                     <div class="d-flex">
@@ -81,9 +81,9 @@
 
                                 <div class="my-2">
                                     <MudText Typo="Typo.caption" Class="text-white"><b>Progress</b></MudText>
-                                    <MudProgressLinear Color="Color.Primary" Size="Size.Large" Value="@(Convert.ToDouble(output.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) / output.CrowdSale.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) * 100))">
+                                    <MudProgressLinear Color="Color.Primary" Size="Size.Large" Value="@(Convert.ToDouble(output.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) / output.Launchpad.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) * 100))">
                                         <MudText Typo="Typo.caption">
-                                            <b>@(Convert.ToDouble(output.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) / output.CrowdSale.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) * 100)) %</b>
+                                            <b>@(Convert.ToDouble(output.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) / output.Launchpad.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) * 100)) %</b>
                                         </MudText>
                                     </MudProgressLinear>
 
@@ -94,7 +94,7 @@
 
                                 <div class="d-flex justify-space-between my-2">
                                     <MudText Typo="Typo.caption" Class="text-white"><b>Lockup Time</b></MudText>
-                                    <MudText Typo="Typo.caption">@output.CrowdSale.LockUntilDurationInMinutes minutes</MudText>
+                                    <MudText Typo="Typo.caption">@output.Launchpad.LockUntilDurationInMinutes minutes</MudText>
                                 </div>
 
                             </div>

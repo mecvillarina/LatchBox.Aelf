@@ -30,7 +30,7 @@ namespace Client.Infrastructure.Managers
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
-        public async Task<TransactionResultDto> CreateAsync(WalletInformation wallet, string password, CreateCrowdSaleInputModel model)
+        public async Task<TransactionResultDto> CreateAsync(WalletInformation wallet, string password, CreateLaunchpadInputModel model)
         {
             var @params = new CreateInput()
             {

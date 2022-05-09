@@ -5,11 +5,11 @@ using Client.Parameters;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace Client.Pages.CrowdFundings.Modals
+namespace Client.Pages.Launchpads.Modals
 {
-    public partial class CreateCrowdSaleModal
+    public partial class CreateLaunchpadModal
     {
-        [Parameter] public CreateCrowdSaleParameter Model { get; set; } = new();
+        [Parameter] public CreateLaunchpadParameter Model { get; set; } = new();
         [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
 
         private FluentValidationValidator _fluentValidationValidator;
@@ -86,15 +86,15 @@ namespace Client.Pages.CrowdFundings.Modals
                     return;
                 }
 
-                var createCrowdSaleConfirmationParameters = new DialogParameters()
+                var confirmationParameters = new DialogParameters()
                     {
-                        { nameof(CreateCrowdSaleConfirmationModal.Model), Model}
+                        { nameof(CreateLaunchpadConfirmationModal.Model), Model}
                     };
 
-                var createCrowdSaleDialog = DialogService.Show<CreateCrowdSaleConfirmationModal>("Create Launchpad Confirmation", createCrowdSaleConfirmationParameters);
-                var createCrowdSaleDialogResult = await createCrowdSaleDialog.Result;
+                var createDialog = DialogService.Show<CreateLaunchpadConfirmationModal>("Create Launchpad Confirmation", confirmationParameters);
+                var createDialogResult = await createDialog.Result;
 
-                if (!createCrowdSaleDialogResult.Cancelled)
+                if (!createDialogResult.Cancelled)
                 {
                     MudDialog.Close();
                 }

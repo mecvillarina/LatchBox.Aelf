@@ -1,18 +1,18 @@
 ﻿using AElf.Client.MultiToken;
 using Client.Infrastructure.Models;
-using Client.Pages.CrowdFundings.Modals;
+using Client.Pages.Launchpads.Modals;
 using Client.Services;
 using MudBlazor;
 
-namespace Client.Pages.CrowdFundings
+namespace Client.Pages.Launchpads
 {
-    public partial class CrowdFundingsPage
+    public partial class LaunchpadsPage
     {
         public bool IsLoaded { get; set; }
 
         private (WalletInformation, string) _creds;
         public TokenInfo NativeTokenInfo { get; set; }
-        public List<CrowdSaleModel> CrowdSaleList { get; set; } = new();
+        public List<LaunchpadModel> LaunchpadList { get; set; } = new();
         public int LaunchpadStatus { get; set; }
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
@@ -41,7 +41,7 @@ namespace Client.Pages.CrowdFundings
 
             switch (LaunchpadStatus)
             {
-                case 1: isUpcoming = true;break;
+                case 1: isUpcoming = true; break;
                 case 2: isOngoing = true; break;
                 default: isUpcoming = isOngoing = false; break;
             }
@@ -49,7 +49,7 @@ namespace Client.Pages.CrowdFundings
             NativeTokenInfo = await TokenManager.GetNativeTokenInfoAsync(_creds.Item1, _creds.Item2);
             await MultiCrowdSaleManager.InitializeAsync(_creds.Item1, _creds.Item2);
             var output = await MultiCrowdSaleManager.GetCrowdSalesAsync(_creds.Item1, _creds.Item2, isUpcoming, isOngoing);
-            CrowdSaleList = output.CrowdSales.Select(x => new CrowdSaleModel(x)).ToList();
+            LaunchpadList = output.CrowdSales.Select(x => new LaunchpadModel(x)).ToList();
             IsLoaded = true;
             StateHasChanged();
         }
@@ -60,16 +60,16 @@ namespace Client.Pages.CrowdFundings
             await FetchDataAsync();
         }
 
-        private void OnViewLaunchpad(CrowdSaleModel model)
+        private void OnViewLaunchpad(LaunchpadModel model)
         {
             var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
             var parameters = new DialogParameters()
             {
-                 { nameof(LaunchpadPreviewerModal.CrowdSaleId), model.CrowdSale.Id},
+                 { nameof(LaunchpadPreviewerModal.CrowdSaleId), model.Launchpad.Id},
                  { nameof(LaunchpadPreviewerModal.NativeTokenInfo), NativeTokenInfo},
             };
 
-            DialogService.Show<LaunchpadPreviewerModal>($"{model.CrowdSale.Name}", parameters, options);
+            DialogService.Show<LaunchpadPreviewerModal>($"{model.Launchpad.Name}", parameters, options);
         }
     }
 }

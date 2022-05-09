@@ -1,20 +1,20 @@
 ﻿using AElf.Client.MultiToken;
 using Client.Infrastructure.Models;
-using Client.Pages.CrowdFundings.Modals;
+using Client.Pages.Launchpads.Modals;
 using Client.Pages.Modals;
 using Client.Parameters;
 using Client.Services;
 using MudBlazor;
 
-namespace Client.Pages.CrowdFundings
+namespace Client.Pages.Launchpads
 {
-    public partial class MyCrowdFundingsPage
+    public partial class ManageLaunchpadsPage
     {
         public bool IsLoaded { get; set; }
 
         private (WalletInformation, string) _creds;
         public TokenInfo NativeTokenInfo { get; set; }
-        public List<MyCrowdSaleModel> CrowdSaleList { get; set; } = new();
+        public List<MyLaunchpadModel> LaunchpadList { get; set; } = new();
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
@@ -41,7 +41,7 @@ namespace Client.Pages.CrowdFundings
             NativeTokenInfo = await TokenManager.GetNativeTokenInfoAsync(_creds.Item1, _creds.Item2);
             await MultiCrowdSaleManager.InitializeAsync(_creds.Item1, _creds.Item2);
             var output = await MultiCrowdSaleManager.GetCrowdSalesByInitiatorAsync(_creds.Item1, _creds.Item2, _creds.Item1.Address);
-            CrowdSaleList = output.CrowdSales.Select(x => new MyCrowdSaleModel(x)).ToList();
+            LaunchpadList = output.CrowdSales.Select(x => new MyLaunchpadModel(x)).ToList();
 
             IsLoaded = true;
             StateHasChanged();
@@ -56,9 +56,9 @@ namespace Client.Pages.CrowdFundings
             {
                 var data = (TokenInfo)searchTokenDialogResult.Data;
 
-                var createCrowdSaleParameters = new DialogParameters()
+                var createParameters = new DialogParameters()
                 {
-                    { nameof(CreateCrowdSaleModal.Model), new CreateCrowdSaleParameter()
+                    { nameof(CreateLaunchpadModal.Model), new CreateLaunchpadParameter()
                         {
                            NativeTokenName = NativeTokenInfo.TokenName,
                            NativeTokenSymbol = NativeTokenInfo.Symbol,
@@ -70,25 +70,25 @@ namespace Client.Pages.CrowdFundings
                     }
                 };
 
-                var createCrowdSaleDialog = DialogService.Show<CreateCrowdSaleModal>("Create Launchpad", createCrowdSaleParameters);
-                var createCrowdSaleDialogResult = await createCrowdSaleDialog.Result;
+                var createDialog = DialogService.Show<CreateLaunchpadModal>("Create Launchpad", createParameters);
+                var createDialogResult = await createDialog.Result;
 
-                if (!createCrowdSaleDialogResult.Cancelled)
+                if (!createDialogResult.Cancelled)
                 {
                     await FetchDataAsync();
                 }
             }
         }
 
-        private async Task InvokeCancelCrowdSaleAsync(MyCrowdSaleModel output)
+        private async Task InvokeCancelLaunchpadConfirmationAsync(MyLaunchpadModel output)
         {
             var parameters = new DialogParameters()
             {
-                { nameof(CancelCrowdSaleConfirmationModal.Model), output},
-                { nameof(CancelCrowdSaleConfirmationModal.NativeTokenInfo), NativeTokenInfo}
+                { nameof(CancelLaunchpadConfirmationModal.Model), output},
+                { nameof(CancelLaunchpadConfirmationModal.NativeTokenInfo), NativeTokenInfo}
             };
 
-            var dialog = DialogService.Show<CancelCrowdSaleConfirmationModal>("Cancel Launchpad Confirmation", parameters);
+            var dialog = DialogService.Show<CancelLaunchpadConfirmationModal>("Cancel Launchpad Confirmation", parameters);
             var dialogResult = await dialog.Result;
 
             if (!dialogResult.Cancelled)

@@ -33,5 +33,6 @@
 
 	<ItemGroup>
 	  <Folder Include="Models\" />
+	  <Folder Include="Pages\Locks\" />
 	</ItemGroup>
 </Project>

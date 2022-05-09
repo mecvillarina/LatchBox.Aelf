@@ -6,7 +6,7 @@ using Client.Parameters;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace Client.Pages.CrowdFundings.Modals
+namespace Client.Pages.Launchpads.Modals
 {
     public partial class LaunchpadPreviewerModal
     {
@@ -16,7 +16,7 @@ namespace Client.Pages.CrowdFundings.Modals
 
         public bool IsLoaded { get; set; }
         public bool IsInvestmentsLoaded { get; set; }
-        public CrowdSaleModel Model { get; set; }
+        public LaunchpadModel Model { get; set; }
         public List<CrowdSalePurchase> Investments { get; set; }
         public string ShareLink { get; set; }
         private (WalletInformation, string) _cred;
@@ -39,8 +39,8 @@ namespace Client.Pages.CrowdFundings.Modals
             IsInvestmentsLoaded = false;
             StateHasChanged();
 
-            var crowdSale = await MultiCrowdSaleManager.GetCrowdSaleAsync(_cred.Item1, _cred.Item2, CrowdSaleId);
-            Model = new CrowdSaleModel(crowdSale);
+            var launchpad = await MultiCrowdSaleManager.GetCrowdSaleAsync(_cred.Item1, _cred.Item2, CrowdSaleId);
+            Model = new LaunchpadModel(launchpad);
             
             IsLoaded = true;
             StateHasChanged();
@@ -57,17 +57,17 @@ namespace Client.Pages.CrowdFundings.Modals
             AppDialogService.ShowSuccess("Link copied to clipboard.");
         }
 
-        private async Task InvokeInvestOnCrowdSaleModalAsync()
+        private async Task InvokeInvestOnLaunchpadModalAsync()
         {
             var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Small };
             var parameters = new DialogParameters()
             {
-                 { nameof(InvestOnCrowdSaleConfirmationModal.CrowdSaleModel), Model},
-                 { nameof(InvestOnCrowdSaleConfirmationModal.NativeTokenInfo), NativeTokenInfo},
-                 { nameof(InvestOnCrowdSaleConfirmationModal.Model), new InvestOnCrowdSaleParameter() { LimitAmount = (double)Model.CrowdSale.NativeTokenPurchaseLimitPerBuyerAddress.ToAmount(NativeTokenInfo.Decimals) } },
+                 { nameof(InvestOnLaunchpadConfirmationModal.LaunchpadModel), Model},
+                 { nameof(InvestOnLaunchpadConfirmationModal.NativeTokenInfo), NativeTokenInfo},
+                 { nameof(InvestOnLaunchpadConfirmationModal.Model), new InvestOnLaunchpadParameter() { LimitAmount = (double)Model.Launchpad.NativeTokenPurchaseLimitPerBuyerAddress.ToAmount(NativeTokenInfo.Decimals) } },
             };
 
-            var dialog = DialogService.Show<InvestOnCrowdSaleConfirmationModal>($"{Model.CrowdSale.Name} invest confirmation", parameters, options);
+            var dialog = DialogService.Show<InvestOnLaunchpadConfirmationModal>($"{Model.Launchpad.Name} invest confirmation", parameters, options);
             var dialogResult = await dialog.Result;
 
             if (!dialogResult.Cancelled)

@@ -7,12 +7,12 @@ using Client.Parameters;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace Client.Pages.CrowdFundings.Modals
+namespace Client.Pages.Launchpads.Modals
 {
-    public partial class InvestOnCrowdSaleConfirmationModal
+    public partial class InvestOnLaunchpadConfirmationModal
     {
-        [Parameter] public InvestOnCrowdSaleParameter Model { get; set; }
-        [Parameter] public CrowdSaleModel CrowdSaleModel { get; set; }
+        [Parameter] public InvestOnLaunchpadParameter Model { get; set; }
+        [Parameter] public LaunchpadModel LaunchpadModel { get; set; }
         [Parameter] public TokenInfo NativeTokenInfo { get; set; }
 
         [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
@@ -55,10 +55,10 @@ namespace Client.Pages.CrowdFundings.Modals
                             await TokenManager.ApproveAsync(cred.Item1, cred.Item2, MultiCrowdSaleManager.ContactAddress, NativeTokenInfo.Symbol, amount);
                         }
 
-                        var investOnCrowdSaleResult = await MultiCrowdSaleManager.InvestAsync(cred.Item1, cred.Item2, CrowdSaleModel.CrowdSale.Id, amount);
-                        if (!string.IsNullOrEmpty(investOnCrowdSaleResult.Error))
+                        var investResult = await MultiCrowdSaleManager.InvestAsync(cred.Item1, cred.Item2, LaunchpadModel.Launchpad.Id, amount);
+                        if (!string.IsNullOrEmpty(investResult.Error))
                         {
-                            throw new GeneralException(investOnCrowdSaleResult.Error);
+                            throw new GeneralException(investResult.Error);
                         }
                         else
                         {

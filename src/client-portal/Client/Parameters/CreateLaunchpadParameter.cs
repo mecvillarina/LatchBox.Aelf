@@ -2,7 +2,7 @@
 
 namespace Client.Parameters
 {
-    public class CreateCrowdSaleParameter
+    public class CreateLaunchpadParameter
     {
         public string NativeTokenName { get; set; }
         public string NativeTokenSymbol { get; set; }
@@ -21,9 +21,9 @@ namespace Client.Parameters
         public long LockUntilDurationInMinutes { get; set; } = 60;
     }
 
-    public class CreateCrowdSaleParameterValidator : AbstractValidator<CreateCrowdSaleParameter>
+    public class CreateLaunchpadParameterValidator : AbstractValidator<CreateLaunchpadParameter>
     {
-        public CreateCrowdSaleParameterValidator()
+        public CreateLaunchpadParameterValidator()
         {
             CascadeMode = CascadeMode.Stop;
 

@@ -2,15 +2,15 @@
 
 namespace Client.Parameters
 {
-    public class InvestOnCrowdSaleParameter
+    public class InvestOnLaunchpadParameter
     {
         public double LimitAmount { get; set; }
         public double Amount { get; set; }
     }
 
-    public class BuyOnCrowdSaleParameterValidator : AbstractValidator<InvestOnCrowdSaleParameter>
+    public class InvestOnLaunchpadParameterValidator : AbstractValidator<InvestOnLaunchpadParameter>
     {
-        public BuyOnCrowdSaleParameterValidator()
+        public InvestOnLaunchpadParameterValidator()
         {
             CascadeMode = CascadeMode.Stop;
 

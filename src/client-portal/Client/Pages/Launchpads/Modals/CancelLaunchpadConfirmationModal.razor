@@ -12,14 +12,14 @@
                      <MudItem xs="12">
                         <div>
                             <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Sale Id</b></MudText>
-                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.CrowdSale.Id</MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.Launchpad.Id</MudText>
                         </div>
                     </MudItem>
 
                      <MudItem xs="12">
                         <div>
                             <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Name</b></MudText>
-                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.CrowdSale.Name</MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.Launchpad.Name</MudText>
                         </div>
                     </MudItem>
 
@@ -33,49 +33,42 @@
                     <MudItem xs="12">
                         <div>
                             <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Cap</b></MudText>
-                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.CrowdSale.SoftCapNativeTokenAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol - @Model.CrowdSale.HardCapNativeTokenAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol</MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.Launchpad.SoftCapNativeTokenAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol - @Model.Launchpad.HardCapNativeTokenAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol</MudText>
                         </div>
                     </MudItem>
 
                     <MudItem xs="12">
                         <div>
                             <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Sale Conversion</b></MudText>
-                            <MudText Typo="Typo.body1" Class="text-white mb-2">1 @NativeTokenInfo.Symbol = @Model.CrowdSale.TokenAmountPerNativeToken.ToAmountDisplay(Model.TokenDecimals) @Model.CrowdSale.TokenSymbol</MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">1 @NativeTokenInfo.Symbol = @Model.Launchpad.TokenAmountPerNativeToken.ToAmountDisplay(Model.TokenDecimals) @Model.Launchpad.TokenSymbol</MudText>
                         </div>
                     </MudItem>
 
                      <MudItem xs="12">
                         <div>
                             <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Raised Amount</b></MudText>
-                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol / @Model.CrowdSale.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol (@(Model.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) / Model.CrowdSale.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) * 100) %)</MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol / @Model.Launchpad.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol (@(Model.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) / Model.Launchpad.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) * 100) %)</MudText>
                         </div>
                     </MudItem>
-
-                   @* <MudItem xs="12">
-                        <div>
-                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Current Sale</b></MudText>
-                            <MudText Typo="Typo.body1" Class="text-white mb-2">@(Model.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) * Model.CrowdSale.TokenAmountPerNativeToken.ToAmount(Model.TokenDecimals)) / @(Model.CrowdSale.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) * Model.CrowdSale.TokenAmountPerNativeToken.ToAmount(Model.TokenDecimals)) @Model.CrowdSale.TokenSymbol</MudText>
-                        </div>
-                    </MudItem>*@
 
                     <MudItem xs="12">
                         <div>
                             <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Sale Starts</b></MudText>
-                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.CrowdSale.SaleStartDate.ToDateTimeOffset().ToString(ClientConstants.LongDateTimeFormat)</MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.Launchpad.SaleStartDate.ToDateTimeOffset().ToString(ClientConstants.LongDateTimeFormat)</MudText>
                         </div>
                     </MudItem>
                     
                     <MudItem xs="12">
                         <div>
                             <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Sale Ends</b></MudText>
-                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.CrowdSale.SaleEndDate.ToDateTimeOffset().ToString(ClientConstants.LongDateTimeFormat)</MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.Launchpad.SaleEndDate.ToDateTimeOffset().ToString(ClientConstants.LongDateTimeFormat)</MudText>
                         </div>
                     </MudItem>
 
                     <MudItem xs="12">
                         <div>
                             <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Lock Duration after Sale</b></MudText>
-                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.CrowdSale.LockUntilDurationInMinutes minutes</MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.Launchpad.LockUntilDurationInMinutes minutes</MudText>
                         </div>
                     </MudItem>
                 </MudGrid>

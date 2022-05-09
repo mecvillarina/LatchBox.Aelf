@@ -3,9 +3,9 @@ using MudBlazor;
 
 namespace Client.Infrastructure.Models
 {
-    public class MyCrowdSaleModel
+    public class MyLaunchpadModel
     {
-        public CrowdSale CrowdSale { get; }
+        public CrowdSale Launchpad { get; }
         public long RaisedAmount { get; }
         public string TokenName { get; }
         public string TokenSymbol { get; }
@@ -16,24 +16,24 @@ namespace Client.Infrastructure.Models
         public bool CanComplete { get; set; }
         public bool CanRefund { get; set; }
 
-        public MyCrowdSaleModel(CrowdSaleOutput output)
+        public MyLaunchpadModel(CrowdSaleOutput output)
         {
-            CrowdSale = output.CrowdSale;
+            Launchpad = output.CrowdSale;
             RaisedAmount = output.RaisedAmount;
             TokenName = output.TokenName;
             TokenSymbol = output.TokenSymbol;
             TokenDecimals = output.TokenDecimals;
 
-            if (CrowdSale.IsActive)
+            if (Launchpad.IsActive)
             {
                 CanCancel = true;
 
-                if(CrowdSale.SaleStartDate.ToDateTimeOffset() > System.DateTimeOffset.UtcNow)
+                if(Launchpad.SaleStartDate.ToDateTimeOffset() > System.DateTimeOffset.UtcNow)
                 {
                     Status = "UPCOMING";
                     StatusColor = Color.Primary;
                 }
-                if (CrowdSale.SaleEndDate.ToDateTimeOffset() > System.DateTimeOffset.UtcNow)
+                if (Launchpad.SaleEndDate.ToDateTimeOffset() > System.DateTimeOffset.UtcNow)
                 {
                     Status = "ON SALE";
                     StatusColor = Color.Primary;
@@ -47,9 +47,9 @@ namespace Client.Infrastructure.Models
             }
             else
             {
-                if (!CrowdSale.IsCancelled)
+                if (!Launchpad.IsCancelled)
                 {
-                    if (CrowdSale.HardCapNativeTokenAmount == RaisedAmount || RaisedAmount >= CrowdSale.SoftCapNativeTokenAmount)
+                    if (Launchpad.HardCapNativeTokenAmount == RaisedAmount || RaisedAmount >= Launchpad.SoftCapNativeTokenAmount)
                     {
                         Status = "SUCCESS";
                         StatusColor = Color.Info;

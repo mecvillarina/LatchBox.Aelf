@@ -6,11 +6,11 @@ using Client.Parameters;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace Client.Pages.CrowdFundings.Modals
+namespace Client.Pages.Launchpads.Modals
 {
-    public partial class CreateCrowdSaleConfirmationModal
+    public partial class CreateLaunchpadConfirmationModal
     {
-        [Parameter] public CreateCrowdSaleParameter Model { get; set; } = new();
+        [Parameter] public CreateLaunchpadParameter Model { get; set; } = new();
         [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
 
         private FluentValidationValidator _fluentValidationValidator;
@@ -41,7 +41,7 @@ namespace Client.Pages.CrowdFundings.Modals
                         var saleStartDate = DateTime.SpecifyKind(Model.SaleEndDate.Value.Date, DateTimeKind.Utc);
                         var saleEndDate = DateTime.SpecifyKind(Model.SaleEndDate.Value.Date.AddDays(1).AddMilliseconds(-1), DateTimeKind.Utc);
 
-                        var input = new CreateCrowdSaleInputModel()
+                        var input = new CreateLaunchpadInputModel()
                         {
                             Name = Model.Name,
                             TokenSymbol = Model.TokenSymbol,
@@ -54,11 +54,11 @@ namespace Client.Pages.CrowdFundings.Modals
                             SaleEndDate = saleEndDate
                         };
 
-                        var createCrowdSaleResult = await MultiCrowdSaleManager.CreateAsync(cred.Item1, cred.Item2, input);
+                        var createResult = await MultiCrowdSaleManager.CreateAsync(cred.Item1, cred.Item2, input);
 
-                        if (!string.IsNullOrEmpty(createCrowdSaleResult.Error))
+                        if (!string.IsNullOrEmpty(createResult.Error))
                         {
-                            throw new GeneralException(createCrowdSaleResult.Error);
+                            throw new GeneralException(createResult.Error);
                         }
                         else
                         {

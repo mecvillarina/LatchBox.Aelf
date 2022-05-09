@@ -10,7 +10,7 @@ namespace Client.Infrastructure.Managers.Interfaces
     {
         string ContactAddress { get; }
         Task<TransactionResultDto> InitializeAsync(WalletInformation wallet, string password);
-        Task<TransactionResultDto> CreateAsync(WalletInformation wallet, string password, CreateCrowdSaleInputModel model);
+        Task<TransactionResultDto> CreateAsync(WalletInformation wallet, string password, CreateLaunchpadInputModel model);
         Task<TransactionResultDto> CancelAsync(WalletInformation wallet, string password, long crowdSaleId);
         
         Task<TransactionResultDto> InvestAsync(WalletInformation wallet, string password, long crowdSaleId, long amount);

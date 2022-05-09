@@ -2,7 +2,7 @@
 
 namespace Client.Infrastructure.Models.Inputs
 {
-    public class CreateCrowdSaleInputModel
+    public class CreateLaunchpadInputModel
     {
         public string Name { get; set; }
         public string TokenSymbol { get; set; }
