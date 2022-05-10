@@ -8,6 +8,7 @@ namespace Client.Infrastructure.Managers.Interfaces
 {
     public interface IVestingTokenVaultManager : IManager
     {
+        string ContactAddress { get; }
         Task<TransactionResultDto> InitializeAsync();
         Task<TransactionResultDto> AddVestingAsync(AddVestingInputModel model);
         Task<TransactionResultDto> ClaimVestingAsync(long vestingId, long periodId);
