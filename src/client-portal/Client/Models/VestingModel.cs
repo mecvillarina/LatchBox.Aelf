@@ -1,8 +1,8 @@
 ﻿using AElf.Client.LatchBox.VestingTokenVault;
 using AElf.Client.MultiToken;
+using Client.Infrastructure.Constants;
 using Client.Infrastructure.Extensions;
 using MudBlazor;
-using System.Numerics;
 
 namespace Client.Models
 {
@@ -10,55 +10,49 @@ namespace Client.Models
     {
         public TokenInfo TokenInfo { get; private set; }
         public Vesting Vesting { get; private set; }
-        public List<VestingPeriod> Periods { get; private set; }
-        public long TotalAmount { get; private set; }
+        public List<VestingTransactionPeriodOutput> Periods { get; private set; }
+        public string InitiatorAddressDisplay { get; private set; }
         public string TotalAmountDisplay { get; private set; }
-        public string PeriodDisplay { get; set; }
+        public string DateCreationDisplay { get; private set; }
+        public string RevocableDisplay { get; private set; }
         public string StatusDisplay { get; private set; }
-        public Color StatusColor { get; private set; }
-        public bool IsRevocable { get; private set; }
-        public VestingPeriod UpcomingPeriod { get; private set; }
+        public Color StatusDisplayColor { get; private set; }
 
-        public VestingModel(GetVestingOutput transaction)
+        public VestingModel(GetVestingTransactionOutput output, TokenInfo tokenInfo)
         {
-            Vesting = transaction.Vesting;
-            Periods = transaction.Periods.ToList();
+            Vesting = output.Vesting;
+            Periods = output.Periods.ToList();
+            TokenInfo = tokenInfo;
 
-            TotalAmount = Vesting.TotalAmount;
+            InitiatorAddressDisplay = Vesting.Initiator.ToStringAddress();
+            DateCreationDisplay = Vesting.CreationTime.ToDateTime().ToString(ClientConstants.LongDateTimeFormat);
+            RevocableDisplay = Vesting.IsRevocable ? "Yes" : "No";
+            TotalAmountDisplay = $"{Vesting.TotalAmount.ToAmount(TokenInfo.Decimals).ToAmountDisplay(TokenInfo.Decimals)} {TokenInfo.Symbol}";
 
             if (Vesting.IsActive)
             {
-                if (Periods.Any(x => DateTime.UtcNow < x.UnlockTime.ToDateTime()))
+                if (Periods.Any(x => DateTime.UtcNow < x.Period.UnlockTime.ToDateTime()))
                 {
                     StatusDisplay = "On Vesting";
-                    StatusColor = Color.Primary;
+                    StatusDisplayColor = Color.Primary;
                 }
                 else
                 {
                     StatusDisplay = "Unlocked";
-                    StatusColor = Color.Info;
+                    StatusDisplayColor = Color.Info;
                 }
             }
             else if (Vesting.IsRevoked)
             {
                 StatusDisplay = "Revoked";
-                StatusColor = Color.Error;
+                StatusDisplayColor = Color.Error;
             }
             else
             {
                 StatusDisplay = "Completed";
-                StatusColor = Color.Info;
+                StatusDisplayColor = Color.Info;
             }
 
-            IsRevocable = Vesting.IsRevocable;
-            PeriodDisplay = $"{transaction.Periods.Count} Periods";
-            UpcomingPeriod = transaction.Periods.FirstOrDefault(x => x.UnlockTime.ToDateTime() > DateTime.UtcNow);
-        }
-
-        public void SetTokenInfo(TokenInfo tokenInfo)
-        {
-            TokenInfo = tokenInfo;
-            TotalAmountDisplay = $"{TotalAmount.ToAmount(TokenInfo.Decimals).ToAmountDisplay(TokenInfo.Decimals)} {TokenInfo.Symbol}";
         }
     }
 }

@@ -3,9 +3,7 @@ using Client.Infrastructure.Models;
 using Client.Models;
 using Client.Pages.Modals;
 using Client.Pages.Vestings.Modals;
-using Client.Parameters;
 using MudBlazor;
-using System.Numerics;
 
 namespace Client.Pages.Vestings
 {
@@ -15,7 +13,7 @@ namespace Client.Pages.Vestings
         public bool IsCompletelyLoaded { get; set; }
         public WalletInformation Wallet { get; set; }
 
-        public List<VestingModel> Vestings { get; set; } = new();
+        public List<VestingByInitiatorModel> Vestings { get; set; } = new();
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
@@ -47,7 +45,7 @@ namespace Client.Pages.Vestings
 
             foreach (var vesting in vestingListOutput.Transactions)
             {
-                Vestings.Add(new VestingModel(vesting));
+                Vestings.Add(new VestingByInitiatorModel(vesting));
             }
 
             Vestings = Vestings.OrderByDescending(x => x.Vesting.CreationTime).ToList();
@@ -88,7 +86,7 @@ namespace Client.Pages.Vestings
             }
         }
 
-        private async Task InvokeRevokeVestingModalAsync(VestingModel vestingModel)
+        private async Task InvokeRevokeVestingModalAsync(VestingByInitiatorModel vestingModel)
         {
             //var vestingIndex = vestingModel.Transaction.VestingIndex;
 
@@ -107,13 +105,13 @@ namespace Client.Pages.Vestings
 
         private void InvokeVestingPreviewerModal(long vestingId)
         {
-            //var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
-            //var parameters = new DialogParameters()
-            //{
-            //     { nameof(VestingPreviewerModal.VestingIndex), vestingIndex},
-            //};
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
+            var parameters = new DialogParameters()
+            {
+                 { nameof(VestingPreviewerModal.VestingId), vestingId},
+            };
 
-            //DialogService.Show<VestingPreviewerModal>($"Vesting #{vestingIndex}", parameters, options);
+            DialogService.Show<VestingPreviewerModal>($"Vesting #{vestingId}", parameters, options);
         }
 
         private async Task OnTextToClipboardAsync(string text)
