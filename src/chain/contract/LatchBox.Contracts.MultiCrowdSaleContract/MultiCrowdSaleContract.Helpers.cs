@@ -19,7 +19,7 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             Assert(Context.Sender == State.Admin.Value, "Sender should be admin.");
         }
 
-        private void AssertSymbolIsExists(string symbol)
+        private void AssertSymbolExists(string symbol)
         {
             var tokenInfo = State.TokenContract.GetTokenInfo.Call(new GetTokenInfoInput()
             {

@@ -9,9 +9,8 @@ namespace Client.Pages.Tokens
     {
         public bool IsLoaded { get; set; }
         public bool IsCompletelyLoaded { get; set; }
-
+        public WalletInformation Wallet { get; set; }
         public List<TokenInfoWithBalance> TokenInfoWithBalanceList { get; set; } = new();
-        private (WalletInformation, string) _creds;
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
@@ -23,21 +22,21 @@ namespace Client.Pages.Tokens
 
                     await InvokeAsync(async () =>
                     {
-                        _creds = await WalletManager.GetWalletCredentialsAsync();
+                        Wallet = await WalletManager.GetWalletInformationAsync();
+                        await FetchDataAsync();
                         try
                         {
-                            var result = await TokenManager.CreateAsync(_creds.Item1, _creds.Item2, "LATCH", "LATCH", 300000000_00000000, 8, true);
+                            var result = await TokenManager.CreateAsync("LATCH", "LATCH", 300000000_00000000, 8, true);
 
                             if (string.IsNullOrWhiteSpace(result.Error))
                             {
-                                await TokenManager.IssueAsync(_creds.Item1, _creds.Item2, "LATCH", 10000000_00000000, "MINT1", _creds.Item1.Address);
+                                await TokenManager.IssueAsync("LATCH", 10000000_00000000, "MINT1", Wallet.Address);
                             }
                         }
                         catch
                         {
 
                         }
-                        await FetchDataAsync();
                     });
                 });
             }
@@ -51,14 +50,14 @@ namespace Client.Pages.Tokens
 
             TokenInfoWithBalanceList.Clear();
 
-            var nativeToken = await TokenManager.GetNativeTokenInfoAsync(_creds.Item1, _creds.Item2);
+            var nativeToken = await TokenManager.GetNativeTokenInfoAsync();
             TokenInfoWithBalanceList.Add(new TokenInfoWithBalance() { Token = nativeToken, IsNative = true });
 
             var tokenSymbolList = await TokenManager.GetTokenSymbolsFromStorageAsync();
 
             foreach (var symbol in tokenSymbolList)
             {
-                var token = await TokenManager.GetTokenInfoAsync(_creds.Item1, _creds.Item2, symbol);
+                var token = await TokenManager.GetTokenInfoAsync(symbol);
 
                 if (!string.IsNullOrEmpty(token.Symbol))
                 {
@@ -75,7 +74,7 @@ namespace Client.Pages.Tokens
 
             foreach (var tokenInfo in TokenInfoWithBalanceList)
             {
-                var getBalanceOutput = await TokenManager.GetBalanceAsync(_creds.Item1, _creds.Item2, tokenInfo.Token.Symbol);
+                var getBalanceOutput = await TokenManager.GetBalanceAsync(tokenInfo.Token.Symbol);
                 tokenInfo.Balance = getBalanceOutput.Balance;
                 StateHasChanged();
             }

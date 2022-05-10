@@ -22,8 +22,7 @@ namespace Client.Pages.Tokens.Modals
 
                 try
                 {
-                    var cred = await WalletManager.GetWalletCredentialsAsync();
-                    var tokenInfo = await TokenManager.GetTokenInfoAsync(cred.Item1, cred.Item2, Model.Symbol.ToUpper());
+                    var tokenInfo = await TokenManager.GetTokenInfoAsync(Model.Symbol.ToUpper());
 
                     if (!string.IsNullOrEmpty(tokenInfo.Symbol))
                     {

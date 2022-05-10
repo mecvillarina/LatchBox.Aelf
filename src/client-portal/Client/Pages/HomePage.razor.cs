@@ -1,16 +1,19 @@
 ﻿using Client.Infrastructure.Managers.Interfaces;
+using Client.Pages.Locks.Modals;
+using Client.Pages.Vestings.Modals;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.AspNetCore.Components;
+using MudBlazor;
 
 namespace Client.Pages
 {
     public partial class HomePage
     {
         [Parameter]
-        public long? LockIndex { get; set; }
+        public long? LockId { get; set; }
 
         [Parameter]
-        public long? VestingIndex { get; set; }
+        public long? VestingId { get; set; }
 
         public bool IsLoaded { get; set; }
 
@@ -18,19 +21,26 @@ namespace Client.Pages
         {
             if (firstRender)
             {
-                //if (LockIndex.HasValue && LockIndex.Value >= 0)
-                //{
-                //    InvokeLockPreviewerModal(LockIndex.Value);
-                //}
-                //else if (VestingIndex.HasValue && VestingIndex.Value >= 0)
-                //{
-                //    InvokeVestingPreviewerModal(VestingIndex.Value);
-                //}
-
-                await InvokeAsync(async () =>
+                await PageService.EnsureAuthenticatedAsync(async (authenticated) =>
                 {
-                    await FetchDataAsync();
+                    if (!authenticated) return;
+
+                    if (LockId.HasValue && LockId.Value > 0)
+                    {
+                        InvokeLockPreviewerModal(LockId.Value);
+                    }
+
+                    if (VestingId.HasValue && VestingId.Value > 0)
+                    {
+                        InvokeVestingPreviewerModal(LockId.Value);
+                    }
+
+                    await InvokeAsync(async () =>
+                    {
+                        await FetchDataAsync();
+                    });
                 });
+              
             }
         }
 
@@ -38,41 +48,30 @@ namespace Client.Pages
         {
             IsLoaded = false;
 
-            var authenticated = await AuthManager.IsAuthenticated();
-
-            if (authenticated)
-            {
-                var cred = await WalletManager.GetWalletCredentialsAsync();
-                //var nativeToken = await TokenManager.GetNativeTokenInfoAsync(cred.Item1, cred.Item2);
-                //var tokenList = await TokenManager.GetTokenInfoListAsync(cred.Item1, cred.Item2);
-                //await TokenManager.CreateTokenAsync(cred.Item1, cred.Item2);
-                //var token = await TokenManager.GetTokenInfoAsync(cred.Item1, cred.Item2, "LATCHH");
-            }
-
             IsLoaded = true;
             StateHasChanged();
         }
 
-        //private void InvokeLockPreviewerModal(BigInteger lockIndex)
-        //{
-        //    var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
-        //    var parameters = new DialogParameters()
-        //    {
-        //         { nameof(LockPreviewerModal.LockIndex), lockIndex},
-        //    };
+        private void InvokeLockPreviewerModal(long lockId)
+        {
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
+            var parameters = new DialogParameters()
+            {
+                 { nameof(LockPreviewerModal.LockId), lockId},
+            };
 
-        //    DialogService.Show<LockPreviewerModal>($"Lock #{lockIndex}", parameters, options);
-        //}
+            DialogService.Show<LockPreviewerModal>($"Lock #{lockId}", parameters, options);
+        }
 
-        //private void InvokeVestingPreviewerModal(BigInteger vestingIndex)
-        //{
-        //    var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
-        //    var parameters = new DialogParameters()
-        //    {
-        //         { nameof(VestingPreviewerModal.VestingIndex), vestingIndex},
-        //    };
+        private void InvokeVestingPreviewerModal(long vestingId)
+        {
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
+            var parameters = new DialogParameters()
+            {
+                 { nameof(VestingPreviewerModal.VestingId), vestingId},
+            };
 
-        //    DialogService.Show<VestingPreviewerModal>($"Vesting #{vestingIndex}", parameters, options);
-        //}
+            DialogService.Show<VestingPreviewerModal>($"Vesting #{vestingId}", parameters, options);
+        }
     }
 }

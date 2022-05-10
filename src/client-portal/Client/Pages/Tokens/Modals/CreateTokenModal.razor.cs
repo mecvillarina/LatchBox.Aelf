@@ -26,11 +26,12 @@ namespace Client.Pages.Tokens.Modals
                 {
                     var totalSupply = Model.TotalSupply.ToChainAmount(Model.Decimals);
                     var initialSupply = Model.InitialSupply.ToChainAmount(Model.Decimals);
-                    var cred = await AppDialogService.ShowConfirmWalletTransactionAsync();
+                    var authenticated = await AppDialogService.ShowConfirmWalletTransactionAsync();
 
-                    if (cred.Item1 != null)
+                    if (authenticated)
                     {
-                        var createTokenResult = await TokenManager.CreateAsync(cred.Item1, cred.Item2, Model.Symbol, Model.TokenName, totalSupply, Model.Decimals, Model.IsBurnable);
+                        var wallet = await WalletManager.GetWalletInformationAsync();
+                        var createTokenResult = await TokenManager.CreateAsync(Model.Symbol, Model.TokenName, totalSupply, Model.Decimals, Model.IsBurnable);
 
                         if (!string.IsNullOrEmpty(createTokenResult.Error))
                         {
@@ -40,7 +41,7 @@ namespace Client.Pages.Tokens.Modals
                         {
                             if (initialSupply > 0)
                             {
-                                var issueTokenResult = await TokenManager.IssueAsync(cred.Item1, cred.Item2, Model.Symbol, initialSupply, "Initial Supply", cred.Item1.Address);
+                                var issueTokenResult = await TokenManager.IssueAsync(Model.Symbol, initialSupply, "Initial Supply", wallet.Address);
 
                                 if (!string.IsNullOrEmpty(issueTokenResult.Error))
                                 {

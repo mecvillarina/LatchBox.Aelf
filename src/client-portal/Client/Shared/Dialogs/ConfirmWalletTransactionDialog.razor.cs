@@ -50,7 +50,7 @@ namespace Client.Shared.Dialogs
                 try
                 {
                     await WalletManager.AuthenticateAsync(Model.Password);
-                    MudDialog.Close(DialogResult.Ok((Wallet, Model.Password)));
+                    MudDialog.Close(true);
                 }
                 catch (Exception ex)
                 {

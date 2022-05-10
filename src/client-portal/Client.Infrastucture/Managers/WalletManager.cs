@@ -24,7 +24,7 @@ namespace Client.Infrastructure.Managers
         {
             var wallet = await ManagerToolkit.GetWalletAsync();
 
-            if (wallet == null) throw new GeneralException("Connect your wallet first.");
+            if (wallet == null) throw new ConnectWalletException("Connect your wallet first.");
 
             var pass = _accountsService.FetchKeyStorePassword(wallet.Filename);
             return (wallet, pass);
@@ -34,7 +34,7 @@ namespace Client.Infrastructure.Managers
         {
             var wallet = await GetWalletInformationAsync();
 
-            if (wallet == null) throw new GeneralException("Connect your wallet first.");
+            if (wallet == null) throw new ConnectWalletException("Connect your wallet first.");
 
             await _accountsService.GetAccountKeyPairAsync(wallet.Filename, password);
         }

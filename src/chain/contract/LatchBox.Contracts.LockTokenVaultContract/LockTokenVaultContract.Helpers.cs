@@ -1,4 +1,5 @@
-﻿using Google.Protobuf.Collections;
+﻿using AElf.Contracts.MultiToken;
+using Google.Protobuf.Collections;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -17,19 +18,28 @@ namespace LatchBox.Contracts.LockTokenVaultContract
             Assert(Context.Sender == State.Admin.Value, "Sender should be admin.");
         }
 
-        private void ValidateLockReceiverInputData(RepeatedField<AddLockReceiverInput> receivers, long totalAmount)
+        private void AssertSymbolExists(string symbol)
         {
-            Assert(receivers != null && receivers.Count > 0, "LatchBox Lock MUST have at least one receiver.");
+            var tokenInfo = State.TokenContract.GetTokenInfo.Call(new GetTokenInfoInput()
+            {
+                Symbol = symbol
+            });
+
+            Assert(tokenInfo != null && !string.IsNullOrEmpty(tokenInfo.Symbol), "Token not found.");
+        }
+
+        private void AssertValidLockReceiverInputData(RepeatedField<AddLockReceiverInput> receivers, long totalAmount)
+        {
+            Assert(receivers != null && receivers.Count > 0, "Lock MUST have at least one receiver.");
 
             long totalAmountCheck = 0;
             foreach (var receiver in receivers)
             {
-                Assert(receiver.Amount > 0, "All receiver must be greater than 0.");
+                Assert(receiver.Amount > 0, "All receiver amount must be greater than 0.");
                 totalAmountCheck += receiver.Amount;
             }
 
             Assert(totalAmountCheck == totalAmount, "The total amount is not equal to the summation receivers' amounts.");
         }
-
     }
 }

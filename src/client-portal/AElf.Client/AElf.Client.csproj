@@ -32,6 +32,7 @@
 
     <ItemGroup>
       <None Remove="Protobuf\Proto\multi_crowd_sale_contract.proto" />
+      <None Remove="Protobuf\Proto\vesting_token_vault_contract.proto" />
     </ItemGroup>
 
     <ItemGroup>

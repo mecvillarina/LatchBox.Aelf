@@ -50,13 +50,13 @@ namespace Client.Shared.Components
         {
             IsClaimingElf = true;
 
-            var credentials = await AppDialogService.ShowConfirmWalletTransactionAsync();
+            var authenticated = await AppDialogService.ShowConfirmWalletTransactionAsync();
 
-            if (credentials.Item1 != null)
+            if (authenticated)
             {
                 try
                 {
-                    var result = await FaucetManager.TakeAsync(credentials.Item1, credentials.Item2, "ELF", 100_00000000);
+                    var result = await FaucetManager.TakeAsync("ELF", 100_00000000);
 
                     if (!string.IsNullOrEmpty(result.Error))
                     {

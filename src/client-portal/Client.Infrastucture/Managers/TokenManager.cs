@@ -1,15 +1,12 @@
 ﻿using AElf;
 using AElf.Client.Dto;
 using AElf.Client.MultiToken;
-using AElf.Types;
 using Blazored.LocalStorage;
 using Client.Infrastructure.Constants;
 using Client.Infrastructure.Managers.Interfaces;
-using Client.Infrastructure.Models;
 using Client.Infrastructure.Services.Interfaces;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,81 +17,97 @@ namespace Client.Infrastructure.Managers
     {
         private readonly IBlockChainService _blockChainService;
         private readonly ILocalStorageService _localStorageService;
+        private readonly IWalletManager _walletManager;
 
-        public TokenManager(IManagerToolkit managerToolkit, IBlockChainService blockChainService, ILocalStorageService localStorageService) : base(managerToolkit)
+        public TokenManager(IManagerToolkit managerToolkit, IBlockChainService blockChainService, ILocalStorageService localStorageService, IWalletManager walletManager) : base(managerToolkit)
         {
             _blockChainService = blockChainService;
             _localStorageService = localStorageService;
+            _walletManager = walletManager;
         }
 
         public string ContactAddress => ManagerToolkit.AelfSettings.MultiTokenContractAddress;
 
-        public async Task<TokenInfo> GetNativeTokenInfoAsync(WalletInformation wallet, string password)
+        public async Task<TokenInfo> GetNativeTokenInfoAsync()
         {
+            var cred = await _walletManager.GetWalletCredentialsAsync();
+
             IMessage @params = new Empty { };
 
-            var result = await _blockChainService.CallTransactionAsync(wallet, password, ContactAddress, "GetNativeTokenInfo", @params);
+            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetNativeTokenInfo", @params);
             return TokenInfo.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
-        public async Task<StringValue> GetPrimaryTokenSymbolAsync(WalletInformation wallet, string password)
+        public async Task<StringValue> GetPrimaryTokenSymbolAsync()
         {
+            var cred = await _walletManager.GetWalletCredentialsAsync();
+
             IMessage @params = new Empty { };
 
-            var result = await _blockChainService.CallTransactionAsync(wallet, password, ContactAddress, "GetPrimaryTokenSymbol", @params);
+            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetPrimaryTokenSymbol", @params);
             return StringValue.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
-        public async Task<TokenInfoList> GetResourceTokenInfoListAsync(WalletInformation wallet, string password)
+        public async Task<TokenInfoList> GetResourceTokenInfoListAsync()
         {
+            var cred = await _walletManager.GetWalletCredentialsAsync();
+
             IMessage @params = new Empty { };
 
-            var result = await _blockChainService.CallTransactionAsync(wallet, password, ContactAddress, "GetResourceTokenInfo", @params);
+            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetResourceTokenInfo", @params);
             return TokenInfoList.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
-        public async Task<TokenInfo> GetTokenInfoAsync(WalletInformation wallet, string password, string symbol)
+        public async Task<TokenInfo> GetTokenInfoAsync(string symbol)
         {
+            var cred = await _walletManager.GetWalletCredentialsAsync();
+
             var @params = new GetTokenInfoInput()
             {
                 Symbol = symbol
             };
 
-            var result = await _blockChainService.CallTransactionAsync(wallet, password, ContactAddress, "GetTokenInfo", @params);
+            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetTokenInfo", @params);
             return TokenInfo.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
-        public async Task<GetBalanceOutput> GetBalanceAsync(WalletInformation wallet, string password, string symbol)
+        public async Task<GetBalanceOutput> GetBalanceAsync(string symbol)
         {
+            var cred = await _walletManager.GetWalletCredentialsAsync();
+
             var @params = new GetBalanceInput
             {
                 Symbol = symbol,
-                Owner = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(wallet.Address).Value }
+                Owner = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(cred.Item1.Address).Value }
             };
 
-            var result = await _blockChainService.CallTransactionAsync(wallet, password, ContactAddress, "GetBalance", @params);
+            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetBalance", @params);
             return GetBalanceOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
-        public async Task<TransactionResultDto> CreateAsync(WalletInformation wallet, string password, string symbol, string tokenName, long totalSupply, int decimals, bool isBurnable)
+        public async Task<TransactionResultDto> CreateAsync(string symbol, string tokenName, long totalSupply, int decimals, bool isBurnable)
         {
+            var cred = await _walletManager.GetWalletCredentialsAsync();
+
             var @params = new CreateInput
             {
                 Symbol = symbol.ToUpper(),
                 TokenName = tokenName,
                 TotalSupply = totalSupply,
                 Decimals = decimals,
-                Issuer = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(wallet.Address).Value },
+                Issuer = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(cred.Item1.Address).Value },
                 IsBurnable = isBurnable,
                 IssueChainId = ManagerToolkit.AelfSettings.ChainId
             };
 
-            var txId = await _blockChainService.SendTransactionAsync(wallet, password, ContactAddress, "Create", @params);
+            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "Create", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
-        public async Task<TransactionResultDto> IssueAsync(WalletInformation wallet, string password, string symbol, long amount, string memo, string to)
+        public async Task<TransactionResultDto> IssueAsync(string symbol, long amount, string memo, string to)
         {
+            var cred = await _walletManager.GetWalletCredentialsAsync();
+
             var @params = new IssueInput
             {
                 Symbol = symbol.ToUpper(),
@@ -103,12 +116,14 @@ namespace Client.Infrastructure.Managers
                 To = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(to).Value },
             };
 
-            var txId = await _blockChainService.SendTransactionAsync(wallet, password, ContactAddress, "Issue", @params);
+            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "Issue", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
-        public async Task<TransactionResultDto> ApproveAsync(WalletInformation wallet, string password, string spender, string symbol, long amount)
+        public async Task<TransactionResultDto> ApproveAsync(string spender, string symbol, long amount)
         {
+            var cred = await _walletManager.GetWalletCredentialsAsync();
+
             var @params = new ApproveInput
             {
                 Spender = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(spender).Value },
@@ -116,12 +131,14 @@ namespace Client.Infrastructure.Managers
                 Amount = amount,
             };
 
-            var txId = await _blockChainService.SendTransactionAsync(wallet, password, ContactAddress, "Approve", @params);
+            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "Approve", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
-        public async Task<TransactionResultDto> UnApproveAsync(WalletInformation wallet, string password, string spender, string symbol, long amount)
+        public async Task<TransactionResultDto> UnApproveAsync(string spender, string symbol, long amount)
         {
+            var cred = await _walletManager.GetWalletCredentialsAsync();
+
             var @params = new UnApproveInput
             {
                 Spender = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(spender).Value },
@@ -129,12 +146,14 @@ namespace Client.Infrastructure.Managers
                 Amount = amount,
             };
 
-            var txId = await _blockChainService.SendTransactionAsync(wallet, password, ContactAddress, "UnApproveInput", @params);
+            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "UnApproveInput", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
-        public async Task<GetAllowanceOutput> GetAllowanceAsync(WalletInformation wallet, string password, string symbol, string owner, string spender)
+        public async Task<GetAllowanceOutput> GetAllowanceAsync(string symbol, string owner, string spender)
         {
+            var cred = await _walletManager.GetWalletCredentialsAsync();
+
             var @params = new GetAllowanceInput
             {
                 Symbol = symbol,
@@ -142,7 +161,7 @@ namespace Client.Infrastructure.Managers
                 Spender = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(spender).Value },
             };
 
-            var result = await _blockChainService.CallTransactionAsync(wallet, password, ContactAddress, "GetAllowance", @params);
+            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetAllowance", @params);
             return GetAllowanceOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 

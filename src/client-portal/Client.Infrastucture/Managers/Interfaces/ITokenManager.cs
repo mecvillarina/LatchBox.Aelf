@@ -10,16 +10,16 @@ namespace Client.Infrastructure.Managers.Interfaces
     public interface ITokenManager : IManager
     {
         string ContactAddress { get; }
-        Task<TokenInfo> GetNativeTokenInfoAsync(WalletInformation wallet, string password);
-        Task<StringValue> GetPrimaryTokenSymbolAsync(WalletInformation wallet, string password);
-        Task<TokenInfoList> GetResourceTokenInfoListAsync(WalletInformation wallet, string password);
-        Task<TokenInfo> GetTokenInfoAsync(WalletInformation wallet, string password, string symbol);
-        Task<GetBalanceOutput> GetBalanceAsync(WalletInformation wallet, string password, string symbol);
-        Task<TransactionResultDto> CreateAsync(WalletInformation wallet, string password, string symbol, string tokenName, long totalSupply, int decimals, bool isBurnable);
-        Task<TransactionResultDto> IssueAsync(WalletInformation wallet, string password, string symbol, long amount, string memo, string to);
-        Task<TransactionResultDto> ApproveAsync(WalletInformation wallet, string password, string spender, string symbol, long amount);
-        Task<TransactionResultDto> UnApproveAsync(WalletInformation wallet, string password, string spender, string symbol, long amount);
-        Task<GetAllowanceOutput> GetAllowanceAsync(WalletInformation wallet, string password, string symbol, string owner, string spender);
+        Task<TokenInfo> GetNativeTokenInfoAsync();
+        Task<StringValue> GetPrimaryTokenSymbolAsync();
+        Task<TokenInfoList> GetResourceTokenInfoListAsync();
+        Task<TokenInfo> GetTokenInfoAsync(string symbol);
+        Task<GetBalanceOutput> GetBalanceAsync(string symbol);
+        Task<TransactionResultDto> CreateAsync(string symbol, string tokenName, long totalSupply, int decimals, bool isBurnable);
+        Task<TransactionResultDto> IssueAsync(string symbol, long amount, string memo, string to);
+        Task<TransactionResultDto> ApproveAsync(string spender, string symbol, long amount);
+        Task<TransactionResultDto> UnApproveAsync(string spender, string symbol, long amount);
+        Task<GetAllowanceOutput> GetAllowanceAsync(string symbol, string owner, string spender);
 
         Task AddTokenSymbolToStorageAsync(string symbol);
         Task<List<string>> GetTokenSymbolsFromStorageAsync();

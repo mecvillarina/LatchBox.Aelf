@@ -5,8 +5,8 @@ namespace Client.Parameters
     public class ClaimVestingParameter
     {
         public string AmountDisplay { get; set; }
-        public ulong VestingIdx { get; set; }
-        public ulong PeriodIdx { get; set; }
+        public long VestingId { get; set; }
+        public long PeriodId { get; set; }
         public string PeriodName { get; set; }
         public string ReceiverAddress { get; set; }
     }

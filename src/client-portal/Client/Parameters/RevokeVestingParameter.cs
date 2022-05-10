@@ -4,6 +4,6 @@ namespace Client.Parameters
 {
     public class RevokeVestingParameter
     {
-        public ulong VestingIndex { get; set; }
+        public long VestingId { get; set; }
     }
 }
