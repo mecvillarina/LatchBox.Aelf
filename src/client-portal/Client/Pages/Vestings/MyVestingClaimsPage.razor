@@ -1,9 +1,9 @@
-﻿@page "/locks/claims"
+﻿@page "/vestings/claims"
 
 @attribute [Authorize]
 
 <MudContainer MaxWidth="MaxWidth.False">
-    <MudText Class="mb-0 text-lightgray" Typo="Typo.body1" GutterBottom="false">Locks</MudText>
+    <MudText Class="mb-0 text-lightgray" Typo="Typo.body1" GutterBottom="false">Vestings</MudText>
 
     <div class="d-flex mt-0">
         <MudHidden Breakpoint="Breakpoint.SmAndUp">
@@ -21,8 +21,8 @@
 
     <div class="my-2">
         <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
-            <MudChip Class="ma-0" Color="Color.Primary" Variant="Variant.Text" Size="Size.Small" OnClick="(() => OnTextToClipboardAsync(ManagerToolkit.AelfSettings.LockTokenVaultContractAddress))">
-                @ManagerToolkit.AelfSettings.LockTokenVaultContractAddress
+            <MudChip Class="ma-0" Color="Color.Primary" Variant="Variant.Text" Size="Size.Small" OnClick="(() => OnTextToClipboardAsync(ManagerToolkit.AelfSettings.VestingTokenVaultContractAddress))">
+                @ManagerToolkit.AelfSettings.VestingTokenVaultContractAddress
             </MudChip>
         </MudHidden>
     </div>
@@ -34,13 +34,14 @@
         <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="56px" Width="100%" />
         <MudSkeleton Class="mt-2" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="280px" Width="100%" />
     }
-    else if (LockTransactions.Any())
+    else if (Vestings.Any())
     {
         <MudPaper Square="true" Elevation="10" Class="grey darken-4">
-            <MudTable Items="@LockTransactions" Class="mx-0 grey darken-4" FixedHeader="true" Breakpoint="Breakpoint.Sm">
+            <MudTable Items="@Vestings" Class="mx-0 grey darken-4" FixedHeader="true" Breakpoint="Breakpoint.Sm">
                 <HeaderContent>
-                    <MudTh>Lock Id</MudTh>
+                    <MudTh>Vesting Id</MudTh>
                     <MudTh>Token</MudTh>
+                    <MudTh>Period</MudTh>
                     <MudTh>Date Unlock</MudTh>
                     <MudTh>Claimable Amount</MudTh>
                     <MudTh>Status</MudTh>
@@ -55,28 +56,32 @@
                     <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
                     <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
                     <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
+                    <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
                     }
                     else
                     {
-                    <MudTd DataLabel="Lock Id">
+                    <MudTd DataLabel="Vesting Id">
                         <MudText Color="Color.Primary">
-                            <b class="cursor-pointer" @onclick="(() => InvokeLockPreviewerModal(context.Lock.LockId))">@context.Lock.LockId</b>
+                            <b class="cursor-pointer" @onclick="(() => InvokeVestingPreviewerModal(context.Vesting.VestingId))">@context.Vesting.VestingId</b>
                         </MudText>
                     </MudTd>
                     <MudTd DataLabel="Token">@context.TokenInfo.Symbol</MudTd>
-                    <MudTd DataLabel="Date Unlock">@context.Lock.UnlockTime.ToDateTime().ToString(ClientConstants.LongDateTimeFormat)</MudTd>
+                    <MudTd DataLabel="Date Unlock">@context.Period.Name</MudTd>
+                    <MudTd DataLabel="Date Unlock">@context.Period.UnlockTime.ToDateTime().ToString(ClientConstants.LongDateTimeFormat)</MudTd>
                     <MudTd DataLabel="Claimable Amount">
-                        @context.AmountDisplay
+                        <div class="d-flex">
+                            @context.AmountDisplay
+                        </div>
                     </MudTd>
                     <MudTd DataLabel="Status">
                         <MudChip Color="@context.StatusColor" Size="Size.Small">
-                            <b>@context.Status</b>
+                            <b>@context.StatusDisplay</b>
                         </MudChip>
                     </MudTd>
                     <MudTd DataLabel="Actions">
                         <MudMenu Variant="Variant.Filled" Color="Color.Primary" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" DisableElevation="true" Icon="@Icons.Filled.KeyboardArrowDown" IconColor="Color.Secondary" Direction="Direction.Left" OffsetX="true">
-                            @*<MudMenuItem Disabled="@(!context.CanClaim)" OnClick="(() => InvokeClaimLockModalAsync(context))">Claim Lock</MudMenuItem>*@
-                            <MudMenuItem OnClick="(() => InvokeClaimLockModalAsync(context))">Claim Lock</MudMenuItem>
+                            <MudMenuItem Disabled="@(!context.CanClaim)" OnClick="(() => InvokeClaimVestingModalAsync(context))">Claim Vesting</MudMenuItem>
+                            <MudMenuItem OnClick="(() => InvokeClaimVestingModalAsync(context))">Claim Vesting</MudMenuItem>
                         </MudMenu>
                     </MudTd>
                     }
@@ -87,7 +92,7 @@
     else
     {
         <MudText Typo="Typo.h5" Class="mt-4">
-            You've no token claims.
+            You've no token vesting claims.
         </MudText>
     }
 

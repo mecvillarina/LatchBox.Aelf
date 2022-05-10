@@ -34,7 +34,7 @@
                                     <MudTd DataLabel="Address">
                                         @receiverContext.Address.ToStringAddress().ToMask(6)
                                     </MudTd>
-                                    <MudTd DataLabel="Amount">@receiverContext.Amount.ToAmountDisplay(AssetToken.Decimals) @AssetToken.Symbol</MudTd>
+                                    <MudTd DataLabel="Amount">@receiverContext.Amount.ToAmountDisplay(TokenInfo.Decimals) @TokenInfo.Symbol</MudTd>
                                     <MudTd DataLabel="Status">
                                         @if (receiverContext.DateRevoked != null)
                                         {
@@ -72,7 +72,7 @@
                                 <MudTd colspan="4" align="right">
                                     <MudText Typo="Typo.body1" Color="Color.Primary">
                                         <b>
-                                            Total Amount: @Receivers.Sum(x => x.Amount.ToAmount(AssetToken.Decimals)).ToAmountDisplay(AssetToken.Decimals) @AssetToken.Symbol  <br />
+                                            Total Amount: @Receivers.Sum(x => x.Amount.ToAmount(TokenInfo.Decimals)).ToAmountDisplay(TokenInfo.Decimals) @TokenInfo.Symbol  <br />
                                         </b>
                                     </MudText>
                                 </MudTd>

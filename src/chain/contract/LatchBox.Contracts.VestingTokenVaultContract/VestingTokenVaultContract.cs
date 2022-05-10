@@ -116,7 +116,7 @@ namespace LatchBox.Contracts.VestingTokenVaultContract
 
             Assert(vestingObj.IsActive, "Vesting is not active anymore.");
             Assert(receiverObj.DateClaimed == null, "Vesting has been claimed.");
-            Assert(Context.CurrentBlockTime.ToDateTime() > periodObj.UnlockTime.ToDateTime(), "Vesting selected period is not yet ready to be claimed.");
+            //Assert(Context.CurrentBlockTime.ToDateTime() > periodObj.UnlockTime.ToDateTime(), "Vesting selected period is not yet ready to be claimed.");
 
             State.TokenContract.Transfer.Send(new TransferInput()
             {

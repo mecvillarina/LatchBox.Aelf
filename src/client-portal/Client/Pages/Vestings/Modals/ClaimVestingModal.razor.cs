@@ -1,19 +1,29 @@
 ﻿using Blazored.FluentValidation;
 using Client.Infrastructure.Exceptions;
-using Client.Models;
+using Client.Parameters;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace Client.Pages.Locks.Modals
+namespace Client.Pages.Vestings.Modals
 {
-    public partial class ClaimLockRefundModal
+    public partial class ClaimVestingModal
     {
-        [Parameter] public LockAssetRefundModel Model { get; set; }
+        [Parameter] public ClaimVestingParameter Model { get; set; } = new();
         [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
 
         private FluentValidationValidator _fluentValidationValidator;
         private bool Validated => _fluentValidationValidator.Validate(options => { options.IncludeAllRuleSets(); });
         public bool IsProcessing { get; set; }
+        public bool IsLoaded { get; set; }
+
+        protected async override Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                IsLoaded = true;
+                StateHasChanged();
+            }
+        }
 
         private async Task SubmitAsync()
         {
@@ -27,15 +37,15 @@ namespace Client.Pages.Locks.Modals
 
                     if (authenticated)
                     {
-                        var claimRefundResult = await LockTokenVaultManager.ClaimRefundAsync(Model.Refund.TokenSymbol);
+                        var claimResult = await VestingTokenVaultManager.ClaimVestingAsync(Model.VestingId, Model.PeriodId);
 
-                        if (!string.IsNullOrEmpty(claimRefundResult.Error))
+                        if (!string.IsNullOrEmpty(claimResult.Error))
                         {
-                            throw new GeneralException(claimRefundResult.Error);
+                            throw new GeneralException(claimResult.Error);
                         }
                         else
                         {
-                            AppDialogService.ShowSuccess("Claim Refund success.");
+                            AppDialogService.ShowSuccess("Claim Vesting success.");
                             MudDialog.Close();
                         }
                     }

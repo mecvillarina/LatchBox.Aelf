@@ -1,15 +1,15 @@
 ﻿using Client.Models;
-using Client.Pages.Locks.Modals;
+using Client.Pages.Vestings.Modals;
 using MudBlazor;
 
-namespace Client.Pages.Locks
+namespace Client.Pages.Vestings
 {
-    public partial class MyLockRefundsPage
+    public partial class MyVestingRefundsPage
     {
         public bool IsLoaded { get; set; }
         public bool IsCompletelyLoaded { get; set; }
 
-        public List<LockAssetRefundModel> Refunds { get; set; } = new();
+        public List<VestingAssetRefundModel> Refunds { get; set; } = new();
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
@@ -35,11 +35,11 @@ namespace Client.Pages.Locks
 
             Refunds.Clear();
 
-            var refundsOutput = await LockTokenVaultManager.GetRefundsAsync();
+            var refundsOutput = await VestingTokenVaultManager.GetRefundsAsync();
 
             foreach (var refund in refundsOutput.Refunds)
             {
-                Refunds.Add(new LockAssetRefundModel(refund));
+                Refunds.Add(new VestingAssetRefundModel(refund));
             }
 
             IsLoaded = true;
@@ -56,12 +56,12 @@ namespace Client.Pages.Locks
         }
 
 
-        private async Task InvokeClaimRefundModalAsync(LockAssetRefundModel model)
+        private async Task InvokeClaimRefundModalAsync(VestingAssetRefundModel model)
         {
             var parameters = new DialogParameters();
-            parameters.Add(nameof(ClaimLockRefundModal.Model), model);
+            parameters.Add(nameof(ClaimVestingRefundModal.Model), model);
 
-            var dialog = DialogService.Show<ClaimLockRefundModal>($"Claim Refund for {model.TokenInfo.TokenName} ({model.TokenInfo.Symbol})", parameters);
+            var dialog = DialogService.Show<ClaimVestingRefundModal>($"Claim Refund for {model.TokenInfo.TokenName} ({model.TokenInfo.Symbol})", parameters);
             var dialogResult = await dialog.Result;
 
             if (!dialogResult.Cancelled)

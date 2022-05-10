@@ -1,20 +1,20 @@
-﻿using AElf.Client.MultiToken;
+﻿using Client.Infrastructure.Extensions;
 using Client.Infrastructure.Models;
 using Client.Models;
-using Client.Pages.Modals;
 using Client.Pages.Vestings.Modals;
 using Client.Parameters;
 using MudBlazor;
+using System.Numerics;
 
 namespace Client.Pages.Vestings
 {
-    public partial class MyVestingsPage
+    public partial class MyVestingClaimsPage
     {
         public bool IsLoaded { get; set; }
         public bool IsCompletelyLoaded { get; set; }
         public WalletInformation Wallet { get; set; }
 
-        public List<VestingByInitiatorModel> Vestings { get; set; } = new();
+        public List<VestingReceiverModel> Vestings { get; set; } = new();
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
@@ -33,6 +33,7 @@ namespace Client.Pages.Vestings
             }
         }
 
+
         private async Task FetchDataAsync()
         {
             IsLoaded = false;
@@ -41,15 +42,18 @@ namespace Client.Pages.Vestings
 
             Vestings.Clear();
 
-            var result = await VestingTokenVaultManager.InitializeAsync();
-            var vestingListOutput = await VestingTokenVaultManager.GetVestingsByInitiatorAsync(Wallet.Address);
+            var vestingListOutput = await VestingTokenVaultManager.GetVestingsForReceiverAsync(Wallet.Address);
 
-            foreach (var transaction in vestingListOutput.Transactions)
+            foreach (var transactionOutput in vestingListOutput.Transactions)
             {
-                Vestings.Add(new VestingByInitiatorModel(transaction));
+                Vestings.Add(new VestingReceiverModel(transactionOutput));
             }
 
-            Vestings = Vestings.OrderByDescending(x => x.Vesting.CreationTime).ToList();
+            Vestings = Vestings.OrderBy(x => x.Vesting.IsRevoked).ThenBy(x => x.Period.UnlockTime).Select(x => new
+            {
+                IsPastTime = x.Period.UnlockTime.ToDateTime() > DateTime.UtcNow,
+                Vesting = x
+            }).OrderBy(x => x.IsPastTime).Select(x => x.Vesting).ToList();
 
             IsLoaded = true;
             StateHasChanged();
@@ -64,36 +68,22 @@ namespace Client.Pages.Vestings
             StateHasChanged();
         }
 
-        private async Task InvokeAddVestingModalAsync()
+        private async Task InvokeClaimVestingModalAsync(VestingReceiverModel vestingModel)
         {
-            var searchTokenDialog = DialogService.Show<SearchTokenModal>($"Search Token");
-            var searchTokenDialogResult = await searchTokenDialog.Result;
+            var vestingId = vestingModel.Vesting.VestingId;
+            var periodName = vestingModel.Period.Name;
 
-            if (!searchTokenDialogResult.Cancelled)
-            {
-                var tokenInfo = (TokenInfo)searchTokenDialogResult.Data;
-
-                var options = new DialogOptions() { MaxWidth = MaxWidth.Medium };
-                var parameters = new DialogParameters();
-                parameters.Add(nameof(AddVestingModal.TokenInfo), tokenInfo);
-
-                var dialog = DialogService.Show<AddVestingModal>($"Add New Vesting", parameters, options);
-                var dialogResult = await dialog.Result;
-
-                if (!dialogResult.Cancelled)
-                {
-                    await FetchDataAsync();
-                }
-            }
-        }
-
-        private async Task InvokeRevokeVestingModalAsync(VestingByInitiatorModel vestingModel)
-        {
             var parameters = new DialogParameters();
-            parameters.Add(nameof(RevokeVestingModal.Vesting), vestingModel.Vesting);
-            parameters.Add(nameof(RevokeVestingModal.Model), new RevokeVestingParameter() { VestingId = vestingModel.Vesting.VestingId });
+            parameters.Add(nameof(ClaimVestingModal.Model), new ClaimVestingParameter()
+            {
+                VestingId = vestingModel.Vesting.VestingId,
+                PeriodId = vestingModel.Period.PeriodId,
+                PeriodName = periodName,
+                ReceiverAddress = vestingModel.Receiver.Address.ToStringAddress(),
+                AmountDisplay = vestingModel.AmountDisplay
+            });
 
-            var dialog = DialogService.Show<RevokeVestingModal>($"Revoke Vesting #{vestingModel.Vesting.VestingId}", parameters);
+            var dialog = DialogService.Show<ClaimVestingModal>($"Claim from Vesting #{vestingId} - {periodName}", parameters);
             var dialogResult = await dialog.Result;
 
             if (!dialogResult.Cancelled)

@@ -30,9 +30,9 @@ namespace Client.Pages.Vestings.Modals
             try
             {
                 var output = await VestingTokenVaultManager.GetVestingTransactionAsync(VestingId);
-                var assetToken = await TokenManager.GetTokenInfoAsync(output.Vesting.TokenSymbol);
+                var tokenInfo = await TokenManager.GetTokenInfoAsync(output.Vesting.TokenSymbol);
 
-                Model = new VestingModel(output, assetToken);
+                Model = new VestingModel(output, tokenInfo);
                 ShareLink = $"{NavigationManager.BaseUri}view/vestings/{VestingId}";
                 IsLoaded = true;
                 MudDialog.SetTitle("");
@@ -48,7 +48,7 @@ namespace Client.Pages.Vestings.Modals
         private void InvokeVestingPeriodPreviewerModal(VestingTransactionPeriodOutput periodOutput)
         {
             var parameters = new DialogParameters();
-            parameters.Add(nameof(VestingPeriodPreviewerModal.AssetToken), Model.TokenInfo);
+            parameters.Add(nameof(VestingPeriodPreviewerModal.TokenInfo), Model.TokenInfo);
             parameters.Add(nameof(VestingPeriodPreviewerModal.Period), periodOutput.Period);
             parameters.Add(nameof(VestingPeriodPreviewerModal.Receivers), periodOutput.Receivers.ToList());
             parameters.Add(nameof(VestingPeriodPreviewerModal.Vesting), Model.Vesting);

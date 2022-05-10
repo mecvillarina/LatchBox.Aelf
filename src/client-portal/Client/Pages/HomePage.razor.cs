@@ -1,5 +1,6 @@
 ﻿using Client.Infrastructure.Managers.Interfaces;
 using Client.Pages.Locks.Modals;
+using Client.Pages.Vestings.Modals;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -24,9 +25,14 @@ namespace Client.Pages
                 {
                     if (!authenticated) return;
 
-                    if (LockId.HasValue && LockId.Value >= 0)
+                    if (LockId.HasValue && LockId.Value > 0)
                     {
                         InvokeLockPreviewerModal(LockId.Value);
+                    }
+
+                    if (VestingId.HasValue && VestingId.Value > 0)
+                    {
+                        InvokeVestingPreviewerModal(LockId.Value);
                     }
 
                     await InvokeAsync(async () =>
@@ -57,15 +63,15 @@ namespace Client.Pages
             DialogService.Show<LockPreviewerModal>($"Lock #{lockId}", parameters, options);
         }
 
-        //private void InvokeVestingPreviewerModal(BigInteger vestingIndex)
-        //{
-        //    var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
-        //    var parameters = new DialogParameters()
-        //    {
-        //         { nameof(VestingPreviewerModal.VestingIndex), vestingIndex},
-        //    };
+        private void InvokeVestingPreviewerModal(long vestingId)
+        {
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
+            var parameters = new DialogParameters()
+            {
+                 { nameof(VestingPreviewerModal.VestingId), vestingId},
+            };
 
-        //    DialogService.Show<VestingPreviewerModal>($"Vesting #{vestingIndex}", parameters, options);
-        //}
+            DialogService.Show<VestingPreviewerModal>($"Vesting #{vestingId}", parameters, options);
+        }
     }
 }

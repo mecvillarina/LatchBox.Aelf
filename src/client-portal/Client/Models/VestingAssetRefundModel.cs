@@ -1,16 +1,16 @@
-﻿using AElf.Client.LatchBox.LockTokenVault;
+﻿using AElf.Client.LatchBox.VestingTokenVault;
 using AElf.Client.MultiToken;
 using Client.Infrastructure.Extensions;
 using Client.Infrastructure.Models;
 
 namespace Client.Models
 {
-    public class AssetRefundModel
+    public class VestingAssetRefundModel
     {
         public TokenInfo TokenInfo { get; private set; }
         public Refund Refund { get; private set; }
         public string AmountDisplay { get; private set; }
-        public AssetRefundModel(Refund refund)
+        public VestingAssetRefundModel(Refund refund)
         {
             Refund = refund;
         }

@@ -4,11 +4,11 @@ using Client.Models;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace Client.Pages.Locks.Modals
+namespace Client.Pages.Vestings.Modals
 {
-    public partial class ClaimLockRefundModal
+    public partial class ClaimVestingRefundModal
     {
-        [Parameter] public LockAssetRefundModel Model { get; set; }
+        [Parameter] public VestingAssetRefundModel Model { get; set; }
         [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
 
         private FluentValidationValidator _fluentValidationValidator;
@@ -27,7 +27,7 @@ namespace Client.Pages.Locks.Modals
 
                     if (authenticated)
                     {
-                        var claimRefundResult = await LockTokenVaultManager.ClaimRefundAsync(Model.Refund.TokenSymbol);
+                        var claimRefundResult = await VestingTokenVaultManager.ClaimRefundAsync(Model.Refund.TokenSymbol);
 
                         if (!string.IsNullOrEmpty(claimRefundResult.Error))
                         {
