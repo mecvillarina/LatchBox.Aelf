@@ -1,0 +1,117 @@
+﻿@page "/vestings"
+
+@attribute [Authorize]
+
+<MudContainer MaxWidth="MaxWidth.False">
+    <MudText Class="mb-0 text-lightgray" Typo="Typo.body1" GutterBottom="false">Vestings</MudText>
+
+    <div class="d-flex mt-0">
+        <MudHidden Breakpoint="Breakpoint.SmAndUp">
+            <MudText Class="mr-2 align-self-center" Typo="Typo.h5" Color="Color.Primary" GutterBottom="false">My Vestings</MudText>
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.Xs">
+            <MudText Class="mr-4 align-self-center" Typo="Typo.h4" Color="Color.Primary" GutterBottom="false">My Vestings</MudText>
+        </MudHidden>
+        <MudIconButton Class="align-self-center" Icon="@Icons.Material.Filled.Add" Color="Color.Secondary" Variant="Variant.Filled" Size="Size.Small" OnClick="InvokeAddVestingModalAsync" />
+        @if (IsCompletelyLoaded)
+        {
+            <MudIconButton Class="align-self-center mx-1" Icon="@Icons.Material.Filled.Refresh" Color="Color.Secondary" Variant="Variant.Filled" Size="Size.Small" OnClick="FetchDataAsync" />
+        }
+    </div>
+
+    <div class="my-2">
+        <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+            <MudChip Class="ma-0" Color="Color.Primary" Variant="Variant.Text" Size="Size.Small" OnClick="(() => OnTextToClipboardAsync(ManagerToolkit.AelfSettings.VestingTokenVaultContractAddress))">
+                @ManagerToolkit.AelfSettings.VestingTokenVaultContractAddress
+            </MudChip>
+        </MudHidden>
+    </div>
+</MudContainer>
+
+<MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
+    @if (!IsLoaded)
+    {
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="56px" Width="100%" />
+        <MudSkeleton Class="mt-2" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="280px" Width="100%" />
+    }
+    else if (Vestings.Any())
+    {
+        <MudPaper Square="true" Elevation="10" Class="grey darken-4">
+            <MudTable Items="@Vestings" Class="mx-0 grey darken-4" FixedHeader="true" Breakpoint="Breakpoint.Sm">
+                <HeaderContent>
+                    <MudTh>Vesting Id</MudTh>
+                    <MudTh>Date Start</MudTh>
+                    <MudTh>Periods</MudTh>
+                    <MudTh>Revocable</MudTh>
+                    <MudTh>Total Amount</MudTh>
+                    <MudTh>Upcoming Release</MudTh>
+                    <MudTh>Status</MudTh>
+                    <MudTh>Actions</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    @if (@context.TokenInfo == null)
+                    {
+                    <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
+                    <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
+                    <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
+                    <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
+                    <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
+                    <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
+                    <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
+                    <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
+                    }
+                    else
+                    {
+                    <MudTd DataLabel="Vesting Id">
+                        <MudText Color="Color.Primary">
+                            <b Class="cursor-pointer" @onclick="(() => InvokeVestingPreviewerModal(context.Vesting.VestingId))">@context.Vesting.VestingId</b>
+                        </MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Date Created">@context.Vesting.CreationTime.ToDateTime().ToString(ClientConstants.LongDateTimeFormat)</MudTd>
+                    <MudTd DataLabel="Periods">@context.PeriodDisplay</MudTd>
+                    <MudTd DataLabel="Revocable">
+                        @if (context.IsRevocable)
+                            {
+                            <span>Yes</span>
+                            }
+                            else
+                            {
+                            <span>No</span>
+                            }
+                    </MudTd>
+                    <MudTd DataLabel="Total Amount">
+                        @context.TotalAmountDisplay
+                    </MudTd>
+                    <MudTd DataLabel="Upcoming Release">
+                        @if (context.UpcomingPeriod != null)
+                            {
+                            <span>@context.UpcomingPeriod.Name<br/>@context.UpcomingPeriod.UnlockTime.ToDateTime().ToString(ClientConstants.LongDateTimeFormat)</span>
+                            }
+                            else
+                            {
+                            <span>Unlocked</span>
+                            }
+                    </MudTd>
+                    <MudTd DataLabel="Status">
+                        <MudChip Color="@context.StatusColor" Size="Size.Small">
+                            @context.StatusDisplay
+                        </MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="Actions">
+                        <MudMenu Variant="Variant.Filled" Color="Color.Primary" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" DisableElevation="true" Icon="@Icons.Filled.KeyboardArrowDown" IconColor="Color.Secondary" Direction="Direction.Left" OffsetX="true">
+                            <MudMenuItem Disabled="@(!context.IsRevocable || !context.Vesting.IsActive)" OnClick="(() => InvokeRevokeVestingModalAsync(context))">Revoke Vesting</MudMenuItem>
+                        </MudMenu>
+                    </MudTd>
+                    }
+            </RowTemplate>
+        </MudTable>
+
+    </MudPaper>
+    }
+    else
+    {
+        <MudText Typo="Typo.h5" Class="mt-4">
+            No Vestings found. You haven't created any vesting.
+        </MudText>
+    }
+</MudContainer>

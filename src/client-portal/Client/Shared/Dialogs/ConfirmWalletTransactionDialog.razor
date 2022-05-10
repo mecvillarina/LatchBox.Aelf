@@ -1,0 +1,45 @@
+﻿<EditForm Model="@Model" OnValidSubmit="SubmitAsync">
+    <FluentValidationValidator @ref="_fluentValidationValidator" />
+    <MudDialog DisableSidePadding="true" ClassActions="px-2 pb-4" ClassContent="pt-0">
+        <DialogContent>
+            <MudContainer MaxWidth="MaxWidth.False">
+                <MudGrid Class="pt-0" Spacing="1">
+
+                    @if (!string.IsNullOrEmpty(GasDetails))
+                    {
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.caption" Class="text-white"><b>Estimated GAS</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white">@GasDetails</MudText>
+                        </MudItem>
+                    }
+
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.caption" Class="text-white"><b>Wallet Address</b></MudText>
+                        <MudText Typo="Typo.body1" Class="text-white">@Model.Address.ToMask(6)</MudText>
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.caption" Class="text-white"><b>Wallet File Password</b></MudText>
+                        <MudTextField Placeholder="Please input password" Variant="Variant.Outlined" Disabled="IsProcessing"
+                                      @bind-Value="Model.Password" For="@(() => Model.Password)"
+                                      InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
+                    </MudItem>
+                </MudGrid>
+            </MudContainer>
+        </DialogContent>
+        <DialogActions>
+            <MudButton DisableElevation Variant="Variant.Text" Disabled="IsProcessing" OnClick="Cancel">CANCEL</MudButton>
+            <MudButton DisableElevation Variant="Variant.Filled" Disabled="IsProcessing" ButtonType="ButtonType.Submit" Color="Color.Secondary">
+                @if (IsProcessing)
+                {
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                }
+                else
+                {
+                    <span>CONFIRM</span>
+                }
+            </MudButton>
+
+        </DialogActions>
+    </MudDialog>
+</EditForm>

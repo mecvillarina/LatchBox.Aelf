@@ -1,0 +1,183 @@
+syntax = "proto3";
+
+// some core imports for aelf chain types
+import "aelf/core.proto";
+import "aelf/options.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "LatchBox.Contracts.LockTokenVaultContract";
+
+// the contract definition: a gRPC service definition.
+service LockTokenVaultContract {
+
+    option (aelf.csharp_state) = "LatchBox.Contracts.LockTokenVaultContract.LockTokenVaultContractState";
+
+    rpc Initialize (google.protobuf.Empty) returns (google.protobuf.Empty) { }
+    rpc AddLock (AddLockInput) returns (google.protobuf.Empty) { }
+    rpc RevokeLock (RevokeLockInput) returns (google.protobuf.Empty) { }
+    rpc ClaimLock (ClaimLockInput) returns (google.protobuf.Empty) { }
+    rpc ClaimRefund (ClaimRefundInput) returns (google.protobuf.Empty) { }
+
+    rpc GetLocksCount(google.protobuf.Empty) returns (google.protobuf.Int64Value) {
+        option (aelf.is_view) = true;
+    }
+
+    rpc GetLockTransaction(google.protobuf.Int64Value) returns (GetLockTransactionOutput) {
+        option (aelf.is_view) = true;
+    }
+
+    rpc GetLocks(google.protobuf.Empty) returns (GetLockListOutput) {
+        option (aelf.is_view) = true;
+    }
+
+    rpc GetLocksByInitiator(aelf.Address) returns (GetLockListOutput) {
+        option (aelf.is_view) = true;
+    }
+
+    rpc GetLocksForReceiver(aelf.Address) returns (GetLockReceiverListOutput) {
+        option (aelf.is_view) = true;
+    }
+
+    rpc GetLocksByAsset(google.protobuf.StringValue) returns (GetLockListOutput) {
+        option (aelf.is_view) = true;
+    }
+
+    rpc GetRefunds(google.protobuf.Empty) returns (GetRefundListOutput) {
+        option (aelf.is_view) = true;
+    }
+
+    rpc GetAssetsCounter(google.protobuf.Empty) returns (GetLockAssetCounterListOutput) {
+        option (aelf.is_view) = true;
+    }
+}
+
+message AddLockInput {
+    string token_symbol = 1;
+    int64 total_amount = 2;
+    google.protobuf.Timestamp unlock_time = 3;
+    bool is_revocable = 4;
+    repeated AddLockReceiverInput receivers = 5;
+}
+
+message AddLockReceiverInput {
+    aelf.Address receiver = 1;
+    int64 amount = 2;
+}
+
+message ClaimLockInput {
+    int64 lock_id = 1;
+}
+
+message RevokeLockInput {
+    int64 lock_id = 1;
+}
+
+message ClaimRefundInput {
+    string token_symbol = 1 ;
+}
+
+message Lock {
+    int64 lock_id = 1;
+    string token_symbol = 2;
+    aelf.Address initiator = 3;
+    int64 total_amount = 4;
+    google.protobuf.Timestamp creation_time = 5;
+    google.protobuf.Timestamp start_time = 6;
+    google.protobuf.Timestamp unlock_time = 7;
+    bool is_revocable = 8;
+    bool is_revoked = 9;
+    bool is_active = 10;
+}
+
+message LockReceiver {
+    aelf.Address receiver = 1;
+    int64 amount = 2;
+    google.protobuf.Timestamp date_claimed = 3;
+    google.protobuf.Timestamp date_revoked = 4;
+    bool is_active = 5;
+}
+
+message Refund {
+    string token_symbol = 1;
+    int64 amount = 2;
+}
+
+message RefundList {
+    repeated Refund refunds = 1;
+}
+
+message LockAssetCounter {
+    int64 locked_amount = 1;
+    int64 unlocked_amount = 2;
+}
+
+message LockAssetCounterTokenSymbolList {
+    repeated string token_symbols = 1;
+}
+
+message LockIdList {
+    repeated int64 ids = 1;
+}
+
+message LockReceiverAddressList {
+    repeated aelf.Address receivers = 1;
+}
+
+message GetLockTransactionOutput {
+    Lock lock = 1;
+    repeated LockReceiver receivers = 2;
+}
+
+message GetLockListOutput {
+    repeated Lock locks = 1;
+}
+
+message GetLockTransactionForReceiverOutput {
+    Lock lock = 1;
+    LockReceiver receiver = 2;
+}
+
+message GetLockReceiverListOutput {
+    repeated GetLockTransactionForReceiverOutput lock_transactions = 1; 
+}
+
+message GetRefundListOutput {
+    repeated Refund refunds = 1;
+}
+
+message GetLockAssetCounterOutput {
+    string token_symbol = 1;    
+    int64 locked_amount = 2;
+    int64 unlocked_amount = 3; 
+}
+
+message GetLockAssetCounterListOutput {
+    repeated GetLockAssetCounterOutput assets = 1;
+}
+
+message OnCreatedLockEvent {
+    option (aelf.is_event) = true;
+    int64 lock_id = 1;
+}
+
+message OnClaimedLockEvent {
+    option (aelf.is_event) = true;
+    int64 lock_id = 1;
+    aelf.Address receiver = 2;
+    int64 claimed_amount = 3;
+}
+
+message OnRevokeLockEvent {
+    option (aelf.is_event) = true;
+    int64 lock_id = 1;
+    int64 unlocked_amount = 2;
+}
+
+message OnClaimedRefundEvent {
+    option (aelf.is_event) = true;
+    aelf.Address recipient = 1;
+    string token_symbol = 2;
+    int64 refunded_amount = 3;
+}
