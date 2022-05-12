@@ -42,6 +42,7 @@ namespace Client.Infrastructure.Managers
                 TotalAmount = model.TotalAmount,
                 UnlockTime = Timestamp.FromDateTime(model.UnlockTime),
                 IsRevocable = model.IsRevocable,
+                Remarks = model.Remarks
             };
 
             foreach (var receiver in model.Receivers)

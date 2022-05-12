@@ -40,7 +40,7 @@ namespace Client.Pages.Launchpads.Modals
                             await TokenManager.ApproveAsync(MultiCrowdSaleManager.ContactAddress, Model.TokenSymbol, amount);
                         }
 
-                        var saleStartDate = DateTime.SpecifyKind(Model.SaleEndDate.Value.Date, DateTimeKind.Utc);
+                        var saleStartDate = DateTime.SpecifyKind(Model.SaleStartDate.Value.Date, DateTimeKind.Utc);
                         var saleEndDate = DateTime.SpecifyKind(Model.SaleEndDate.Value.Date.AddDays(1).AddMilliseconds(-1), DateTimeKind.Utc);
 
                         var input = new CreateLaunchpadInputModel()

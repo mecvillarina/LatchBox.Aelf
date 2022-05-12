@@ -7,9 +7,6 @@ import "client.proto";
 
 option csharp_namespace = "AElf.Client.LatchBox.MultiCrowdSale";
 
-message InitializeInput {
-}
-
 message CreateInput {
     string name = 1;                            
     string token_symbol = 2;                    // SYMB
@@ -24,6 +21,15 @@ message CreateInput {
 
 message CancelInput {
     int64 crowd_sale_id = 1;
+}
+
+message CompleteInput {
+    int64 crowd_sale_id = 1;
+}
+
+message UpdateLockInfoInput {
+    int64 crowd_sale_id = 1;
+    int64 lock_id = 2;
 }
 
 message InvestInput {
@@ -44,6 +50,12 @@ message GetCrowdSalesInput  {
     bool is_ongoing = 2;
 }
 
+message NativeToken {
+    string symbol = 1;
+    string token_name = 2;
+    int32 decimals = 3;
+}
+
 message CrowdSale {
     int64 id = 1;
     client.Address initiator = 2;
@@ -58,13 +70,33 @@ message CrowdSale {
     int64 lock_until_duration_in_minutes = 11;
     bool is_active = 12;
     bool is_cancelled = 13;
+    bool is_success = 14;
+    int64 lock_id = 15;
 }
 
-message CrowdSalePurchase {
+message CrowdSaleInvestment {
     client.Address investor = 1;
     int64 token_amount = 2;
     google.protobuf.Timestamp date_last_purchased = 3; 
     google.protobuf.Timestamp date_refunded = 4; 
+}
+
+message CrowdSaleIds {
+    repeated int64 ids = 1;
+}
+
+message CrowdSaleInvestorList {
+    repeated client.Address investors = 1;
+}
+
+message Refund {
+    client.Address to = 1;
+    string token_symbol = 2;
+    int64 amount = 3;
+}
+
+message RefundList {
+    repeated Refund refunds = 1;
 }
 
 message CrowdSaleOutput {
@@ -76,9 +108,23 @@ message CrowdSaleOutput {
 }
 
 message CrowdSaleListOutput {
-    repeated CrowdSaleOutput crowd_sales = 1;
+    repeated CrowdSaleOutput list = 1;
 }
 
-message CrowdSaleInvestorListOutput {
-    repeated CrowdSalePurchase purchases = 1;
+message CrowdSaleInvestmentListOutput {
+    repeated CrowdSaleInvestment list = 1;
+}
+
+message CrowdSaleInvestmentOutput {
+    CrowdSale crowd_sale = 1;
+    CrowdSaleInvestment investment = 2;
+}
+
+message GetCrowdSaleInvestmentListOuput {
+    repeated CrowdSaleInvestmentOutput list = 1;
+}
+
+message ResultOutput {
+    bool is_success = 1;
+    string message = 2;
 }

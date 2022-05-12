@@ -23,7 +23,7 @@ namespace LatchBox.Contracts.LockTokenVaultContract
             return new Empty();
         }
 
-        public override Empty AddLock(AddLockInput input)
+        public override AddLockOuput AddLock(AddLockInput input)
         {
             AssertContractHasBeenInitialized();
 
@@ -59,7 +59,8 @@ namespace LatchBox.Contracts.LockTokenVaultContract
                 UnlockTime = input.UnlockTime,
                 IsActive = true,
                 IsRevocable = input.IsRevocable,
-                IsRevoked = false
+                IsRevoked = false,
+                Remarks = input.Remarks,
             };
 
             State.Locks[lockId] = lockObj;
@@ -92,7 +93,7 @@ namespace LatchBox.Contracts.LockTokenVaultContract
                 LockId = lockId
             });
 
-            return new Empty();
+            return new AddLockOuput() { LockId = lockId };
         }
 
         public override Empty ClaimLock(ClaimLockInput input)

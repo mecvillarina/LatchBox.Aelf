@@ -18,7 +18,8 @@ service MultiCrowdSaleContract {
     rpc Initialize (google.protobuf.Empty) returns (google.protobuf.Empty) { }
     rpc Create (CreateInput) returns (google.protobuf.Empty) { }
     rpc Cancel (CancelInput) returns (google.protobuf.Empty) { }
-    rpc Complete (CompleteInput) returns (google.protobuf.Empty) { }
+    rpc Complete (CompleteInput) returns (ResultOutput) { }
+    rpc UpdateLockInfo (UpdateLockInfoInput) returns (google.protobuf.Empty) { }
 
     rpc Invest (InvestInput) returns (google.protobuf.Empty) { }
 
@@ -34,13 +35,9 @@ service MultiCrowdSaleContract {
         option (aelf.is_view) = true;
     }
 
-    rpc GetCrowdSaleInvestors (GetCrowdSaleInvestorsInput) returns (CrowdSaleInvestorListOutput) { 
+    rpc GetCrowdSaleInvestments (GetCrowdSaleInvestorsInput) returns (CrowdSaleInvestmentListOutput) { 
         option (aelf.is_view) = true;
     }
-}
-
-message InitializeInput {
-
 }
 
 message CreateInput {
@@ -61,6 +58,11 @@ message CancelInput {
 
 message CompleteInput {
     int64 crowd_sale_id = 1;
+}
+
+message UpdateLockInfoInput {
+    int64 crowd_sale_id = 1;
+    int64 lock_id = 2;
 }
 
 message InvestInput {
@@ -101,9 +103,11 @@ message CrowdSale {
     int64 lock_until_duration_in_minutes = 11;
     bool is_active = 12;
     bool is_cancelled = 13;
+    bool is_success = 14;
+    int64 lock_id = 15;
 }
 
-message CrowdSalePurchase {
+message CrowdSaleInvestment {
     aelf.Address investor = 1;
     int64 token_amount = 2;
     google.protobuf.Timestamp date_last_purchased = 3; 
@@ -114,7 +118,7 @@ message CrowdSaleIds {
     repeated int64 ids = 1;
 }
 
-message CrowdSaleInvestors {
+message CrowdSaleInvestorList {
     repeated aelf.Address investors = 1;
 }
 
@@ -137,9 +141,23 @@ message CrowdSaleOutput {
 }
 
 message CrowdSaleListOutput {
-    repeated CrowdSaleOutput crowd_sales = 1;
+    repeated CrowdSaleOutput list = 1;
 }
 
-message CrowdSaleInvestorListOutput {
-    repeated CrowdSalePurchase purchases = 1;
+message CrowdSaleInvestmentListOutput {
+    repeated CrowdSaleInvestment list = 1;
+}
+
+message CrowdSaleInvestmentOutput {
+    CrowdSale crowd_sale = 1;
+    CrowdSaleInvestment investment = 2;
+}
+
+message GetCrowdSaleInvestmentListOuput {
+    repeated CrowdSaleInvestmentOutput list = 1;
+}
+
+message ResultOutput {
+    bool is_success = 1;
+    string message = 2;
 }

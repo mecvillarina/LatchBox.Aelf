@@ -10,6 +10,7 @@ namespace Client.Infrastructure.Models.Inputs
         public DateTime UnlockTime { get; set; }
         public bool IsRevocable { get; set; }
         public List<AddLockReceiverInputModel> Receivers { get; set; }
+        public string Remarks { get; set; }
     }
 
     public class AddLockReceiverInputModel

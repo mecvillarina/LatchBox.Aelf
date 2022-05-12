@@ -74,10 +74,15 @@
                     </MudItem>
 
                     <MudItem xs="12" md="6">
-                        <div>
-                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Invest</b></MudText>
-                            <MudButton OnClick="InvokeInvestOnLaunchpadModalAsync">Invest</MudButton>
-                        </div>
+                        @if (Model.CanBuy)
+                        {
+                            <MudButton OnClick="InvokeInvestOnLaunchpadModalAsync" Color="Color.Primary" Variant="Variant.Filled">Invest</MudButton>
+                        }
+
+                        @if (Model.Launchpad.IsSuccess)
+                        {
+                            <MudButton OnClick="InvokeLockPreviewerModal" Color="Color.Primary" Variant="Variant.Filled">View Vestings</MudButton>
+                        }
                     </MudItem>
 
                     <MudItem xs="12">

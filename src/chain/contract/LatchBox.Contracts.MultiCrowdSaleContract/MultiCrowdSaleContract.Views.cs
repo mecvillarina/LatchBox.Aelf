@@ -19,7 +19,7 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
 
             foreach (var crowdSaleId in crowdSalesByInitiator.Ids)
             {
-                output.CrowdSales.Add(GetCrowdSaleOutput(crowdSaleId));
+                output.List.Add(GetCrowdSaleOutput(crowdSaleId));
             }
 
             return output;
@@ -34,7 +34,7 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
                 for (int i = 1; i < State.SelfIncresingCrowdSaleId.Value; i++)
                 {
                     var sale = GetCrowdSaleOutput(i);
-                    output.CrowdSales.Add(sale);
+                    output.List.Add(sale);
                 }
             }
             else
@@ -46,11 +46,11 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
                     var sale = GetCrowdSaleOutput(crowdSaleId);
                     if (input.IsUpcoming && sale.CrowdSale.SaleStartDate >= Context.CurrentBlockTime)
                     {
-                        output.CrowdSales.Add(sale);
+                        output.List.Add(sale);
                     }
                     else if (input.IsOngoing && sale.CrowdSale.SaleStartDate < Context.CurrentBlockTime && sale.CrowdSale.SaleEndDate > Context.CurrentBlockTime)
                     {
-                        output.CrowdSales.Add(sale);
+                        output.List.Add(sale);
                     }
                 }
             }
@@ -58,19 +58,19 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             return output;
         }
 
-        public override CrowdSaleInvestorListOutput GetCrowdSaleInvestors(GetCrowdSaleInvestorsInput input)
+        public override CrowdSaleInvestmentListOutput GetCrowdSaleInvestments(GetCrowdSaleInvestorsInput input)
         {
             Assert(input.CrowdSaleId < State.SelfIncresingCrowdSaleId.Value, "Invalid Sale Id");
 
             var crowdSaleId = input.CrowdSaleId;
-            var output = new CrowdSaleInvestorListOutput();
+            var output = new CrowdSaleInvestmentListOutput();
 
             var investors = State.CrowdSaleInvestors[input.CrowdSaleId].Investors;
 
             foreach (var investor in investors)
             {
-                var purchase = State.CrowdSalePurchases[crowdSaleId][investor];
-                output.Purchases.Add(purchase);
+                var investment = State.CrowdSaleInvestments[crowdSaleId][investor];
+                output.List.Add(investment);
             }
 
             return output;

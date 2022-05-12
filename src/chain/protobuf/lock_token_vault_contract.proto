@@ -15,7 +15,7 @@ service LockTokenVaultContract {
     option (aelf.csharp_state) = "LatchBox.Contracts.LockTokenVaultContract.LockTokenVaultContractState";
 
     rpc Initialize (google.protobuf.Empty) returns (google.protobuf.Empty) { }
-    rpc AddLock (AddLockInput) returns (google.protobuf.Empty) { }
+    rpc AddLock (AddLockInput) returns (AddLockOuput) { }
     rpc RevokeLock (RevokeLockInput) returns (google.protobuf.Empty) { }
     rpc ClaimLock (ClaimLockInput) returns (google.protobuf.Empty) { }
     rpc ClaimRefund (ClaimRefundInput) returns (google.protobuf.Empty) { }
@@ -59,6 +59,7 @@ message AddLockInput {
     google.protobuf.Timestamp unlock_time = 3;
     bool is_revocable = 4;
     repeated AddLockReceiverInput receivers = 5;
+    string remarks = 6;
 }
 
 message AddLockReceiverInput {
@@ -89,6 +90,7 @@ message Lock {
     bool is_revocable = 8;
     bool is_revoked = 9;
     bool is_active = 10;
+    string remarks = 11;
 }
 
 message LockReceiver {
@@ -123,6 +125,10 @@ message LockIdList {
 
 message LockReceiverAddressList {
     repeated aelf.Address receivers = 1;
+}
+
+message AddLockOuput {
+    int64 lock_id = 1;
 }
 
 message GetLockTransactionOutput {

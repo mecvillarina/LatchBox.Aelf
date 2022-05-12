@@ -42,7 +42,7 @@
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel="Id">
-                        <MudText Typo="Typo.body1" Color="Color.Primary" Class="cursor-pointer">
+                        <MudText Typo="Typo.body1" Color="Color.Primary" Class="cursor-pointer" @onclick="(() => OnViewLaunchpad(context))">
                             <b>@context.Launchpad.Id</b>
                         </MudText>
                     </MudTd>
@@ -75,6 +75,8 @@
                     <MudTd DataLabel="Actions">
                         <MudMenu Variant="Variant.Filled" Color="Color.Primary" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" DisableElevation="true" Icon="@Icons.Filled.MoreVert" IconColor="Color.Secondary" Direction="Direction.Left" OffsetX="true">
                             <MudMenuItem Disabled="!context.CanCancel" OnClick="(() => InvokeCancelLaunchpadConfirmationAsync(context))">Cancel</MudMenuItem>
+                            <MudMenuItem Disabled="!context.CanComplete" OnClick="(() => InvokeCompleteLaunchpadConfirmationAsync(context))">Complete</MudMenuItem>
+                            <MudMenuItem Disabled="!context.CanRefund" OnClick="(() => InvokeCompleteLaunchpadConfirmationAsync(context))">Refund</MudMenuItem>
                         </MudMenu>
                     </MudTd>
                 </RowTemplate>

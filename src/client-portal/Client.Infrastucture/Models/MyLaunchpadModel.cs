@@ -13,7 +13,7 @@ namespace Client.Infrastructure.Models
         public string Status { get; set; }
         public Color StatusColor { get; set; }
         public bool CanCancel { get; set; }
-        public bool CanComplete { get; set; }
+        public bool CanComplete { get; set; } = true;
         public bool CanRefund { get; set; }
 
         public MyLaunchpadModel(CrowdSaleOutput output)
@@ -28,43 +28,49 @@ namespace Client.Infrastructure.Models
             {
                 CanCancel = true;
 
-                if(Launchpad.SaleStartDate.ToDateTimeOffset() > System.DateTimeOffset.UtcNow)
+                if (Launchpad.SaleStartDate.ToDateTimeOffset() > System.DateTimeOffset.UtcNow)
                 {
                     Status = "UPCOMING";
                     StatusColor = Color.Primary;
                 }
-                if (Launchpad.SaleEndDate.ToDateTimeOffset() > System.DateTimeOffset.UtcNow)
+                else if (Launchpad.SaleEndDate.ToDateTimeOffset() > System.DateTimeOffset.UtcNow)
                 {
-                    Status = "ON SALE";
+                    Status = "ONGOING";
                     StatusColor = Color.Primary;
                 }
                 else
                 {
-                    Status = "ENDED";
-                    StatusColor = Color.Info;
-                    CanComplete = true;
+                    if (Launchpad.HardCapNativeTokenAmount == RaisedAmount || RaisedAmount >= Launchpad.SoftCapNativeTokenAmount)
+                    {
+                        CanComplete = true;
+                        Status = "NEED ACTION TO COMPLETE";
+                        StatusColor = Color.Info;
+                    }
+                    else
+                    {
+                        CanRefund = true;
+                        Status = "NEED ACTION TO REFUND";
+                        StatusColor = Color.Error;
+                    }
                 }
             }
             else
             {
                 if (!Launchpad.IsCancelled)
                 {
-                    if (Launchpad.HardCapNativeTokenAmount == RaisedAmount || RaisedAmount >= Launchpad.SoftCapNativeTokenAmount)
+                    if (Launchpad.IsSuccess)
                     {
-                        Status = "SUCCESS";
+                        Status = "ENDED";
                         StatusColor = Color.Info;
-                        
                     }
                     else
                     {
-                        CanRefund = true;
                         Status = "GOAL NOT MET";
                         StatusColor = Color.Error;
                     }
                 }
                 else
                 {
-                    CanRefund = true;
                     Status = "CANCELLED";
                     StatusColor = Color.Error;
                 }

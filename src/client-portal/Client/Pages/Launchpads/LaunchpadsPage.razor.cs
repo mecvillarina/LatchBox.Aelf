@@ -47,7 +47,7 @@ namespace Client.Pages.Launchpads
             NativeTokenInfo = await TokenManager.GetNativeTokenInfoAsync();
             await MultiCrowdSaleManager.InitializeAsync();
             var output = await MultiCrowdSaleManager.GetCrowdSalesAsync(isUpcoming, isOngoing);
-            LaunchpadList = output.CrowdSales.Select(x => new LaunchpadModel(x)).ToList();
+            LaunchpadList = output.List.Select(x => new LaunchpadModel(x)).ToList();
             IsLoaded = true;
             StateHasChanged();
         }

@@ -43,12 +43,14 @@
                     <MudTh>Token</MudTh>
                     <MudTh>Date Unlock</MudTh>
                     <MudTh>Claimable Amount</MudTh>
+                    <MudTh>Remarks</MudTh>
                     <MudTh>Status</MudTh>
                     <MudTh>Actions</MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     @if (@context.TokenInfo == null)
                     {
+                    <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
                     <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
                     <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
                     <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
@@ -67,6 +69,9 @@
                     <MudTd DataLabel="Date Unlock">@context.Lock.UnlockTime.ToDateTime().ToString(ClientConstants.LongDateTimeFormat)</MudTd>
                     <MudTd DataLabel="Claimable Amount">
                         @context.AmountDisplay
+                    </MudTd>
+                     <MudTd DataLabel="Remarks">
+                        @context.Lock.Remarks
                     </MudTd>
                     <MudTd DataLabel="Status">
                         <MudChip Color="@context.StatusColor" Size="Size.Small">
