@@ -59,14 +59,10 @@ namespace Client.Pages.Launchpads.Modals
                         var createResult = await MultiCrowdSaleManager.CreateAsync(input);
 
                         if (!string.IsNullOrEmpty(createResult.Error))
-                        {
                             throw new GeneralException(createResult.Error);
-                        }
-                        else
-                        {
-                            AppDialogService.ShowSuccess("Launchpad creation success.");
-                            MudDialog.Close();
-                        }
+
+                        AppDialogService.ShowSuccess("Launchpad creation success.");
+                        MudDialog.Close();
                     }
                 }
                 catch (Exception ex)

@@ -46,14 +46,10 @@ namespace Client.Pages.Tokens.Modals
                         var issueTokenResult = await TokenManager.IssueAsync(Model.Symbol, amount, Model.Memo, Model.To);
 
                         if (!string.IsNullOrEmpty(issueTokenResult.Error))
-                        {
                             throw new GeneralException(issueTokenResult.Error);
-                        }
-                        else
-                        {
-                            AppDialogService.ShowSuccess("Issue new token success.");
-                            MudDialog.Close();
-                        }
+
+                        AppDialogService.ShowSuccess("Issue new token success.");
+                        MudDialog.Close();
                     }
                 }
                 catch (Exception ex)

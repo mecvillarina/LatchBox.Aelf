@@ -58,59 +58,55 @@ namespace Client.Pages.Locks.Modals
                         var token = await TokenManager.GetBalanceAsync(TokenInfo.Symbol);
 
                         if (token.Balance.ToAmount(TokenInfo.Decimals) < Convert.ToDecimal(Model.Receivers.Sum(x => x.Amount)))
-                        {
                             throw new GeneralException($"Insufficient {TokenInfo.Symbol} balance.");
-                        }
-                        else
+
+                        var authenticated = await AppDialogService.ShowConfirmWalletTransactionAsync();
+
+                        if (authenticated)
                         {
-                            var authenticated = await AppDialogService.ShowConfirmWalletTransactionAsync();
+                            var wallet = await WalletManager.GetWalletInformationAsync();
 
-                            if (authenticated)
+                            long totalAmount = 0;
+
+                            var inputReceivers = new List<AddLockReceiverInputModel>();
+
+                            foreach (var receiver in Model.Receivers)
                             {
-                                var wallet = await WalletManager.GetWalletInformationAsync();
-
-                                long totalAmount = 0;
-
-                                var inputReceivers = new List<AddLockReceiverInputModel>();
-
-                                foreach (var receiver in Model.Receivers)
+                                var amount = receiver.Amount.ToChainAmount(TokenInfo.Decimals);
+                                inputReceivers.Add(new AddLockReceiverInputModel()
                                 {
-                                    var amount = receiver.Amount.ToChainAmount(TokenInfo.Decimals);
-                                    inputReceivers.Add(new AddLockReceiverInputModel()
-                                    {
-                                        ReceiverAddress = receiver.ReceiverAddress,
-                                        Amount = amount
-                                    });
+                                    ReceiverAddress = receiver.ReceiverAddress,
+                                    Amount = amount
+                                });
 
-                                    totalAmount += amount;
-                                }
-
-                                var unlockTime = DateTime.SpecifyKind(Model.UnlockDate.Value.Date.AddDays(1).AddMilliseconds(-1), DateTimeKind.Utc);
-
-                                var inputModel = new AddLockInputModel()
-                                {
-                                    TokenSymbol = Model.TokenSymbol,
-                                    TotalAmount = totalAmount,
-                                    IsRevocable = Model.IsRevocable,
-                                    Receivers = inputReceivers,
-                                    UnlockTime = unlockTime,
-                                    Remarks = Model.Remarks
-                                };
-
-                                var getAllowanceResult = await TokenManager.GetAllowanceAsync(Model.TokenSymbol, wallet.Address, LockTokenVaultManager.ContactAddress);
-
-                                if (getAllowanceResult.Allowance < totalAmount)
-                                {
-                                    await TokenManager.ApproveAsync(LockTokenVaultManager.ContactAddress, Model.TokenSymbol, totalAmount);
-                                }
-
-                                var addLockResult = await LockTokenVaultManager.AddLockAsync(inputModel);
-                                if (!string.IsNullOrEmpty(addLockResult.Error))
-                                    throw new GeneralException(addLockResult.Error);
-
-                                AppDialogService.ShowSuccess("Add Lock success.");
-                                MudDialog.Close();
+                                totalAmount += amount;
                             }
+
+                            var unlockTime = DateTime.SpecifyKind(Model.UnlockDate.Value.Date.AddDays(1).AddMilliseconds(-1), DateTimeKind.Utc);
+
+                            var inputModel = new AddLockInputModel()
+                            {
+                                TokenSymbol = Model.TokenSymbol,
+                                TotalAmount = totalAmount,
+                                IsRevocable = Model.IsRevocable,
+                                Receivers = inputReceivers,
+                                UnlockTime = unlockTime,
+                                Remarks = Model.Remarks
+                            };
+
+                            var getAllowanceResult = await TokenManager.GetAllowanceAsync(Model.TokenSymbol, wallet.Address, LockTokenVaultManager.ContactAddress);
+
+                            if (getAllowanceResult.Allowance < totalAmount)
+                            {
+                                await TokenManager.ApproveAsync(LockTokenVaultManager.ContactAddress, Model.TokenSymbol, totalAmount);
+                            }
+
+                            var addLockResult = await LockTokenVaultManager.AddLockAsync(inputModel);
+                            if (!string.IsNullOrEmpty(addLockResult.Error))
+                                throw new GeneralException(addLockResult.Error);
+
+                            AppDialogService.ShowSuccess("Add Lock success.");
+                            MudDialog.Close();
                         }
                     }
                     catch (Exception ex)
