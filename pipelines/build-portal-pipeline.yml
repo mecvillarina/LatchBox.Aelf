@@ -12,19 +12,14 @@ steps:
     displayName: 'Use .NET Core SDK $(dotnetSdkVersion)'
     inputs:
       version: '$(dotnetSdkVersion)'
-      
-  - task: NuGetCommand@2
-    inputs:
-      command: 'restore'
-      feedsToUse: 'config'
-      nugetConfigPath: '$(nugetPath)'
   
   - task: DotNetCoreCLI@2
     displayName: 'Restore project dependencies'
     inputs:
       command: 'restore'
       projects: '$(projectFile)'
-
+      feedsToUse: 'config'
+      nugetConfigPath: '$(nugetPath)'
 
   - task: DotNetCoreCLI@2
     displayName: 'Build the project - $(buildConfiguration)'
@@ -32,6 +27,8 @@ steps:
       command: 'build'
       arguments: '--no-restore --configuration $(buildConfiguration)'
       projects: '$(projectFile)'
+      feedsToUse: 'config'
+      nugetConfigPath: '$(nugetPath)'
       
   - task: DotNetCoreCLI@2
     displayName: 'Publish the project - $(buildConfiguration)'
@@ -41,6 +38,9 @@ steps:
       publishWebProjects: false
       arguments: '--no-build --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
       zipAfterPublish: true
+      feedsToUse: 'config'
+      nugetConfigPath: '$(nugetPath)'
+
 
   - publish: '$(Build.ArtifactStagingDirectory)'
     artifact: drop
