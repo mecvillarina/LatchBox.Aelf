@@ -40,7 +40,6 @@ namespace Client.Pages.Locks
 
             Locks.Clear();
 
-            var result = await LockTokenVaultManager.InitializeAsync();
             var lockListOutput = await LockTokenVaultManager.GetLocksByInitiatorAsync(Wallet.Address);
 
             foreach (var @lock in lockListOutput.Locks)
