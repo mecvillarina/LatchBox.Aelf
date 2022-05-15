@@ -5,7 +5,8 @@ variables:
   dotnetSdkVersion: '6.0.x'
   buildConfiguration: 'Release'
   projectFile: 'src/client-portal/Client/*.csproj'
-
+  nugetPath: 'src/client-portal/nuget.config'
+  
 steps:
   - task: UseDotNet@2
     displayName: 'Use .NET Core SDK $(dotnetSdkVersion)'
@@ -16,7 +17,7 @@ steps:
     inputs:
       command: 'restore'
       feedsToUse: 'config'
-      nugetConfigPath: 'nuget.config'
+      nugetConfigPath: '$(nugetPath)'
   
   - task: DotNetCoreCLI@2
     displayName: 'Restore project dependencies'
