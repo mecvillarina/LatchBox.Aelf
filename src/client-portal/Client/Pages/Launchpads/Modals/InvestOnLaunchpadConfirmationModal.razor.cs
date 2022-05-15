@@ -58,14 +58,10 @@ namespace Client.Pages.Launchpads.Modals
 
                         var investResult = await MultiCrowdSaleManager.InvestAsync(LaunchpadModel.Launchpad.Id, amount);
                         if (!string.IsNullOrEmpty(investResult.Error))
-                        {
                             throw new GeneralException(investResult.Error);
-                        }
-                        else
-                        {
-                            AppDialogService.ShowSuccess("Launchpad invest success.");
-                            MudDialog.Close();
-                        }
+
+                        AppDialogService.ShowSuccess("Launchpad invest success.");
+                        MudDialog.Close();
                     }
                 }
                 catch (Exception ex)

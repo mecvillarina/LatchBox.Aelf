@@ -48,6 +48,11 @@ namespace Client.Pages
         {
             IsLoaded = false;
 
+            await MultiCrowdSaleManager.InitializeAsync();
+            await LockTokenVaultManager.InitializeAsync();
+            await VestingTokenVaultManager.InitializeAsync();
+
+            AppDialogService.ShowSuccess("Success");
             IsLoaded = true;
             StateHasChanged();
         }

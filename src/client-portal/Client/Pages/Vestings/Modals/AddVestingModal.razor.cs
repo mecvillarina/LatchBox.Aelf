@@ -53,76 +53,67 @@ namespace Client.Pages.Vestings.Modals
                         var token = await TokenManager.GetBalanceAsync(TokenInfo.Symbol);
 
                         if (token.Balance.ToAmount(TokenInfo.Decimals) < Convert.ToDecimal(Model.Periods.Sum(x => x.Receivers.Sum(y => y.Amount))))
-                        {
                             throw new GeneralException($"Insufficient {TokenInfo.Symbol} balance.");
-                        }
-                        else
+
+                        var authenticated = await AppDialogService.ShowConfirmWalletTransactionAsync();
+
+                        if (authenticated)
                         {
-                            var authenticated = await AppDialogService.ShowConfirmWalletTransactionAsync();
+                            var wallet = await WalletManager.GetWalletInformationAsync();
 
-                            if (authenticated)
+                            long totalAmount = 0;
+
+                            var inputPeriods = new List<AddVestingPeriodInputModel>();
+
+                            foreach (var periodModel in Model.Periods)
                             {
-                                var wallet = await WalletManager.GetWalletInformationAsync();
+                                var period = new AddVestingPeriodInputModel();
+                                period.Name = periodModel.Name;
+                                period.UnlockTime = DateTime.SpecifyKind(periodModel.UnlockDate.Value.Date.AddDays(1).AddMilliseconds(-1), DateTimeKind.Utc);
+                                period.Receivers = new List<AddVestingReceiverInputModel>();
 
-                                long totalAmount = 0;
-
-                                var inputPeriods = new List<AddVestingPeriodInputModel>();
-
-                                foreach (var periodModel in Model.Periods)
+                                foreach (var receiverModel in periodModel.Receivers)
                                 {
-                                    var period = new AddVestingPeriodInputModel();
-                                    period.Name = periodModel.Name;
-                                    period.UnlockTime = DateTime.SpecifyKind(periodModel.UnlockDate.Value.Date.AddDays(1).AddMilliseconds(-1), DateTimeKind.Utc);
-                                    period.Receivers = new List<AddVestingReceiverInputModel>();
+                                    var amount = receiverModel.Amount.ToChainAmount(TokenInfo.Decimals);
 
-                                    foreach (var receiverModel in periodModel.Receivers)
+                                    period.Receivers.Add(new AddVestingReceiverInputModel()
                                     {
-                                        var amount = receiverModel.Amount.ToChainAmount(TokenInfo.Decimals);
+                                        Name = receiverModel.Name,
+                                        Address = receiverModel.ReceiverAddress,
+                                        Amount = amount
+                                    });
 
-                                        period.Receivers.Add(new AddVestingReceiverInputModel()
-                                        {
-                                            Name = receiverModel.Name,
-                                            Address = receiverModel.ReceiverAddress,
-                                            Amount = amount
-                                        });
-
-                                        period.TotalAmount += amount;
-                                    }
-
-                                    inputPeriods.Add(period);
-
-                                    totalAmount += period.TotalAmount;
+                                    period.TotalAmount += amount;
                                 }
 
-                                var inputModel = new AddVestingInputModel()
-                                {
-                                    TokenSymbol = Model.TokenSymbol,
-                                    TotalAmount = totalAmount,
-                                    IsRevocable = Model.IsRevocable,
-                                    Periods = inputPeriods
-                                };
+                                inputPeriods.Add(period);
 
-                                var getAllowanceResult = await TokenManager.GetAllowanceAsync(Model.TokenSymbol, wallet.Address, VestingTokenVaultManager.ContactAddress);
-
-                                if (getAllowanceResult.Allowance < totalAmount)
-                                {
-                                    await TokenManager.ApproveAsync(VestingTokenVaultManager.ContactAddress, Model.TokenSymbol, totalAmount);
-                                }
-
-                                var addVestingResult = await VestingTokenVaultManager.AddVestingAsync(inputModel);
-
-                                if (!string.IsNullOrEmpty(addVestingResult.Error))
-                                {
-                                    throw new GeneralException(addVestingResult.Error);
-                                }
-                                else
-                                {
-                                    AppDialogService.ShowSuccess("Add Vesting success.");
-                                    MudDialog.Close();
-                                }
+                                totalAmount += period.TotalAmount;
                             }
-                        }
 
+                            var inputModel = new AddVestingInputModel()
+                            {
+                                TokenSymbol = Model.TokenSymbol,
+                                TotalAmount = totalAmount,
+                                IsRevocable = Model.IsRevocable,
+                                Periods = inputPeriods
+                            };
+
+                            var getAllowanceResult = await TokenManager.GetAllowanceAsync(Model.TokenSymbol, wallet.Address, VestingTokenVaultManager.ContactAddress);
+
+                            if (getAllowanceResult.Allowance < totalAmount)
+                            {
+                                await TokenManager.ApproveAsync(VestingTokenVaultManager.ContactAddress, Model.TokenSymbol, totalAmount);
+                            }
+
+                            var addVestingResult = await VestingTokenVaultManager.AddVestingAsync(inputModel);
+
+                            if (!string.IsNullOrEmpty(addVestingResult.Error))
+                                throw new GeneralException(addVestingResult.Error);
+
+                            AppDialogService.ShowSuccess("Add Vesting success.");
+                            MudDialog.Close();
+                        }
                     }
                     catch (Exception ex)
                     {

@@ -41,7 +41,6 @@ namespace Client.Pages.Vestings
 
             Vestings.Clear();
 
-            var result = await VestingTokenVaultManager.InitializeAsync();
             var vestingListOutput = await VestingTokenVaultManager.GetVestingsByInitiatorAsync(Wallet.Address);
 
             foreach (var transaction in vestingListOutput.Transactions)

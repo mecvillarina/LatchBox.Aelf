@@ -40,14 +40,10 @@ namespace Client.Pages.Locks.Modals
                         var claimLockResult = await LockTokenVaultManager.ClaimLockAsync(Model.LockId);
 
                         if (!string.IsNullOrEmpty(claimLockResult.Error))
-                        {
                             throw new GeneralException(claimLockResult.Error);
-                        }
-                        else
-                        {
-                            AppDialogService.ShowSuccess("Claim Lock success.");
-                            MudDialog.Close();
-                        }
+
+                        AppDialogService.ShowSuccess("Claim Lock success.");
+                        MudDialog.Close();
                     }
                 }
                 catch (Exception ex)

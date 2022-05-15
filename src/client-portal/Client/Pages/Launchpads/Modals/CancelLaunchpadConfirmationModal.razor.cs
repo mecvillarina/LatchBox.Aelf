@@ -29,14 +29,10 @@ namespace Client.Pages.Launchpads.Modals
                     var cancelResult = await MultiCrowdSaleManager.CancelAsync(Model.Launchpad.Id);
 
                     if (!string.IsNullOrEmpty(cancelResult.Error))
-                    {
                         throw new GeneralException(cancelResult.Error);
-                    }
-                    else
-                    {
-                        AppDialogService.ShowSuccess("Launchpad cancellation success.");
-                        MudDialog.Close();
-                    }
+
+                    AppDialogService.ShowSuccess("Launchpad cancellation success.");
+                    MudDialog.Close();
                 }
             }
             catch (Exception ex)

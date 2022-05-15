@@ -1,18 +1,22 @@
 ﻿using AElf.Client.MultiToken;
 using Client.Infrastructure.Models;
 using Client.Pages.Launchpads.Modals;
+using Client.Pages.Locks.Modals;
+using Client.Pages.Modals;
+using Client.Parameters;
 using Client.Services;
 using MudBlazor;
 
 namespace Client.Pages.Launchpads
 {
-    public partial class LaunchpadsPage
+    public partial class InvestedLaunchpadsPage
     {
         public bool IsLoaded { get; set; }
 
         public TokenInfo NativeTokenInfo { get; set; }
-        public List<LaunchpadModel> LaunchpadList { get; set; } = new();
-        public int LaunchpadStatus { get; set; }
+        public WalletInformation Wallet { get; set; }
+        public List<InvestedLaunchpadModel> LaunchpadList { get; set; } = new();
+
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
@@ -23,6 +27,7 @@ namespace Client.Pages.Launchpads
 
                     await InvokeAsync(async () =>
                     {
+                        Wallet = await WalletManager.GetWalletInformationAsync();
                         await FetchDataAsync();
                     });
                 });
@@ -34,30 +39,15 @@ namespace Client.Pages.Launchpads
             IsLoaded = false;
             StateHasChanged();
 
-            bool isUpcoming = false;
-            bool isOngoing = false;
-
-            switch (LaunchpadStatus)
-            {
-                case 1: isUpcoming = true; break;
-                case 2: isOngoing = true; break;
-                default: isUpcoming = isOngoing = false; break;
-            }
-
             NativeTokenInfo = await TokenManager.GetNativeTokenInfoAsync();
-            var output = await MultiCrowdSaleManager.GetCrowdSalesAsync(isUpcoming, isOngoing);
-            LaunchpadList = output.List.Select(x => new LaunchpadModel(x)).ToList();
+            var output = await MultiCrowdSaleManager.GetCrowdSalesByInvestorAsync(Wallet.Address);
+            LaunchpadList = output.List.Select(x => new InvestedLaunchpadModel(x)).ToList();
+
             IsLoaded = true;
             StateHasChanged();
         }
 
-        public async Task OnStatusChanged(int value)
-        {
-            LaunchpadStatus = value;
-            await FetchDataAsync();
-        }
-
-        private void OnViewLaunchpad(LaunchpadModel model)
+        private void OnViewLaunchpad(InvestedLaunchpadModel model)
         {
             var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
             var parameters = new DialogParameters()
@@ -68,5 +58,11 @@ namespace Client.Pages.Launchpads
 
             DialogService.Show<LaunchpadPreviewerModal>($"{model.Launchpad.Name}", parameters, options);
         }
+
+        private void InvokeLockPreviewerModal(long lockId)
+        {
+            NavigationManager.NavigateTo($"/locks/claims/{lockId}");
+        }
+
     }
 }

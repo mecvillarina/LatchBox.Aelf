@@ -42,14 +42,10 @@ namespace Client.Pages.Locks.Modals
                         var revokeLockResult = await LockTokenVaultManager.RevokeLockAsync(Model.LockId);
 
                         if (!string.IsNullOrEmpty(revokeLockResult.Error))
-                        {
                             throw new GeneralException(revokeLockResult.Error);
-                        }
-                        else
-                        {
-                            AppDialogService.ShowSuccess("Revoke Lock success. Go to My Refunds Page to claim your token refunds.");
-                            MudDialog.Close();
-                        }
+
+                        AppDialogService.ShowSuccess("Revoke Lock success. Go to My Refunds Page to claim your token refunds.");
+                        MudDialog.Close();
                     }
                 }
                 catch (Exception ex)

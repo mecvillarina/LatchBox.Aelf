@@ -34,25 +34,19 @@ namespace Client.Pages.Tokens.Modals
                         var createTokenResult = await TokenManager.CreateAsync(Model.Symbol, Model.TokenName, totalSupply, Model.Decimals, Model.IsBurnable);
 
                         if (!string.IsNullOrEmpty(createTokenResult.Error))
-                        {
                             throw new GeneralException(createTokenResult.Error);
-                        }
-                        else
+
+                        if (initialSupply > 0)
                         {
-                            if (initialSupply > 0)
-                            {
-                                var issueTokenResult = await TokenManager.IssueAsync(Model.Symbol, initialSupply, "Initial Supply", wallet.Address);
+                            var issueTokenResult = await TokenManager.IssueAsync(Model.Symbol, initialSupply, "Initial Supply", wallet.Address);
 
-                                if (!string.IsNullOrEmpty(issueTokenResult.Error))
-                                {
-                                    throw new GeneralException(issueTokenResult.Error);
-                                }
-                            }
-
-                            await TokenManager.AddTokenSymbolToStorageAsync(Model.Symbol.ToUpper());
-                            AppDialogService.ShowSuccess("Token creation success.");
-                            MudDialog.Close();
+                            if (!string.IsNullOrEmpty(issueTokenResult.Error))
+                                throw new GeneralException(issueTokenResult.Error);
                         }
+
+                        await TokenManager.AddTokenSymbolToStorageAsync(Model.Symbol.ToUpper());
+                        AppDialogService.ShowSuccess("Token creation success.");
+                        MudDialog.Close();
                     }
                 }
                 catch (Exception ex)

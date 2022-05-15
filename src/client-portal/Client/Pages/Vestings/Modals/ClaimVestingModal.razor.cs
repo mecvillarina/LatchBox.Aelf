@@ -40,14 +40,10 @@ namespace Client.Pages.Vestings.Modals
                         var claimResult = await VestingTokenVaultManager.ClaimVestingAsync(Model.VestingId, Model.PeriodId);
 
                         if (!string.IsNullOrEmpty(claimResult.Error))
-                        {
                             throw new GeneralException(claimResult.Error);
-                        }
-                        else
-                        {
-                            AppDialogService.ShowSuccess("Claim Vesting success.");
-                            MudDialog.Close();
-                        }
+
+                        AppDialogService.ShowSuccess("Claim Vesting success.");
+                        MudDialog.Close();
                     }
                 }
                 catch (Exception ex)

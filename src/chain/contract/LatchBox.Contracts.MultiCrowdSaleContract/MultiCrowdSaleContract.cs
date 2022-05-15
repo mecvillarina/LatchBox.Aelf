@@ -1,7 +1,6 @@
 using AElf.Contracts.MultiToken;
 using AElf.CSharp.Core;
 using AElf.Sdk.CSharp;
-using AElf.Types;
 using Google.Protobuf.WellKnownTypes;
 using System;
 
@@ -87,7 +86,7 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
 
             State.CrowdSales[crowdSaleId] = sale;
             State.CrowdSaleRaiseAmounts[crowdSaleId] = 0;
-            State.CrowdSaleInvestors[crowdSaleId] = new CrowdSaleInvestors();
+            State.CrowdSaleInvestors[crowdSaleId] = new CrowdSaleInvestorList();
 
             var activeCrowdSaleIds = State.ActiveCrowdSales.Value;
 
@@ -120,7 +119,7 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             var crowdSaleId = input.CrowdSaleId;
             var crowdSale = State.CrowdSales[crowdSaleId];
 
-            Assert(crowdSale.Initiator == Context.Sender || State.Admin.Value == Context.Sender, "No authorization.");
+            Assert(crowdSale.Initiator == Context.Sender, "No authorization.");
             Assert(crowdSale.IsActive, "Sale is not active anymore.");
             Assert(!crowdSale.IsCancelled, "Sale has already cancelled.");
 
@@ -140,8 +139,8 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
 
             foreach (var investor in investors)
             {
-                var purchase = State.CrowdSalePurchases[crowdSaleId][investor];
-                if(purchase.DateRefunded == null)
+                var purchase = State.CrowdSaleInvestments[crowdSaleId][investor];
+                if (purchase.DateRefunded == null)
                 {
                     purchase.DateRefunded = Context.CurrentBlockTime;
                     State.TokenContract.Transfer.Send(new TransferInput()
@@ -151,7 +150,7 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
                         Symbol = nativeTokenInfo.Symbol,
                         Memo = "Refund"
                     });
-                    State.CrowdSalePurchases[crowdSaleId][investor] = purchase;
+                    State.CrowdSaleInvestments[crowdSaleId][investor] = purchase;
                     //Add Event
                 }
             }
@@ -183,8 +182,8 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
 
             Assert(raiseAmount < crowdSale.HardCapNativeTokenAmount, "Sale Pool is already full.");
 
-            var purchase = State.CrowdSalePurchases[crowdSaleId][Context.Sender];
-            long currentPurchaseAmount = purchase != null ? purchase.TokenAmount : 0;
+            var investment = State.CrowdSaleInvestments[crowdSaleId][Context.Sender];
+            long currentPurchaseAmount = investment != null ? investment.TokenAmount : 0;
 
             Assert(currentPurchaseAmount <= crowdSale.NativeTokenPurchaseLimitPerBuyerAddress, "You've reached the buy limit. ");
             Assert(currentPurchaseAmount + input.TokenAmount <= crowdSale.NativeTokenPurchaseLimitPerBuyerAddress, "Your purchase will exceed the buy limit per address.");
@@ -193,9 +192,9 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             var nativeTokenInfo = GetNativeToken();
 
             var isNewInvestor = false;
-            if (purchase == null)
+            if (investment == null)
             {
-                purchase = new CrowdSalePurchase();
+                investment = new CrowdSaleInvestment();
                 isNewInvestor = true;
             }
 
@@ -208,11 +207,11 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
                 Memo = $"Invest: {crowdSaleId}"
             });
 
-            purchase.TokenAmount += input.TokenAmount;
-            purchase.Investor = Context.Sender;
-            purchase.DateLastPurchased = Context.CurrentBlockTime;
+            investment.TokenAmount += input.TokenAmount;
+            investment.Investor = Context.Sender;
+            investment.DateLastPurchased = Context.CurrentBlockTime;
 
-            State.CrowdSalePurchases[crowdSaleId][Context.Sender] = purchase;
+            State.CrowdSaleInvestments[crowdSaleId][Context.Sender] = investment;
             State.CrowdSaleRaiseAmounts[crowdSaleId] = State.CrowdSaleRaiseAmounts[crowdSaleId] + input.TokenAmount;
 
             if (isNewInvestor)
@@ -222,24 +221,23 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
                 State.CrowdSaleInvestors[crowdSaleId] = investorList;
             }
 
-            var crowdSalesByBuyer = State.CrowdSalesByBuyer[Context.Sender];
+            var crowdSalesByInvestor = State.CrowdSalesByInvestor[Context.Sender];
 
-            if (crowdSalesByBuyer == null)
+            if (crowdSalesByInvestor == null)
             {
-                crowdSalesByBuyer = new CrowdSaleIds();
+                crowdSalesByInvestor = new CrowdSaleIds();
             }
 
-            if (!crowdSalesByBuyer.Ids.Contains(crowdSaleId))
+            if (!crowdSalesByInvestor.Ids.Contains(crowdSaleId))
             {
-                crowdSalesByBuyer.Ids.Add(crowdSaleId);
-                State.CrowdSalesByBuyer[Context.Sender] = crowdSalesByBuyer;
+                crowdSalesByInvestor.Ids.Add(crowdSaleId);
+                State.CrowdSalesByInvestor[Context.Sender] = crowdSalesByInvestor;
             }
 
             return new Empty();
         }
 
-        //TBC
-        public override Empty Complete(CompleteInput input)
+        public override ResultOutput Complete(CompleteInput input)
         {
             AssertContractHasBeenInitialized();
 
@@ -254,14 +252,81 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             //Assert(Context.CurrentBlockTime.ToDateTime() > crowdSale.SaleStartDate.ToDateTime(), "Sale is not yet started.");
             //Assert(Context.CurrentBlockTime.ToDateTime() < crowdSale.SaleEndDate.ToDateTime(), "Sale is still ongoing not yet ended.");
 
+
             var raiseAmount = State.CrowdSaleRaiseAmounts[crowdSaleId];
 
-            Assert(raiseAmount >= crowdSale.SoftCapNativeTokenAmount, "Sale doesn't met at least the soft cap goal.");
+            if (raiseAmount < crowdSale.SoftCapNativeTokenAmount)
+            {
+                State.TokenContract.Transfer.Send(new TransferInput()
+                {
+                    To = crowdSale.Initiator,
+                    Amount = crowdSale.TokenAmountPerNativeToken * (crowdSale.HardCapNativeTokenAmount / GetChainAmount(10, State.NativeToken.Value.Decimals)),
+                    Symbol = crowdSale.TokenSymbol,
+                });
 
-            RemoveFromActiveCrowdSales(crowdSaleId);
+                crowdSale.IsSuccess = false;
+                crowdSale.IsActive = false;
+
+                State.CrowdSales[crowdSaleId] = crowdSale;
+                RemoveFromActiveCrowdSales(crowdSaleId);
+
+                return new ResultOutput { IsSuccess = false, Message = "Soft cap goal doesn't met. Your launchpad token was refunded." };
+            }
+            else
+            {
+                if (raiseAmount != crowdSale.HardCapNativeTokenAmount)
+                {
+                    State.TokenContract.Transfer.Send(new TransferInput()
+                    {
+                        To = crowdSale.Initiator,
+                        Amount = crowdSale.TokenAmountPerNativeToken * ((crowdSale.HardCapNativeTokenAmount - raiseAmount) / GetChainAmount(10, State.NativeToken.Value.Decimals)),
+                        Symbol = crowdSale.TokenSymbol,
+                    });
+                }
+
+                State.TokenContract.Transfer.Send(new TransferInput()
+                {
+                    To = Context.Sender,
+                    Amount = crowdSale.TokenAmountPerNativeToken * (raiseAmount / GetChainAmount(10, State.NativeToken.Value.Decimals)),
+                    Symbol = crowdSale.TokenSymbol,
+                });
+
+                State.TokenContract.Transfer.Send(new TransferInput()
+                {
+                    To = crowdSale.Initiator,
+                    Amount = raiseAmount,
+                    Symbol = State.NativeToken.Value.Symbol
+                });
+
+                crowdSale.IsSuccess = true;
+                crowdSale.IsActive = false;
+                State.CrowdSales[crowdSaleId] = crowdSale;
+                RemoveFromActiveCrowdSales(crowdSaleId);
+
+                return new ResultOutput { IsSuccess = true };
+            }
+
+        }
+
+        public override Empty UpdateLockInfo(UpdateLockInfoInput input)
+        {
+            AssertContractHasBeenInitialized();
+
+            Assert(input.CrowdSaleId < State.SelfIncresingCrowdSaleId.Value, "Invalid Sale Id");
+
+            var crowdSaleId = input.CrowdSaleId;
+            var crowdSale = State.CrowdSales[crowdSaleId];
+
+            Assert(crowdSale.Initiator == Context.Sender || Context.Sender == State.Admin.Value, "No authorization.");
+            Assert(!crowdSale.IsActive, "Sale is still active.");
+            Assert(crowdSale.IsSuccess, "Sale doesn't met the soft cap goal.");
+            Assert(crowdSale.LockId == 0, "Sale has already associated lock.");
+            Assert(input.LockId > 0, "Lock doesn't exists.");
+
+            crowdSale.LockId = input.LockId;
+            State.CrowdSales[crowdSaleId] = crowdSale;
 
             return new Empty();
         }
-
     }
 }

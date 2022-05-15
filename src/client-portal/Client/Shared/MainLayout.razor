@@ -45,12 +45,6 @@
         <MudNavMenu Rounded="true" Margin="Margin.Dense">
             <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
             <MudNavLink Href="/assets" Disabled="@(!IsAuthenticated)" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Payments">Assets/Tokens</MudNavLink>
-            <MudNavGroup Title="Launchpads" Icon="@Icons.Material.Filled.LockClock" Disabled="@(!IsAuthenticated)" Expanded="IsAuthenticated">
-                <MudNavLink Href="/launchpads" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Lock">All launchpads</MudNavLink>
-                <MudNavLink Href="/launchpads/manage" Disabled="@(!IsAuthenticated)" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.CurrencyBitcoin">Manage launchpads</MudNavLink>
-                <MudNavLink Href="/launchpads/investment" Disabled="@(!IsAuthenticated)" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Lock">Invested launchpads</MudNavLink>
-            </MudNavGroup>
-
             <MudNavGroup Title="Locks" Icon="@Icons.Material.Filled.LockClock" Disabled="@(!IsAuthenticated)" Expanded="IsAuthenticated">
                 <MudNavLink Href="/locks/assets" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.CurrencyBitcoin">Locked Tokens</MudNavLink>
                 <MudNavLink Href="/locks" Disabled="@(!IsAuthenticated)" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Lock">My Locks</MudNavLink>
@@ -61,6 +55,11 @@
                 <MudNavLink Href="/vestings" Disabled="@(!IsAuthenticated)" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.AccountBalance">My Vestings</MudNavLink>
                 <MudNavLink Href="/vestings/claims" Disabled="@(!IsAuthenticated)" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Redeem">My Claims</MudNavLink>
                 <MudNavLink Href="/vestings/refunds" Disabled="@(!IsAuthenticated)" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.LockReset">My Refunds</MudNavLink>
+            </MudNavGroup>
+            <MudNavGroup Title="Launchpads" Icon="@Icons.Material.Filled.RocketLaunch" Disabled="@(!IsAuthenticated)" Expanded="IsAuthenticated">
+                <MudNavLink Href="/launchpads" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.RocketLaunch">All launchpads</MudNavLink>
+                <MudNavLink Href="/launchpads/manage" Disabled="@(!IsAuthenticated)" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.ManageHistory">Manage launchpads</MudNavLink>
+                <MudNavLink Href="/launchpads/investment" Disabled="@(!IsAuthenticated)" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.PriceCheck">Invested launchpads</MudNavLink>
             </MudNavGroup>
         </MudNavMenu>
     </MudDrawer>

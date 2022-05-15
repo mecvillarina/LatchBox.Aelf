@@ -41,14 +41,10 @@ namespace Client.Pages.Vestings.Modals
                         var revokeLockResult = await VestingTokenVaultManager.RevokeVestingAsync(Model.VestingId);
 
                         if (!string.IsNullOrEmpty(revokeLockResult.Error))
-                        {
                             throw new GeneralException(revokeLockResult.Error);
-                        }
-                        else
-                        {
-                            AppDialogService.ShowSuccess("Revoke Vesting success. Go to My Refunds Page to claim your token refunds.");
-                            MudDialog.Close();
-                        }
+
+                        AppDialogService.ShowSuccess("Revoke Vesting success. Go to My Refunds Page to claim your token refunds.");
+                        MudDialog.Close();
                     }
                 }
                 catch (Exception ex)

@@ -2,6 +2,7 @@
 using AElf.Client.MultiToken;
 using Client.Infrastructure.Extensions;
 using Client.Infrastructure.Models;
+using Client.Pages.Locks.Modals;
 using Client.Parameters;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -17,7 +18,7 @@ namespace Client.Pages.Launchpads.Modals
         public bool IsLoaded { get; set; }
         public bool IsInvestmentsLoaded { get; set; }
         public LaunchpadModel Model { get; set; }
-        public List<CrowdSalePurchase> Investments { get; set; }
+        public List<CrowdSaleInvestment> Investments { get; set; }
         public string ShareLink { get; set; }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -43,8 +44,8 @@ namespace Client.Pages.Launchpads.Modals
             IsLoaded = true;
             StateHasChanged();
 
-            var investors = await MultiCrowdSaleManager.GetCrowdSaleInvestorsAsync(CrowdSaleId);
-            Investments = investors.Purchases.ToList();
+            var investors = await MultiCrowdSaleManager.GetCrowdSaleInvestments(CrowdSaleId);
+            Investments = investors.List.ToList();
             IsInvestmentsLoaded = true;
             StateHasChanged();
         }
@@ -72,6 +73,17 @@ namespace Client.Pages.Launchpads.Modals
             {
                 await FetchDataAsync();
             }
+        }
+
+        private void InvokeLockPreviewerModal()
+        {
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
+            var parameters = new DialogParameters()
+            {
+                 { nameof(LockPreviewerModal.LockId), Model.Launchpad.LockId},
+            };
+
+            DialogService.Show<LockPreviewerModal>($"Lock #{Model.Launchpad.LockId}", parameters, options);
         }
     }
 }

@@ -32,8 +32,7 @@ namespace Client.Infrastructure.Models
                     Status = "UPCOMING";
                     StatusColor = Color.Info;
                 }
-
-                if (Launchpad.SaleEndDate.ToDateTimeOffset() < System.DateTimeOffset.UtcNow)
+                else if(Launchpad.SaleEndDate.ToDateTimeOffset() < System.DateTimeOffset.UtcNow)
                 {
                     Status = "ENDED";
                     StatusColor = Color.Success;
@@ -42,6 +41,7 @@ namespace Client.Infrastructure.Models
                 if (Launchpad.SaleStartDate.ToDateTimeOffset() < System.DateTimeOffset.UtcNow && Launchpad.SaleEndDate.ToDateTimeOffset() > System.DateTimeOffset.UtcNow)
                 {
                     Status = "ONGOING";
+                    CanBuy = true;
                     Substatus = $"{Environment.NewLine} {Launchpad.SaleEndDate.ToDateTimeOffset().Subtract(System.DateTimeOffset.UtcNow).Humanize(3)}";
                 }
             }
@@ -58,7 +58,6 @@ namespace Client.Infrastructure.Models
                     StatusColor = Color.Error;
                 }
             }
-
         }
     }
 }

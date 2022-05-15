@@ -30,14 +30,10 @@ namespace Client.Pages.Locks.Modals
                         var claimRefundResult = await LockTokenVaultManager.ClaimRefundAsync(Model.Refund.TokenSymbol);
 
                         if (!string.IsNullOrEmpty(claimRefundResult.Error))
-                        {
                             throw new GeneralException(claimRefundResult.Error);
-                        }
-                        else
-                        {
-                            AppDialogService.ShowSuccess("Claim Refund success.");
-                            MudDialog.Close();
-                        }
+
+                        AppDialogService.ShowSuccess("Claim Refund success.");
+                        MudDialog.Close();
                     }
                 }
                 catch (Exception ex)

@@ -81,6 +81,33 @@ namespace Client.Infrastructure.Managers
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
+        public async Task<TransactionResultDto> CompleteAsync(long crowdSaleId)
+        {
+            var cred = await _walletManager.GetWalletCredentialsAsync();
+
+            var @params = new CompleteInput()
+            {
+                CrowdSaleId = crowdSaleId
+            };
+
+            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "Complete", @params);
+            return await _blockChainService.CheckTransactionResultAsync(txId);
+        }
+
+        public async Task<TransactionResultDto> UpdateLockInfoAsync(long crowdSaleId, long lockId)
+        {
+            var cred = await _walletManager.GetWalletCredentialsAsync();
+
+            var @params = new UpdateLockInfoInput()
+            {
+                CrowdSaleId = crowdSaleId, 
+                LockId = lockId,
+            };
+
+            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "UpdateLockInfo", @params);
+            return await _blockChainService.CheckTransactionResultAsync(txId);
+        }
+
         public async Task<CrowdSaleOutput> GetCrowdSaleAsync(long crowdSaleId)
         {
             var cred = await _walletManager.GetWalletCredentialsAsync();
@@ -94,19 +121,6 @@ namespace Client.Infrastructure.Managers
             return CrowdSaleOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
-        public async Task<CrowdSaleInvestorListOutput> GetCrowdSaleInvestorsAsync(long crowdSaleId)
-        {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
-
-            var @params = new GetCrowdSaleInvestorsInput()
-            {
-                CrowdSaleId = crowdSaleId
-            };
-
-            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetCrowdSaleInvestors", @params);
-            return CrowdSaleInvestorListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
-        }
-
         public async Task<CrowdSaleListOutput> GetCrowdSalesByInitiatorAsync(string initiator)
         {
             var cred = await _walletManager.GetWalletCredentialsAsync();
@@ -115,6 +129,16 @@ namespace Client.Infrastructure.Managers
 
             var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetCrowdSalesByInitiator", @params);
             return CrowdSaleListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
+        }
+
+        public async Task<CrowdSaleByInvestorListOuput> GetCrowdSalesByInvestorAsync(string investor)
+        {
+            var cred = await _walletManager.GetWalletCredentialsAsync();
+
+            var @params = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(investor).Value };
+
+            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetCrowdSalesByInvestor", @params);
+            return CrowdSaleByInvestorListOuput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<CrowdSaleListOutput> GetCrowdSalesAsync(bool isUpcoming, bool isOngoing)
@@ -130,5 +154,19 @@ namespace Client.Infrastructure.Managers
             var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetCrowdSales", @params);
             return CrowdSaleListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
+
+        public async Task<CrowdSaleInvestmentListOutput> GetCrowdSaleInvestments(long crowdSaleId)
+        {
+            var cred = await _walletManager.GetWalletCredentialsAsync();
+
+            var @params = new GetCrowdSaleInvestorsInput()
+            {
+                CrowdSaleId = crowdSaleId
+            };
+
+            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetCrowdSaleInvestments", @params);
+            return CrowdSaleInvestmentListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
+        }
+
     }
 }

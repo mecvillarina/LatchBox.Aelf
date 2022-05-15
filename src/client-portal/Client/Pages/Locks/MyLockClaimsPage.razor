@@ -1,4 +1,4 @@
-﻿@page "/locks/claims"
+﻿@page "/locks/claims/{lockId:long?}"
 
 @attribute [Authorize]
 
@@ -43,12 +43,14 @@
                     <MudTh>Token</MudTh>
                     <MudTh>Date Unlock</MudTh>
                     <MudTh>Claimable Amount</MudTh>
+                    <MudTh>Remarks</MudTh>
                     <MudTh>Status</MudTh>
                     <MudTh>Actions</MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     @if (@context.TokenInfo == null)
                     {
+                    <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
                     <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
                     <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
                     <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
@@ -68,6 +70,9 @@
                     <MudTd DataLabel="Claimable Amount">
                         @context.AmountDisplay
                     </MudTd>
+                     <MudTd DataLabel="Remarks">
+                        @context.Lock.Remarks
+                    </MudTd>
                     <MudTd DataLabel="Status">
                         <MudChip Color="@context.StatusColor" Size="Size.Small">
                             <b>@context.Status</b>
@@ -75,8 +80,8 @@
                     </MudTd>
                     <MudTd DataLabel="Actions">
                         <MudMenu Variant="Variant.Filled" Color="Color.Primary" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" DisableElevation="true" Icon="@Icons.Filled.KeyboardArrowDown" IconColor="Color.Secondary" Direction="Direction.Left" OffsetX="true">
-                            @*<MudMenuItem Disabled="@(!context.CanClaim)" OnClick="(() => InvokeClaimLockModalAsync(context))">Claim Lock</MudMenuItem>*@
-                            <MudMenuItem OnClick="(() => InvokeClaimLockModalAsync(context))">Claim Lock</MudMenuItem>
+                            <MudMenuItem Disabled="@(!context.CanClaim)" OnClick="(() => InvokeClaimLockModalAsync(context))">Claim Lock</MudMenuItem>
+                            @*<MudMenuItem OnClick="(() => InvokeClaimLockModalAsync(context))">Claim Lock</MudMenuItem>*@
                         </MudMenu>
                     </MudTd>
                     }

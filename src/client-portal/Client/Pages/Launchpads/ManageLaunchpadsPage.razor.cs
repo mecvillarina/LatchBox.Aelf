@@ -39,9 +39,8 @@ namespace Client.Pages.Launchpads
             StateHasChanged();
 
             NativeTokenInfo = await TokenManager.GetNativeTokenInfoAsync();
-            await MultiCrowdSaleManager.InitializeAsync();
             var output = await MultiCrowdSaleManager.GetCrowdSalesByInitiatorAsync(Wallet.Address);
-            LaunchpadList = output.CrowdSales.Select(x => new MyLaunchpadModel(x)).ToList();
+            LaunchpadList = output.List.Select(x => new MyLaunchpadModel(x)).ToList();
 
             IsLoaded = true;
             StateHasChanged();
@@ -97,5 +96,33 @@ namespace Client.Pages.Launchpads
             }
         }
 
+        private async Task InvokeCompleteLaunchpadConfirmationAsync(MyLaunchpadModel model)
+        {
+            var parameters = new DialogParameters()
+            {
+                { nameof(CompleteLaunchpadConfirmationModal.Model), model},
+                { nameof(CompleteLaunchpadConfirmationModal.NativeTokenInfo), NativeTokenInfo}
+            };
+
+            var dialog = DialogService.Show<CompleteLaunchpadConfirmationModal>("Complete Launchpad Confirmation", parameters);
+            var dialogResult = await dialog.Result;
+
+            if (!dialogResult.Cancelled)
+            {
+                await FetchDataAsync();
+            }
+        }
+
+        private void OnViewLaunchpad(MyLaunchpadModel model)
+        {
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
+            var parameters = new DialogParameters()
+            {
+                 { nameof(LaunchpadPreviewerModal.CrowdSaleId), model.Launchpad.Id},
+                 { nameof(LaunchpadPreviewerModal.NativeTokenInfo), NativeTokenInfo},
+            };
+
+            DialogService.Show<LaunchpadPreviewerModal>($"{model.Launchpad.Name}", parameters, options);
+        }
     }
 }
