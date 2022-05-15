@@ -7,7 +7,7 @@ namespace Client.Pages.Tokens.Modals
 {
     public partial class AddExistingTokenModal
     {
-        [Parameter] public AddExistingTokenParameter Model { get; set; } = new();
+        [Parameter] public SearchTokenParameter Model { get; set; } = new();
         [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
 
         private FluentValidationValidator _fluentValidationValidator;
