@@ -131,6 +131,16 @@ namespace Client.Infrastructure.Managers
             return CrowdSaleListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
+        public async Task<CrowdSaleByInvestorListOuput> GetCrowdSalesByInvestorAsync(string investor)
+        {
+            var cred = await _walletManager.GetWalletCredentialsAsync();
+
+            var @params = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(investor).Value };
+
+            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetCrowdSalesByInvestor", @params);
+            return CrowdSaleByInvestorListOuput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
+        }
+
         public async Task<CrowdSaleListOutput> GetCrowdSalesAsync(bool isUpcoming, bool isOngoing)
         {
             var cred = await _walletManager.GetWalletCredentialsAsync();

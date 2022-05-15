@@ -52,6 +52,11 @@
                             </MudItem>
 
                             <MudItem xs="12">
+                                <MudTextField Label="Remarks" Placeholder=" " Variant="Variant.Outlined" Disabled="IsProcessing"
+                                          @bind-Value="Model.Remarks" For="@(() => Model.Remarks)" />
+                            </MudItem>
+
+                            <MudItem xs="12">
                                 <MudText Typo="Typo.body1" Class="text-white"><b>Receivers</b></MudText>
                                 <MudButton Class="mt-2" Color="Color.Secondary" Variant="Variant.Filled" OnClick="InvokeAddLockReceiverModalAsync" Disabled="IsProcessing">Add Receiver</MudButton>
                             </MudItem>

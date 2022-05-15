@@ -32,6 +32,7 @@ namespace Client.Pages.Locks.Modals
                     MinDateValue = DateTime.Now;
                     Model.UnlockDate = MinDateValue.AddDays(1);
                     Model.IsRevocable = true;
+                    Model.Remarks = "";
                     var balanceOutput = await TokenManager.GetBalanceAsync(TokenInfo.Symbol);
                     TokenBalanceDisplay = $"{balanceOutput.Balance.ToAmountDisplay(TokenInfo.Decimals)} {TokenInfo.Symbol}";
                     IsLoaded = true;
@@ -92,7 +93,8 @@ namespace Client.Pages.Locks.Modals
                                     TotalAmount = totalAmount,
                                     IsRevocable = Model.IsRevocable,
                                     Receivers = inputReceivers,
-                                    UnlockTime = unlockTime
+                                    UnlockTime = unlockTime,
+                                    Remarks = Model.Remarks
                                 };
 
                                 var getAllowanceResult = await TokenManager.GetAllowanceAsync(Model.TokenSymbol, wallet.Address, LockTokenVaultManager.ContactAddress);
@@ -103,16 +105,11 @@ namespace Client.Pages.Locks.Modals
                                 }
 
                                 var addLockResult = await LockTokenVaultManager.AddLockAsync(inputModel);
-
                                 if (!string.IsNullOrEmpty(addLockResult.Error))
-                                {
                                     throw new GeneralException(addLockResult.Error);
-                                }
-                                else
-                                {
-                                    AppDialogService.ShowSuccess("Add Lock success.");
-                                    MudDialog.Close();
-                                }
+
+                                AppDialogService.ShowSuccess("Add Lock success.");
+                                MudDialog.Close();
                             }
                         }
                     }

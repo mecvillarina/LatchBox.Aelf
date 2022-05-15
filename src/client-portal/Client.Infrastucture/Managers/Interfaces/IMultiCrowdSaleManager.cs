@@ -19,6 +19,6 @@ namespace Client.Infrastructure.Managers.Interfaces
         Task<CrowdSaleListOutput> GetCrowdSalesByInitiatorAsync(string initiator);
         Task<CrowdSaleListOutput> GetCrowdSalesAsync(bool isUpcoming, bool isOngoing);
         Task<CrowdSaleInvestmentListOutput> GetCrowdSaleInvestments(long crowdSaleId);
-
+        Task<CrowdSaleByInvestorListOuput> GetCrowdSalesByInvestorAsync(string investor);
     }
 }

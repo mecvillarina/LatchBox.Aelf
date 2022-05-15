@@ -1,33 +1,32 @@
 ﻿using AElf.Client.LatchBox.MultiCrowdSale;
+using Client.Infrastructure.Extensions;
 using MudBlazor;
 
 namespace Client.Infrastructure.Models
 {
-    public class MyLaunchpadModel
+    public class InvestedLaunchpadModel
     {
         public CrowdSale Launchpad { get; }
-        public long RaisedAmount { get; }
+        public CrowdSaleInvestment Investment { get; }
         public string TokenName { get; }
         public string TokenSymbol { get; }
         public int TokenDecimals { get; }
         public string Status { get; set; }
         public Color StatusColor { get; set; }
-        public bool CanCancel { get; set; }
-        public bool CanComplete { get; set; }
-        public bool CanRefund { get; set; }
-
-        public MyLaunchpadModel(CrowdSaleOutput output)
+        public long? LockId { get; set; }
+        public long InvestedAmount { get; }
+        public InvestedLaunchpadModel(CrowdSaleInvestmentOutput output)
         {
-            Launchpad = output.CrowdSale;
-            RaisedAmount = output.RaisedAmount;
-            TokenName = output.TokenName;
-            TokenSymbol = output.TokenSymbol;
-            TokenDecimals = output.TokenDecimals;
+            Launchpad = output.CrowdSaleOutput.CrowdSale;
+            TokenName = output.CrowdSaleOutput.TokenName;
+            TokenSymbol = output.CrowdSaleOutput.TokenSymbol;
+            TokenDecimals = output.CrowdSaleOutput.TokenDecimals;
+            Investment = output.Investment;
+            InvestedAmount = Investment.TokenAmount;
+            LockId = Launchpad.LockId > 0 ? Launchpad.LockId : null;
 
             if (Launchpad.IsActive)
             {
-                CanCancel = true;
-
                 if (Launchpad.SaleStartDate.ToDateTimeOffset() > System.DateTimeOffset.UtcNow)
                 {
                     Status = "UPCOMING";
@@ -40,18 +39,8 @@ namespace Client.Infrastructure.Models
                 }
                 else
                 {
-                    if (Launchpad.HardCapNativeTokenAmount == RaisedAmount || RaisedAmount >= Launchpad.SoftCapNativeTokenAmount)
-                    {
-                        CanComplete = true;
-                        Status = "NEED ACTION: COMPLETE";
-                        StatusColor = Color.Info;
-                    }
-                    else
-                    {
-                        CanRefund = true;
-                        Status = "NEED ACTION: REFUND";
-                        StatusColor = Color.Error;
-                    }
+                    Status = "WAITING TO BE COMPLETED";
+                    StatusColor = Color.Info;
                 }
             }
             else
@@ -65,13 +54,13 @@ namespace Client.Infrastructure.Models
                     }
                     else
                     {
-                        Status = "GOAL NOT MET";
+                        Status = "GOAL NOT MET & REFUNDED";
                         StatusColor = Color.Error;
                     }
                 }
                 else
                 {
-                    Status = "CANCELLED";
+                    Status = "CANCELLED & REFUNDED";
                     StatusColor = Color.Error;
                 }
             }

@@ -25,6 +25,26 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             return output;
         }
 
+        public override CrowdSaleByInvestorListOuput GetCrowdSalesByInvestor(Address input)
+        {
+            var crowdSalesByInvestor = State.CrowdSalesByInvestor[input] ?? new CrowdSaleIds();
+
+            var output = new CrowdSaleByInvestorListOuput();
+
+            foreach (var crowdSaleId in crowdSalesByInvestor.Ids)
+            {
+                var crowdSaleOutput = GetCrowdSaleOutput(crowdSaleId);
+
+                output.List.Add(new CrowdSaleInvestmentOutput()
+                {
+                    CrowdSaleOutput = crowdSaleOutput,
+                    Investment = State.CrowdSaleInvestments[crowdSaleId][input]
+                });
+            }
+
+            return output;
+        }
+
         public override CrowdSaleListOutput GetCrowdSales(GetCrowdSalesInput input)
         {
             var output = new CrowdSaleListOutput();

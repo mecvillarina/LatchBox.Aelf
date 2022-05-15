@@ -52,6 +52,7 @@ namespace Client.Pages
             await LockTokenVaultManager.InitializeAsync();
             await VestingTokenVaultManager.InitializeAsync();
 
+            AppDialogService.ShowSuccess("Success");
             IsLoaded = true;
             StateHasChanged();
         }

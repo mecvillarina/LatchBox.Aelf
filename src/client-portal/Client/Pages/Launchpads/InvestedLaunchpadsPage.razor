@@ -1,0 +1,80 @@
+﻿@page "/launchpads/investment"
+
+@attribute [Authorize]
+
+<MudContainer MaxWidth="MaxWidth.False">
+    <div class="d-flex">
+        <MudHidden Breakpoint="Breakpoint.SmAndUp">
+            <MudText Class="mr-2 align-self-center" Typo="Typo.h5" Color="Color.Primary" GutterBottom="false">Invested launchpads</MudText>
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.Xs">
+            <MudText Class="mr-4 align-self-center" Typo="Typo.h4" Color="Color.Primary" GutterBottom="false">Invested launchpads</MudText>
+        </MudHidden>
+
+        @if (IsLoaded)
+        {
+            <MudIconButton Class="align-self-center mx-1" Icon="@Icons.Material.Filled.Refresh" Color="Color.Secondary" Variant="Variant.Filled" Size="Size.Small" OnClick="FetchDataAsync" />
+        }
+    </div>
+</MudContainer>
+
+<MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
+    @if (!IsLoaded)
+    {
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="56px" Width="100%" />
+        <MudSkeleton Class="mt-2" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="280px" Width="100%" />
+    }
+    else
+    {
+        <MudPaper Square="true" Elevation="10">
+            <MudTable Items="@LaunchpadList" Class="mx-0 grey darken-4" FixedHeader="true" Breakpoint="Breakpoint.Sm">
+                <HeaderContent>
+                    <MudTh>Id</MudTh>
+                    <MudTh>Name</MudTh>
+                    <MudTh>Token</MudTh>
+                    <MudTh>Invested Amount</MudTh>
+                    <MudTh>Token Equivalent</MudTh>
+                    <MudTh>Lock Vault</MudTh>
+                    <MudTh>Status</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Id">
+                        <MudText Typo="Typo.body1" Color="Color.Primary" Class="cursor-pointer" @onclick="(() => OnViewLaunchpad(context))">
+                            <b>@context.Launchpad.Id</b>
+                        </MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Name">
+                        <span>@context.Launchpad.Name</span>
+                    </MudTd>
+                    <MudTd DataLabel="Token">
+                        <span>@context.Launchpad.TokenSymbol</span>
+                    </MudTd>
+                    <MudTd DataLabel="Invested Amount">
+                        <span>@context.InvestedAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol </span>
+                    </MudTd>
+                    <MudTd DataLabel="Token Equivalent">
+                        <span>@((context.Investment.TokenAmount.ToAmount(context.TokenDecimals) * context.Launchpad.TokenAmountPerNativeToken.ToAmount(NativeTokenInfo.Decimals)).ToAmountDisplay(context.TokenDecimals)) @context.TokenSymbol </span>
+                    </MudTd>
+                    <MudTd DataLabel="Lock Vault">
+                        @if (context.LockId.HasValue)
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Primary" Class="cursor-pointer" @onclick="(() => InvokeLockPreviewerModal(context.LockId.Value))">
+                                <b>Lock #@context.LockId.Value</b>
+                            </MudText>
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </MudTd>
+                    <MudTd DataLabel="Status">
+                        <MudChip Color="@context.StatusColor" Size="Size.Small">
+                            <b>@context.Status</b>
+                        </MudChip>
+                    </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudPaper>
+
+    }
+</MudContainer>

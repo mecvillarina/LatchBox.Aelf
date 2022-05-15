@@ -3,12 +3,15 @@ using Client.Infrastructure.Models;
 using Client.Models;
 using Client.Pages.Locks.Modals;
 using Client.Parameters;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 namespace Client.Pages.Locks
 {
     public partial class MyLockClaimsPage
     {
+        [Parameter]
+        public long? LockId { get; set; }
         public bool IsLoaded { get; set; }
         public bool IsCompletelyLoaded { get; set; }
         public WalletInformation Wallet { get; set; }
@@ -22,6 +25,11 @@ namespace Client.Pages.Locks
                 await PageService.EnsureAuthenticatedAsync(async (authenticated) =>
                 {
                     if (!authenticated) return;
+
+                    if (LockId.HasValue && LockId.Value > 0)
+                    {
+                        InvokeLockPreviewerModal(LockId.Value);
+                    }
 
                     await InvokeAsync(async () =>
                     {

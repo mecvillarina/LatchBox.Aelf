@@ -31,6 +31,10 @@ service MultiCrowdSaleContract {
         option (aelf.is_view) = true;
     }
 
+    rpc GetCrowdSalesByInvestor (aelf.Address) returns (CrowdSaleByInvestorListOuput) { 
+        option (aelf.is_view) = true;
+    }
+
     rpc GetCrowdSales (GetCrowdSalesInput) returns (CrowdSaleListOutput) { 
         option (aelf.is_view) = true;
     }
@@ -149,11 +153,11 @@ message CrowdSaleInvestmentListOutput {
 }
 
 message CrowdSaleInvestmentOutput {
-    CrowdSale crowd_sale = 1;
+    CrowdSaleOutput crowd_sale_output = 1;
     CrowdSaleInvestment investment = 2;
 }
 
-message GetCrowdSaleInvestmentListOuput {
+message CrowdSaleByInvestorListOuput {
     repeated CrowdSaleInvestmentOutput list = 1;
 }
 
