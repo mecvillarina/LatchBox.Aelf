@@ -123,8 +123,8 @@ namespace Client.Infrastructure.Settings
             };
 
             theme.PaletteDark.Black = "#222629";
-            theme.PaletteDark.Primary = "#87C232"; 
-            theme.PaletteDark.Secondary = "#618930";
+            theme.PaletteDark.Primary = "#7199e9"; 
+            theme.PaletteDark.Secondary = "#3e66b6";
             theme.PaletteDark.Background = "#222629";
             theme.PaletteDark.Surface = "#222629";
             theme.PaletteDark.DrawerBackground = "#222629";
