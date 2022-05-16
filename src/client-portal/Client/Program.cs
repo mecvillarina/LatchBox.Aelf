@@ -65,7 +65,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.MapBlazorHub("/aelf");
+app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
 app.Run();
