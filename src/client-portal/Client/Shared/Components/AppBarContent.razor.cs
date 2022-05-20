@@ -36,14 +36,50 @@ namespace Client.Shared.Components
 
                     IsLoaded = true;
                     StateHasChanged();
+
+                    //Network = BlockchainManager.Network;
+                    //Node = BlockchainManager.Node;
+
+                    //IsAuthenticated = await NightElfService.IsConnectedAsync();
+
+                    //if (IsAuthenticated)
+                    //{
+                    //    var walletAddress = await NightElfService.GetAddressAsync();
+                    //    WalletAddress = walletAddress;
+                    //}
+
+                    //IsLoaded = true;
+                    //StateHasChanged();
                 });
             }
         }
 
-        private void InvokeConnectWalletModal()
+        private async Task InvokeConnectWalletModalAsync()
         {
             var options = new DialogOptions() { MaxWidth = MaxWidth.ExtraSmall };
             DialogService.Show<ConnectWalletModal>("Connect Wallet (JSON)", options);
+
+            //var hasNightElf = await NightElfService.HasNightElfAsync();
+
+            //if (!hasNightElf)
+            //{
+            //    AppDialogService.ShowError("Install Night Elf Extension.");
+            //    return;
+            //}
+
+            //await NightElfService.InitializeNightElfAsync("LatchBox", BlockchainManager.Node);
+
+            //var isConnected = await NightElfService.IsConnectedAsync();
+
+            //if (!isConnected)
+            //{
+            //    var result = await NightElfService.LoginAsync();
+            //    if(result != null)
+            //    {
+            //        WalletAddress = await NightElfService.GetAddressAsync();
+            //        IsAuthenticated = true;
+            //    }
+            //}
         }
 
         private async Task InvokeClaimELFAsync()
@@ -67,7 +103,7 @@ namespace Client.Shared.Components
                         AppDialogService.ShowSuccess("Claim ELF Success.");
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     AppDialogService.ShowError(ex.Message);
                 }
@@ -76,7 +112,7 @@ namespace Client.Shared.Components
             IsClaimingElf = false;
         }
 
-        private void InvokeDisconnectWalletDialog()
+        private async Task InvokeDisconnectWalletDialogAsync()
         {
             var parameters = new DialogParameters
             {
@@ -86,6 +122,8 @@ namespace Client.Shared.Components
             };
 
             DialogService.Show<DisconnectWalletDialog>("Logout", parameters);
+            //await NightElfService.LogoutAsync();
+            //IsAuthenticated = false;
         }
     }
 }

@@ -1,7 +1,4 @@
-﻿using Client.Infrastructure.Settings;
-using MudBlazor;
-using System;
-using System.Threading.Tasks;
+﻿using MudBlazor;
 
 namespace Client.Shared
 {
@@ -12,6 +9,7 @@ namespace Client.Shared
         private MudTheme CurrentTheme { get; set; }
         public string Network { get; set; }
         public string Node { get; set; }
+        public int ChainId { get; set; }
 
         protected override void OnInitialized()
         {
@@ -26,7 +24,8 @@ namespace Client.Shared
                 {
                     IsAuthenticated = await AuthManager.IsAuthenticated();
                     await AppBreakpointService.InitAsync();
-                    Network = BlockchainManager.Network;
+                    ChainId = await BlockchainManager.GetChainIdAsync();
+                    Network = $"{BlockchainManager.Network} ({ChainId})";
                     Node = BlockchainManager.Node;
                     StateHasChanged();
                 });

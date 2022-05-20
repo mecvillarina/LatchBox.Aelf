@@ -5,9 +5,6 @@ using AElf.Types;
 
 namespace LatchBox.Contracts.VestingTokenVaultContract
 {
-    /// <summary>
-    /// The state class of the contract, it inherits from the AElf.Sdk.CSharp.State.ContractState type. 
-    /// </summary>
     public class VestingTokenVaultContractState : ContractState
     {
         internal TokenContractContainer.TokenContractReferenceState TokenContract { get; set; }
@@ -22,7 +19,7 @@ namespace LatchBox.Contracts.VestingTokenVaultContract
         public MappedState<long, long, VestingPeriod> VestingPeriods { get; set; }
         public MappedState<long, VestingPeriodIdList> VestingPeriodList { get; set; }
 
-        public MappedState<long, Address, VestingReceiver> VestingReceivers { get; set; } //long period
+        public MappedState<long, Address, VestingReceiver> VestingReceivers { get; set; }       
         public MappedState<long, VestingReceiverAddressList> VestingReceiverList { get; set; } //long period
 
         public MappedState<Address, VestingIdList> VestingListByInitiator { get; set; }

@@ -20,6 +20,16 @@ namespace Client.Infrastructure.Services
             _aelfClientFactory = aelfClientFactory;
         }
 
+        public async Task<int> GetChainIdAsync()
+        {
+            return await _aelfClientFactory.CreateClient().GetChainIdAsync();
+        }
+
+        public async Task<MerklePathDto> GetMerklePathByTransactionIdAsync(string transactionId)
+        {
+            return await _aelfClientFactory.CreateClient().GetMerklePathByTransactionIdAsync(transactionId);
+        }
+
         public async Task<string> SendTransactionAsync(WalletInformation wallet, string password, string contract, string method, string @params = null)
         {
             var contractAddress = await GetContractAddressAsync(contract);

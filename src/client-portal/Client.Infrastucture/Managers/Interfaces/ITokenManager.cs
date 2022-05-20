@@ -20,6 +20,7 @@ namespace Client.Infrastructure.Managers.Interfaces
         Task<TransactionResultDto> ApproveAsync(string spender, string symbol, long amount);
         Task<TransactionResultDto> UnApproveAsync(string spender, string symbol, long amount);
         Task<GetAllowanceOutput> GetAllowanceAsync(string symbol, string owner, string spender);
+        //Task<TransactionResultDto> CrossChainTransferAsync(string to, string symbol, long amount, string memo, int toChainId);
 
         Task AddTokenSymbolToStorageAsync(string symbol);
         Task<List<string>> GetTokenSymbolsFromStorageAsync();

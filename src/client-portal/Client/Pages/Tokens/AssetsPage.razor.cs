@@ -1,4 +1,5 @@
-﻿using Client.Infrastructure.Models;
+﻿using Client.Infrastructure.Extensions;
+using Client.Infrastructure.Models;
 using Client.Pages.Tokens.Modals;
 using Client.Parameters;
 using MudBlazor;
@@ -52,6 +53,9 @@ namespace Client.Pages.Tokens
 
             var nativeToken = await TokenManager.GetNativeTokenInfoAsync();
             TokenInfoWithBalanceList.Add(new TokenInfoWithBalance() { Token = nativeToken, IsNative = true });
+
+            //long amount = 5;
+            //var result = await TokenManager.CrossChainTransferAsync(Wallet.Address, nativeToken.Symbol, amount.ToChainAmount(nativeToken.Decimals), "", 1866392);
 
             var tokenSymbolList = await TokenManager.GetTokenSymbolsFromStorageAsync();
 

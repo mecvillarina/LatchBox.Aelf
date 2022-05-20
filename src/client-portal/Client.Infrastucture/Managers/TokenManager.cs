@@ -1,11 +1,13 @@
 ﻿using AElf;
 using AElf.Client.Dto;
 using AElf.Client.MultiToken;
+using AElf.Client.Proto;
 using Blazored.LocalStorage;
 using Client.Infrastructure.Constants;
 using Client.Infrastructure.Managers.Interfaces;
 using Client.Infrastructure.Services.Interfaces;
 using Google.Protobuf;
+using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
 using System.Collections.Generic;
 using System.Linq;
@@ -89,6 +91,8 @@ namespace Client.Infrastructure.Managers
         {
             var cred = await _walletManager.GetWalletCredentialsAsync();
 
+            var chainId = await _blockChainService.GetChainIdAsync();
+
             var @params = new CreateInput
             {
                 Symbol = symbol.ToUpper(),
@@ -97,7 +101,7 @@ namespace Client.Infrastructure.Managers
                 Decimals = decimals,
                 Issuer = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(cred.Item1.Address).Value },
                 IsBurnable = isBurnable,
-                IssueChainId = ManagerToolkit.AelfSettings.ChainId
+                IssueChainId = chainId
             };
 
             var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "Create", @params);
@@ -198,5 +202,66 @@ namespace Client.Infrastructure.Managers
             }
         }
 
+        //public async Task<Address> GetCrossChainTransferTokenContractAddress(int chainId)
+        //{
+        //    var cred = await _walletManager.GetWalletCredentialsAsync();
+
+        //    var @params = new GetCrossChainTransferTokenContractAddressInput
+        //    {
+        //       ChainId = chainId
+        //    };
+
+        //    var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetCrossChainTransferTokenContractAddress", @params);
+        //    return Address.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
+
+        //}
+        //public async Task<TransactionResultDto> CrossChainTransferAsync(string to, string symbol, long amount, string memo, int toChainId)
+        //{
+        //    var cred = await _walletManager.GetWalletCredentialsAsync();
+
+        //    var chainId = await _blockChainService.GetChainIdAsync();
+        //    var cA = await GetCrossChainTransferTokenContractAddress(chainId);
+        //    var @params = new CrossChainTransferInput
+        //    {
+        //        To = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(to).Value },
+        //        Symbol = symbol.ToUpper(),
+        //        Amount = amount,
+        //        Memo = memo,
+        //        ToChainId = toChainId,
+        //        IssueChainId = chainId
+        //    };
+
+        //    var crossChainTransferTxId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "CrossChainTransfer", @params);
+        //    var crossChainTransferTxResult = await _blockChainService.CheckTransactionResultAsync(crossChainTransferTxId);
+
+        //    if (crossChainTransferTxResult.Status == "MINED")
+        //    {
+        //        var merklePath = await _blockChainService.GetMerklePathByTransactionIdAsync(crossChainTransferTxId);
+        //        var generateRawTransaction = await _blockChainService.GenerateRawTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "CrossChainTransfer", @params);
+
+        //        var params2 = new CrossChainReceiveTokenInput
+        //        {
+        //            FromChainId = chainId,
+        //            ParentChainHeight = crossChainTransferTxResult.BlockNumber,
+        //            TransferTransactionBytes = ByteString.CopyFrom(ByteArrayHelper.HexStringToByteArray(generateRawTransaction)),
+        //            MerklePath = new MerklePath()
+        //        };
+
+        //        foreach (var node in merklePath.MerklePathNodes)
+        //        {
+        //            params2.MerklePath.MerklePathNodes.Add(new MerklePathNode()
+        //            {
+        //                Hash = new AElf.Client.Proto.Hash() { Value =  AElf.Types.Hash.LoadFromHex(node.Hash).Value },
+        //                IsLeftChildNode = node.IsLeftChildNode
+        //            });
+        //        }
+
+        //        var crossChainReceiveTxId = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "CrossChainReceiveToken", params2);
+        //        //var crossChainReceiveTxResult = await _blockChainService.CheckTransactionResultAsync2(crossChainReceiveTxId);
+        //        //return crossChainReceiveTxResult;
+        //    }
+
+        //    return crossChainTransferTxResult;
+        //}
     }
 }
