@@ -1,4 +1,3 @@
-using AElf.Contracts.Consensus.AEDPoS;
 using AElf.Contracts.MultiToken;
 using AElf.Sdk.CSharp.State;
 using AElf.Types;
@@ -8,7 +7,6 @@ namespace LatchBox.Contracts.VestingTokenVaultContract
     public class VestingTokenVaultContractState : ContractState
     {
         internal TokenContractContainer.TokenContractReferenceState TokenContract { get; set; }
-        internal AEDPoSContractContainer.AEDPoSContractReferenceState ConsensusContract { get; set; }
 
         public SingletonState<Address> Admin { get; set; }
 
@@ -19,7 +17,7 @@ namespace LatchBox.Contracts.VestingTokenVaultContract
         public MappedState<long, long, VestingPeriod> VestingPeriods { get; set; }
         public MappedState<long, VestingPeriodIdList> VestingPeriodList { get; set; }
 
-        public MappedState<long, Address, VestingReceiver> VestingReceivers { get; set; }       
+        public MappedState<long, Address, VestingReceiver> VestingReceivers { get; set; }
         public MappedState<long, VestingReceiverAddressList> VestingReceiverList { get; set; } //long period
 
         public MappedState<Address, VestingIdList> VestingListByInitiator { get; set; }

@@ -15,7 +15,6 @@ namespace LatchBox.Contracts.VestingTokenVaultContract
             State.Admin.Value = Context.Sender;
 
             State.TokenContract.Value = Context.GetContractAddressByName(SmartContractConstants.TokenContractSystemName);
-            State.ConsensusContract.Value = Context.GetContractAddressByName(SmartContractConstants.ConsensusContractSystemName);
 
             State.SelfIncresingVestingId.Value = 1;
             State.SelfIncresingPeriodId.Value = 1;
