@@ -48,7 +48,6 @@ builder.Services.AddManagers();
 builder.Services.AddScoped<AppBreakpointService>();
 builder.Services.AddScoped<ClipboardService>();
 builder.Services.AddScoped<PageService>();
-builder.Services.AddScoped<NightElfService>();
 
 var app = builder.Build();
 
