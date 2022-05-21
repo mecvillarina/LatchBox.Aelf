@@ -1,4 +1,5 @@
-﻿using Blazored.FluentValidation;
+﻿using AElf;
+using Blazored.FluentValidation;
 using Client.Infrastructure.Exceptions;
 using Client.Infrastructure.Extensions;
 using Client.Parameters;
@@ -15,6 +16,19 @@ namespace Client.Pages.Tokens.Modals
         private FluentValidationValidator _fluentValidationValidator;
         private bool Validated => _fluentValidationValidator.Validate(options => { options.IncludeAllRuleSets(); });
         public bool IsProcessing { get; set; }
+        public int MainChainId { get; set; }
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                await InvokeAsync(async () =>
+                {
+                    MainChainId = await BlockchainManager.GetMainChainIdAsync();
+                    StateHasChanged();
+                });
+            }
+        }
 
         private async Task SubmitAsync()
         {
@@ -43,10 +57,20 @@ namespace Client.Pages.Tokens.Modals
 
                     if (authenticated)
                     {
-                        var issueTokenResult = await TokenManager.IssueAsync(Model.Symbol, amount, Model.Memo, Model.To);
+                        if (Model.IssuedChainId == MainChainId)
+                        {
+                            var issueTokenResult = await TokenManager.IssueOnMainChainAsync(Model.Symbol, amount, Model.Memo, Model.To);
 
-                        if (!string.IsNullOrEmpty(issueTokenResult.Error))
-                            throw new GeneralException(issueTokenResult.Error);
+                            if (!string.IsNullOrEmpty(issueTokenResult.Error))
+                                throw new GeneralException(issueTokenResult.Error);
+                        }
+                        else
+                        {
+                            var issueTokenResult = await TokenManager.IssueOnSideChainAsync(Model.Symbol, amount, Model.Memo, Model.To);
+
+                            if (!string.IsNullOrEmpty(issueTokenResult.Error))
+                                throw new GeneralException(issueTokenResult.Error);
+                        }
 
                         AppDialogService.ShowSuccess("Issue new token success.");
                         MudDialog.Close();

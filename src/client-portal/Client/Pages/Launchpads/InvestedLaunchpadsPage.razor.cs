@@ -36,7 +36,7 @@ namespace Client.Pages.Launchpads
             IsLoaded = false;
             StateHasChanged();
 
-            NativeTokenInfo = await TokenManager.GetNativeTokenInfoAsync();
+            NativeTokenInfo = await TokenManager.GetNativeTokenInfoOnSideChainAsync();
             var output = await MultiCrowdSaleManager.GetCrowdSalesByInvestorAsync(WalletAddress);
             LaunchpadList = output.List.Select(x => new InvestedLaunchpadModel(x)).ToList();
 

@@ -1,4 +1,5 @@
 ﻿using Blazored.FluentValidation;
+using Client.Infrastructure.Extensions;
 using Client.Parameters;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -31,12 +32,12 @@ namespace Client.Pages.Modals
                 await InvokeAsync(async () =>
                 {
                     MainChainNode = BlockchainManager.MainChainNode;
-                    MainChain = await BlockchainManager.GetMainChainIdInformationAsync();
+                    MainChain = $"Main {(await BlockchainManager.GetMainChainIdAsync()).ToStringChainId()}";
 
                     StateHasChanged();
 
                     SideChainNode = BlockchainManager.SideChainNode;
-                    SideChain = await BlockchainManager.GetSideChainIdInformationAsync();
+                    SideChain = $"Side {(await BlockchainManager.GetSideChainIdAsync()).ToStringChainId()}";
                     StateHasChanged();
                 });
             }

@@ -22,14 +22,19 @@ namespace Client.Pages.Vestings.Modals
         public List<string> WalletAddresses { get; set; } = new();
         public string TokenBalanceDisplay { get; set; }
 
-        protected override void OnAfterRender(bool firstRender)
+        protected async override Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
             {
-                Model.TokenSymbol = TokenInfo.Symbol;
-                Model.IsRevocable = true;
-                IsLoaded = true;
-                StateHasChanged();
+                await InvokeAsync(async() =>
+                {
+                    Model.TokenSymbol = TokenInfo.Symbol;
+                    Model.IsRevocable = true;
+                    var balanceOutput = await TokenManager.GetBalanceOnSideChainAsync(TokenInfo.Symbol);
+                    TokenBalanceDisplay = $"{balanceOutput.Balance.ToAmountDisplay(TokenInfo.Decimals)} {TokenInfo.Symbol}";
+                    IsLoaded = true;
+                    StateHasChanged();
+                });
             }
         }
 
@@ -50,7 +55,7 @@ namespace Client.Pages.Vestings.Modals
                     IsProcessing = true;
                     try
                     {
-                        var token = await TokenManager.GetBalanceAsync(TokenInfo.Symbol);
+                        var token = await TokenManager.GetBalanceOnSideChainAsync(TokenInfo.Symbol);
 
                         if (token.Balance.ToAmount(TokenInfo.Decimals) < Convert.ToDecimal(Model.Periods.Sum(x => x.Receivers.Sum(y => y.Amount))))
                             throw new GeneralException($"Insufficient {TokenInfo.Symbol} balance.");

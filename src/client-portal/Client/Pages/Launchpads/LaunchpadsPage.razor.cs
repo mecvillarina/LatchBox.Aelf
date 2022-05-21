@@ -44,7 +44,7 @@ namespace Client.Pages.Launchpads
                 default: isUpcoming = isOngoing = false; break;
             }
 
-            NativeTokenInfo = await TokenManager.GetNativeTokenInfoAsync();
+            NativeTokenInfo = await TokenManager.GetNativeTokenInfoOnSideChainAsync();
             var output = await MultiCrowdSaleManager.GetCrowdSalesAsync(isUpcoming, isOngoing);
             LaunchpadList = output.List.Select(x => new LaunchpadModel(x)).ToList();
             IsLoaded = true;

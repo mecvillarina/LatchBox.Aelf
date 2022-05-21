@@ -47,7 +47,7 @@ namespace Client.Pages.Vestings
 
             foreach (var refund in Refunds)
             {
-                var tokenInfo = await TokenManager.GetTokenInfoAsync(refund.Refund.TokenSymbol);
+                var tokenInfo = await TokenManager.GetTokenInfoOnSideChainAsync(refund.Refund.TokenSymbol);
                 refund.SetTokenInfo(tokenInfo);
             }
 

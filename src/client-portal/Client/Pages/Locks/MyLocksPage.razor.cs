@@ -1,4 +1,5 @@
 ﻿using AElf.Client.MultiToken;
+using Client.Infrastructure.Extensions;
 using Client.Models;
 using Client.Pages.Locks.Modals;
 using Client.Pages.Modals;
@@ -13,7 +14,7 @@ namespace Client.Pages.Locks
         public bool IsCompletelyLoaded { get; set; }
         public string WalletAddress { get; set; }
         public string ContractLink => $"{BlockchainManager.SideChainExplorer}/address/{LockTokenVaultManager.ContactAddress}";
-
+        public string SideChain { get; set; }
         public List<LockModel> Locks { get; set; } = new();
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
@@ -27,6 +28,8 @@ namespace Client.Pages.Locks
                     await InvokeAsync(async () =>
                     {
                         WalletAddress = await WalletManager.GetWalletAddressAsync();
+                        SideChain = $"Side {(await BlockchainManager.GetSideChainIdAsync()).ToStringChainId()}";
+
                         await FetchDataAsync();
                     });
                 });
@@ -55,7 +58,7 @@ namespace Client.Pages.Locks
 
             foreach (var @lock in Locks)
             {
-                var tokenInfo = await TokenManager.GetTokenInfoAsync(@lock.Lock.TokenSymbol);
+                var tokenInfo = await TokenManager.GetTokenInfoOnSideChainAsync(@lock.Lock.TokenSymbol);
                 @lock.SetTokenInfo(tokenInfo);
             }
 
@@ -65,7 +68,7 @@ namespace Client.Pages.Locks
 
         private async Task InvokeAddLockModalAsync()
         {
-            var searchTokenDialog = DialogService.Show<SearchTokenModal>($"Search Token");
+            var searchTokenDialog = DialogService.Show<SearchTokenModal>($"Search Token ({SideChain} Chain)");
             var searchTokenDialogResult = await searchTokenDialog.Result;
 
             if (!searchTokenDialogResult.Cancelled)

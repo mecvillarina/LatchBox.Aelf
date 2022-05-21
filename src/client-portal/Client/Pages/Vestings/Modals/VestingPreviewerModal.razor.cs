@@ -30,7 +30,7 @@ namespace Client.Pages.Vestings.Modals
             try
             {
                 var output = await VestingTokenVaultManager.GetVestingTransactionAsync(VestingId);
-                var tokenInfo = await TokenManager.GetTokenInfoAsync(output.Vesting.TokenSymbol);
+                var tokenInfo = await TokenManager.GetTokenInfoOnSideChainAsync(output.Vesting.TokenSymbol);
 
                 Model = new VestingModel(output, tokenInfo);
                 ShareLink = $"{NavigationManager.BaseUri}view/vestings/{VestingId}";

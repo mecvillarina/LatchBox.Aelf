@@ -21,6 +21,11 @@ namespace Client.Infrastructure.Extensions
             return newAdd.ToBase58();
         }
 
+        public static string ToStringChainId(this int chainId)
+        {
+            return ChainHelper.ConvertChainIdToBase58(chainId);
+        }
+
         public static string ToMask(this string value, int length)
         {
             if (value == null) return "";

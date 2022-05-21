@@ -47,7 +47,7 @@ namespace Client.Pages.Locks
 
             foreach (var assetCounter in AssetCounters)
             {
-                var tokenInfo = await TokenManager.GetTokenInfoAsync(assetCounter.TokenSymbol);
+                var tokenInfo = await TokenManager.GetTokenInfoOnSideChainAsync(assetCounter.TokenSymbol);
                 assetCounter.SetTokenInfo(tokenInfo);
             }
 

@@ -60,7 +60,7 @@ namespace Client.Pages.Vestings
 
             foreach (var vesting in Vestings)
             {
-                var tokenInfo = await TokenManager.GetTokenInfoAsync(vesting.Vesting.TokenSymbol);
+                var tokenInfo = await TokenManager.GetTokenInfoOnSideChainAsync(vesting.Vesting.TokenSymbol);
                 vesting.SetTokenInfo(tokenInfo);
             }
 
