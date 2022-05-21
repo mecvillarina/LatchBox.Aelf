@@ -22,14 +22,19 @@ namespace Client.Pages.Vestings.Modals
         public List<string> WalletAddresses { get; set; } = new();
         public string TokenBalanceDisplay { get; set; }
 
-        protected override void OnAfterRender(bool firstRender)
+        protected async override Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
             {
-                Model.TokenSymbol = TokenInfo.Symbol;
-                Model.IsRevocable = true;
-                IsLoaded = true;
-                StateHasChanged();
+                await InvokeAsync(async() =>
+                {
+                    Model.TokenSymbol = TokenInfo.Symbol;
+                    Model.IsRevocable = true;
+                    var balanceOutput = await TokenManager.GetBalanceOnSideChainAsync(TokenInfo.Symbol);
+                    TokenBalanceDisplay = $"{balanceOutput.Balance.ToAmountDisplay(TokenInfo.Decimals)} {TokenInfo.Symbol}";
+                    IsLoaded = true;
+                    StateHasChanged();
+                });
             }
         }
 
