@@ -30,7 +30,7 @@ namespace Client.Pages.Tokens.Modals
 
                     if (authenticated)
                     {
-                        var wallet = await WalletManager.GetWalletInformationAsync();
+                        var walletAddress = await WalletManager.GetWalletAddressAsync();
                         var createTokenResult = await TokenManager.CreateAsync(Model.Symbol, Model.TokenName, totalSupply, Model.Decimals, Model.IsBurnable);
 
                         if (!string.IsNullOrEmpty(createTokenResult.Error))
@@ -38,7 +38,7 @@ namespace Client.Pages.Tokens.Modals
 
                         if (initialSupply > 0)
                         {
-                            var issueTokenResult = await TokenManager.IssueAsync(Model.Symbol, initialSupply, "Initial Supply", wallet.Address);
+                            var issueTokenResult = await TokenManager.IssueAsync(Model.Symbol, initialSupply, "Initial Supply", walletAddress);
 
                             if (!string.IsNullOrEmpty(issueTokenResult.Error))
                                 throw new GeneralException(issueTokenResult.Error);

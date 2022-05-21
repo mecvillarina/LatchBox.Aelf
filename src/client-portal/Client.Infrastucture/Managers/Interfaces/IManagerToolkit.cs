@@ -10,8 +10,8 @@ namespace Client.Infrastructure.Managers.Interfaces
         string FilePathTemp { get; }
         string FilePathWallet { get; }
 
-        Task SaveWalletAsync(string filename, string address);
-        Task<WalletInformation> GetWalletAsync();
+        Task SaveWalletAuthHandlerAsync(AuthTokenHandler tokenHandler, string address);
+        Task<WalletAuthHandler> GetWalletAsync();
         Task ClearAccountLocalStorageAsync();
     }
 }

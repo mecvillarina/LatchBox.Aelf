@@ -2,9 +2,12 @@
 using Client.Infrastructure.Constants;
 using Client.Infrastructure.Managers.Interfaces;
 using Client.Infrastructure.Models;
+using Client.Infrastructure.Services.Interfaces;
+using Client.Infrastucture.Enums;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Client.Infrastructure.Managers
@@ -12,15 +15,20 @@ namespace Client.Infrastructure.Managers
     public class ManagerToolkit : IManagerToolkit
     {
         private readonly ILocalStorageService _localStorageService;
+        private readonly IAuthTokenService _authTokenService;
+        private readonly IBlockChainService _blockChainService;
+
         public AElfSettings AelfSettings { get; }
 
         public string FilePathTemp => Path.Combine(Directory.GetCurrentDirectory(), "..", "temp");
         public string FilePathWallet => Path.Combine(Directory.GetCurrentDirectory(), "..", "wallet");
 
-        public ManagerToolkit(ILocalStorageService localStorageService, IOptions<AElfSettings> aelfSettingsOption)
+        public ManagerToolkit(ILocalStorageService localStorageService, IOptions<AElfSettings> aelfSettingsOption, IAuthTokenService authTokenService, IBlockChainService blockChainService)
         {
             _localStorageService = localStorageService;
             AelfSettings = aelfSettingsOption.Value;
+            _authTokenService = authTokenService;
+            _blockChainService = blockChainService;
 
             Init();
         }
@@ -38,24 +46,32 @@ namespace Client.Infrastructure.Managers
             }
         }
 
-        public async Task SaveWalletAsync(string filename, string address)
+        public async Task SaveWalletAuthHandlerAsync(AuthTokenHandler tokenHandler, string address)
         {
-            var wallet = new WalletInformation()
+            var wallet = new WalletAuthHandler()
             {
-                Filename = filename,
+                TokenHandler = tokenHandler,
                 Address = address
             };
 
             await _localStorageService.SetItemAsync(StorageConstants.Local.Wallet, wallet);
         }
 
-        public async Task<WalletInformation> GetWalletAsync()
+        public async Task<WalletAuthHandler> GetWalletAsync()
         {
             var isExists = await _localStorageService.ContainKeyAsync(StorageConstants.Local.Wallet);
 
             if (!isExists) return null;
 
-            return await _localStorageService.GetItemAsync<WalletInformation>(StorageConstants.Local.Wallet);
+            var wallet = await _localStorageService.GetItemAsync<WalletAuthHandler>(StorageConstants.Local.Wallet);
+
+            if (!wallet.TokenHandler.IsValid()) return null;
+
+            //validate
+            var authTokenResult = _authTokenService.ValidateToken(wallet.TokenHandler.Token);
+            if (authTokenResult.Status != AuthTokenStatus.Valid) return null;
+
+            return wallet;
         }
 
         public async Task ClearAccountLocalStorageAsync()

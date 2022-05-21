@@ -30,8 +30,7 @@ namespace Client.Shared.Components
 
                     if (IsAuthenticated)
                     {
-                        var wallet = await WalletManager.GetWalletInformationAsync();
-                        WalletAddress = wallet.Address;
+                        WalletAddress = await WalletManager.GetWalletAddressAsync();
                     }
 
                     IsLoaded = true;

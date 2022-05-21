@@ -10,7 +10,7 @@ namespace Client.Pages.Tokens
     {
         public bool IsLoaded { get; set; }
         public bool IsCompletelyLoaded { get; set; }
-        public WalletInformation Wallet { get; set; }
+        public string WalletAddress { get; set; }
         public List<TokenInfoWithBalance> TokenInfoWithBalanceList { get; set; } = new();
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
@@ -23,7 +23,7 @@ namespace Client.Pages.Tokens
 
                     await InvokeAsync(async () =>
                     {
-                        Wallet = await WalletManager.GetWalletInformationAsync();
+                        WalletAddress = await WalletManager.GetWalletAddressAsync();
                         await FetchDataAsync();
                         try
                         {
@@ -31,7 +31,7 @@ namespace Client.Pages.Tokens
 
                             if (string.IsNullOrWhiteSpace(result.Error))
                             {
-                                await TokenManager.IssueAsync("LATCH", 10000000_00000000, "MINT1", Wallet.Address);
+                                await TokenManager.IssueAsync("LATCH", 10000000_00000000, "MINT1", WalletAddress);
                             }
                         }
                         catch
@@ -53,9 +53,6 @@ namespace Client.Pages.Tokens
 
             var nativeToken = await TokenManager.GetNativeTokenInfoAsync();
             TokenInfoWithBalanceList.Add(new TokenInfoWithBalance() { Token = nativeToken, IsNative = true });
-
-            //long amount = 5;
-            //var result = await TokenManager.CrossChainTransferAsync(Wallet.Address, nativeToken.Symbol, amount.ToChainAmount(nativeToken.Decimals), "", 1866392);
 
             var tokenSymbolList = await TokenManager.GetTokenSymbolsFromStorageAsync();
 

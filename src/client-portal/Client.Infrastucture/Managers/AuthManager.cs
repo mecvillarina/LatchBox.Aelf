@@ -1,8 +1,10 @@
-﻿using AElf.Types;
+﻿using AElf;
+using AElf.Types;
 using Client.Infrastructure.Managers.Interfaces;
 using Client.Infrastructure.Services.Interfaces;
 using Microsoft.AspNetCore.Components.Forms;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -11,10 +13,13 @@ namespace Client.Infrastructure.Managers
     public class AuthManager : ManagerBase, IAuthManager
     {
         private readonly IAccountsService _accountsService;
-
-        public AuthManager(IManagerToolkit managerToolkit, IAccountsService accountsService) : base(managerToolkit)
+        private readonly IAuthTokenService _authTokenService;
+        private readonly IBlockChainService _blockChainService;
+        public AuthManager(IManagerToolkit managerToolkit, IAccountsService accountsService, IAuthTokenService authTokenService, IBlockChainService blockChainService) : base(managerToolkit)
         {
             _accountsService = accountsService;
+            _authTokenService = authTokenService;
+            _blockChainService = blockChainService;
         }
 
         public async Task<bool> IsAuthenticated()
@@ -40,12 +45,25 @@ namespace Client.Infrastructure.Managers
                 {
                     var content = textReader.ReadToEnd();
                     _accountsService.SaveKeyStoreJsonContent(filename, content);
-                    var keyPair = await _accountsService.GetAccountKeyPairAsync(filename, password);
-                    _accountsService.SaveKeyStorePassJsonContent(filename, password);
+                    var keyPair = await _accountsService.GetAccountKeyPairFromFileAsync(filename, password);
+
+                    var chainId = await _blockChainService.GetChainIdAsync();
+                    var node = ManagerToolkit.AelfSettings.Node;
+                    var claims = new Dictionary<string, string>()
+                    {
+                        { "PrivateKey", keyPair.PrivateKey.ToHex() },
+                        { "PublicKey", keyPair.PublicKey.ToHex() },
+                        { "ChainId", chainId.ToString() },
+                        { "Node", node },
+                        { "Password", password },
+                    };
+
+                    _accountsService.RemoveKeyStore(filename);
+                    var tokenHandler = _authTokenService.GenerateToken(claims);
                     var address = Address.FromPublicKey(keyPair.PublicKey);
-                    await ManagerToolkit.SaveWalletAsync(filename, address.ToBase58());
+                    await ManagerToolkit.SaveWalletAuthHandlerAsync(tokenHandler, address.ToBase58());
                 }
-                catch
+                catch(Exception ex)
                 {
                     _accountsService.RemoveKeyStore(filename);
                     throw;
@@ -57,11 +75,9 @@ namespace Client.Infrastructure.Managers
         {
             var wallet = await ManagerToolkit.GetWalletAsync();
 
-            if(wallet != null)
+            if (wallet != null)
             {
-                var filename = wallet.Filename;
-                _accountsService.RemoveKeyStore(filename);
-                _accountsService.RemoveKeyStore(filename.Replace(".json", "_pass.json"));
+                await ManagerToolkit.ClearAccountLocalStorageAsync();
             }
         }
 

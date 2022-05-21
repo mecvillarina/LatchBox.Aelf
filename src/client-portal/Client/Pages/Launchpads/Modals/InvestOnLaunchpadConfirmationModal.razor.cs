@@ -46,10 +46,10 @@ namespace Client.Pages.Launchpads.Modals
 
                     if (authenticated)
                     {
-                        var wallet = await WalletManager.GetWalletInformationAsync();
+                        var walletAddress = await WalletManager.GetWalletAddressAsync();
                         var amount = Model.Amount.ToChainAmount(NativeTokenInfo.Decimals);
 
-                        var getAllowanceResult = await TokenManager.GetAllowanceAsync(NativeTokenInfo.Symbol, wallet.Address, MultiCrowdSaleManager.ContactAddress);
+                        var getAllowanceResult = await TokenManager.GetAllowanceAsync(NativeTokenInfo.Symbol, walletAddress, MultiCrowdSaleManager.ContactAddress);
 
                         if (getAllowanceResult.Allowance < amount)
                         {

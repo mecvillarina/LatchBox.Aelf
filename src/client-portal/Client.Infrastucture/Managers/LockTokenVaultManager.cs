@@ -24,17 +24,17 @@ namespace Client.Infrastructure.Managers
 
         public async Task<TransactionResultDto> InitializeAsync()
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new Empty();
 
-            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "Initialize", @params);
+            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "Initialize", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
         public async Task<TransactionResultDto> AddLockAsync(AddLockInputModel model)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new AddLockInput()
             {
@@ -54,126 +54,126 @@ namespace Client.Infrastructure.Managers
                 });
             }
 
-            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "AddLock", @params);
+            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "AddLock", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
         public async Task<TransactionResultDto> ClaimLockAsync(long lockId)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new ClaimLockInput()
             {
                 LockId = lockId,
             };
 
-            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "ClaimLock", @params);
+            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "ClaimLock", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
         public async Task<TransactionResultDto> RevokeLockAsync(long lockId)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new RevokeLockInput()
             {
                 LockId = lockId,
             };
 
-            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "RevokeLock", @params);
+            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "RevokeLock", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
         public async Task<TransactionResultDto> ClaimRefundAsync(string tokenSymbol)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new ClaimRefundInput()
             {
                 TokenSymbol = tokenSymbol
             };
 
-            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "ClaimRefund", @params);
+            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "ClaimRefund", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
         public async Task<Int64Value> GetLocksCountAsync()
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new Empty();
 
-            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetLocksCount", @params);
+            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetLocksCount", @params);
             return Int64Value.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<GetLockTransactionOutput> GetLockTransactionAsync(long lockId)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new Int64Value() { Value = lockId };
 
-            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetLockTransaction", @params);
+            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetLockTransaction", @params);
             return GetLockTransactionOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<GetLockListOutput> GetLocksAsync()
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new Empty();
 
-            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetLocks", @params);
+            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetLocks", @params);
             return GetLockListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<GetLockListOutput> GetLocksByInitiatorAsync(string initiator)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(initiator).Value };
 
-            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetLocksByInitiator", @params);
+            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetLocksByInitiator", @params);
             return GetLockListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<GetLockReceiverListOutput> GetLocksForReceiverAsync(string receiver)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(receiver).Value };
 
-            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetLocksForReceiver", @params);
+            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetLocksForReceiver", @params);
             return GetLockReceiverListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<GetLockListOutput> GetLocksByAssetAsync(string tokenSymbol)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new StringValue() { Value = tokenSymbol };
 
-            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetLocksByAsset", @params);
+            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetLocksByAsset", @params);
             return GetLockListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<GetRefundListOutput> GetRefundsAsync()
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new Empty();
 
-            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetRefunds", @params);
+            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetRefunds", @params);
             return GetRefundListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<GetLockAssetCounterListOutput> GetAssetsCounterAsync()
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new Empty();
 
-            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetAssetsCounter", @params);
+            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetAssetsCounter", @params);
             return GetLockAssetCounterListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
     }

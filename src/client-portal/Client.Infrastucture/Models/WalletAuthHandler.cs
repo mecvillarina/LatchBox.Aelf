@@ -1,8 +1,8 @@
 ﻿namespace Client.Infrastructure.Models
 {
-    public class WalletInformation
+    public class WalletAuthHandler
     {
-        public string Filename { get; set; }
         public string Address { get; set; }
+        public AuthTokenHandler TokenHandler { get; set; }
     }
 }

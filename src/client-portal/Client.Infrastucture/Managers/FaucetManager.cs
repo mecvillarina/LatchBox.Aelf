@@ -20,13 +20,13 @@ namespace Client.Infrastructure.Managers
 
         public async Task<TransactionResultDto> TakeAsync(string symbol, long amount)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new JObject();
             @params["symbol"] = symbol;
             @params["amount"] = amount;
 
-            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ManagerToolkit.AelfSettings.FaucetContractAddress, "Take", JsonConvert.SerializeObject(@params));
+            var txId = await _blockChainService.SendTransactionAsync(keyPair, ManagerToolkit.AelfSettings.FaucetContractAddress, "Take", JsonConvert.SerializeObject(@params));
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
     }

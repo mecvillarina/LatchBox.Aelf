@@ -63,8 +63,8 @@ namespace Client.Pages.Tokens.Modals
 
         private async Task SetToValueAsync()
         {
-            var wallet = await WalletManager.GetWalletInformationAsync();
-            Model.To = wallet.Address;
+            var walletAddress = await WalletManager.GetWalletAddressAsync();
+            Model.To = walletAddress;
         }
 
         public void Cancel()

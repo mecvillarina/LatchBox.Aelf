@@ -1,5 +1,4 @@
 ﻿using AElf.Client.MultiToken;
-using Client.Infrastructure.Models;
 using Client.Models;
 using Client.Pages.Locks.Modals;
 using Client.Pages.Modals;
@@ -12,7 +11,7 @@ namespace Client.Pages.Locks
     {
         public bool IsLoaded { get; set; }
         public bool IsCompletelyLoaded { get; set; }
-        public WalletInformation Wallet { get; set; }
+        public string WalletAddress { get; set; }
         public List<LockModel> Locks { get; set; } = new();
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
@@ -25,7 +24,7 @@ namespace Client.Pages.Locks
 
                     await InvokeAsync(async () =>
                     {
-                        Wallet = await WalletManager.GetWalletInformationAsync();
+                        WalletAddress = await WalletManager.GetWalletAddressAsync();
                         await FetchDataAsync();
                     });
                 });
@@ -40,7 +39,7 @@ namespace Client.Pages.Locks
 
             Locks.Clear();
 
-            var lockListOutput = await LockTokenVaultManager.GetLocksByInitiatorAsync(Wallet.Address);
+            var lockListOutput = await LockTokenVaultManager.GetLocksByInitiatorAsync(WalletAddress);
 
             foreach (var @lock in lockListOutput.Locks)
             {

@@ -29,11 +29,11 @@ namespace Client.Pages.Launchpads.Modals
 
                     if (authenticated)
                     {
-                        var wallet = await WalletManager.GetWalletInformationAsync();
+                        var walletAddress = await WalletManager.GetWalletAddressAsync();
 
                         var amount = (long)(Model.TokenAmountPerNativeToken.ToChainAmount(Model.TokenDecimals) * Model.HardCapNativeTokenAmount);
 
-                        var getAllowanceResult = await TokenManager.GetAllowanceAsync(Model.TokenSymbol, wallet.Address, MultiCrowdSaleManager.ContactAddress);
+                        var getAllowanceResult = await TokenManager.GetAllowanceAsync(Model.TokenSymbol, walletAddress, MultiCrowdSaleManager.ContactAddress);
 
                         if (getAllowanceResult.Allowance < amount)
                         {

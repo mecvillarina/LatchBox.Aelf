@@ -26,6 +26,7 @@ builder.Services.AddServerSideBlazor()
 #if RELEASE
 builder.Services.AddSignalR().AddAzureSignalR();
 #endif
+builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("App"));
 builder.Services.Configure<AElfSettings>(builder.Configuration.GetSection("AELF"));
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddMudServices(configuration =>
@@ -41,6 +42,8 @@ builder.Services.AddScoped<AElfClientFactory>();
 builder.Services.AddScoped<IKeyStore, AElfKeyStore>();
 builder.Services.AddScoped<IAccountsService, AccountsService>();
 builder.Services.AddScoped<IBlockChainService, BlockChainService>();
+builder.Services.AddScoped<IDateTime, DateTimeService>();
+builder.Services.AddScoped<IAuthTokenService, AuthTokenService>();
 
 builder.Services.AddScoped<ClientPreferenceManager>();
 builder.Services.AddScoped<IAppDialogService, AppDialogService>();

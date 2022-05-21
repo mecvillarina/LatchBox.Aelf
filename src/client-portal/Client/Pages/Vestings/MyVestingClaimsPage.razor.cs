@@ -12,7 +12,7 @@ namespace Client.Pages.Vestings
     {
         public bool IsLoaded { get; set; }
         public bool IsCompletelyLoaded { get; set; }
-        public WalletInformation Wallet { get; set; }
+        public string WalletAddress { get; set; }
 
         public List<VestingReceiverModel> Vestings { get; set; } = new();
 
@@ -26,7 +26,7 @@ namespace Client.Pages.Vestings
 
                     await InvokeAsync(async () =>
                     {
-                        Wallet = await WalletManager.GetWalletInformationAsync();
+                        WalletAddress = await WalletManager.GetWalletAddressAsync();
                         await FetchDataAsync();
                     });
                 });
@@ -42,7 +42,7 @@ namespace Client.Pages.Vestings
 
             Vestings.Clear();
 
-            var vestingListOutput = await VestingTokenVaultManager.GetVestingsForReceiverAsync(Wallet.Address);
+            var vestingListOutput = await VestingTokenVaultManager.GetVestingsForReceiverAsync(WalletAddress);
 
             foreach (var transactionOutput in vestingListOutput.Transactions)
             {

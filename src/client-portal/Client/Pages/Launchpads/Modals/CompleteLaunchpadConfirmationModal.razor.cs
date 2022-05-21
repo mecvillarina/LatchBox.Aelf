@@ -40,7 +40,7 @@ namespace Client.Pages.Launchpads.Modals
                     if (!result.IsSuccess)
                         throw new GeneralException(result.Message);
 
-                    var wallet = await WalletManager.GetWalletInformationAsync();
+                    var walletAddress = await WalletManager.GetWalletAddressAsync();
 
                     var crowdSaleOutput = await MultiCrowdSaleManager.GetCrowdSaleAsync(Model.Launchpad.Id);
                     var investmentsOutput = await MultiCrowdSaleManager.GetCrowdSaleInvestments(Model.Launchpad.Id);
@@ -70,7 +70,7 @@ namespace Client.Pages.Launchpads.Modals
                         Remarks = $"LAUNCHPAD: {crowdSaleOutput.CrowdSale.Name}"
                     };
 
-                    var getAllowanceResult = await TokenManager.GetAllowanceAsync(Model.TokenSymbol, wallet.Address, LockTokenVaultManager.ContactAddress);
+                    var getAllowanceResult = await TokenManager.GetAllowanceAsync(Model.TokenSymbol, walletAddress, LockTokenVaultManager.ContactAddress);
 
                     if (getAllowanceResult.Allowance < totalAmount)
                     {

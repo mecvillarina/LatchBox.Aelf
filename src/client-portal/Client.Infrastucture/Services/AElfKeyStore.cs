@@ -59,18 +59,35 @@ namespace Client.Infrastructure.Services
             }
         }
 
-        public async Task<ECKeyPair> ReadKeyPairAsync(string filename, string password)
+        public async Task<ECKeyPair> ReadKeyPairFromFileAsync(string filename, string password)
         {
             try
             {
                 var keyFilePath = GetKeyFileFullPath(filename);
-                var privateKey = await Task.Run(() =>
+                var keyPair = await Task.Run(async () =>
                 {
                     using (var textReader = File.OpenText(keyFilePath))
                     {
                         var json = textReader.ReadToEnd();
-                        return _keyStoreService.DecryptKeyStoreFromJson(password, json);
+                        return await ReadKeyPairAsync(json, password);
                     }
+                });
+
+                return keyPair;
+            }
+            catch (FileNotFoundException ex)
+            {
+                throw new KeyStoreNotFoundException("Keystore file not found.", ex);
+            }
+        }
+
+        public async Task<ECKeyPair> ReadKeyPairAsync(string json, string password)
+        {
+            try
+            {
+                var privateKey = await Task.Run(() =>
+                {
+                    return _keyStoreService.DecryptKeyStoreFromJson(password, json);
                 });
 
                 return CryptoHelper.FromPrivateKey(privateKey);
