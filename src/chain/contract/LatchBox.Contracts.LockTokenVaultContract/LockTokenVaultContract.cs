@@ -8,14 +8,13 @@ namespace LatchBox.Contracts.LockTokenVaultContract
 {
     public partial class LockTokenVaultContract : LockTokenVaultContractContainer.LockTokenVaultContractBase
     {
-        public override Empty Initialize(Empty empty)
+        public override Empty Initialize(Empty input)
         {
             Assert(State.Admin.Value == null, "Already initialized");
 
             State.Admin.Value = Context.Sender;
 
             State.TokenContract.Value = Context.GetContractAddressByName(SmartContractConstants.TokenContractSystemName);
-            State.ConsensusContract.Value = Context.GetContractAddressByName(SmartContractConstants.ConsensusContractSystemName);
 
             State.SelfIncresingLockId.Value = 1;
             State.AssetCounterList.Value = new LockAssetCounterTokenSymbolList();
@@ -113,7 +112,7 @@ namespace LatchBox.Contracts.LockTokenVaultContract
 
             if (!receiverObj.IsActive && receiverObj.DateClaimed != null) throw new AssertionException("Lock has been already claimed.");
 
-            //Assert(Context.CurrentBlockTime > lockObj.UnlockTime, "Lock is not yet ready to be claimwd");
+            Assert(Context.CurrentBlockTime > lockObj.UnlockTime, "Lock is not yet ready to be claimwd");
 
             State.TokenContract.Transfer.Send(new TransferInput()
             {

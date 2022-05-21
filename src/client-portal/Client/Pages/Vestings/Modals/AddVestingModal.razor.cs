@@ -22,7 +22,7 @@ namespace Client.Pages.Vestings.Modals
         public List<string> WalletAddresses { get; set; } = new();
         public string TokenBalanceDisplay { get; set; }
 
-        protected async override Task OnAfterRenderAsync(bool firstRender)
+        protected override void OnAfterRender(bool firstRender)
         {
             if (firstRender)
             {
@@ -59,7 +59,7 @@ namespace Client.Pages.Vestings.Modals
 
                         if (authenticated)
                         {
-                            var wallet = await WalletManager.GetWalletInformationAsync();
+                            var walletAddress = await WalletManager.GetWalletAddressAsync();
 
                             long totalAmount = 0;
 
@@ -99,7 +99,7 @@ namespace Client.Pages.Vestings.Modals
                                 Periods = inputPeriods
                             };
 
-                            var getAllowanceResult = await TokenManager.GetAllowanceAsync(Model.TokenSymbol, wallet.Address, VestingTokenVaultManager.ContactAddress);
+                            var getAllowanceResult = await TokenManager.GetAllowanceAsync(Model.TokenSymbol, walletAddress, VestingTokenVaultManager.ContactAddress);
 
                             if (getAllowanceResult.Allowance < totalAmount)
                             {

@@ -1,11 +1,13 @@
 ﻿using AElf;
 using AElf.Client.Dto;
 using AElf.Client.MultiToken;
+using AElf.Client.Proto;
 using Blazored.LocalStorage;
 using Client.Infrastructure.Constants;
 using Client.Infrastructure.Managers.Interfaces;
 using Client.Infrastructure.Services.Interfaces;
 using Google.Protobuf;
+using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,64 +32,67 @@ namespace Client.Infrastructure.Managers
 
         public async Task<TokenInfo> GetNativeTokenInfoAsync()
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             IMessage @params = new Empty { };
 
-            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetNativeTokenInfo", @params);
+            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetNativeTokenInfo", @params);
             return TokenInfo.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<StringValue> GetPrimaryTokenSymbolAsync()
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             IMessage @params = new Empty { };
 
-            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetPrimaryTokenSymbol", @params);
+            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetPrimaryTokenSymbol", @params);
             return StringValue.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<TokenInfoList> GetResourceTokenInfoListAsync()
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             IMessage @params = new Empty { };
 
-            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetResourceTokenInfo", @params);
+            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetResourceTokenInfo", @params);
             return TokenInfoList.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<TokenInfo> GetTokenInfoAsync(string symbol)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new GetTokenInfoInput()
             {
                 Symbol = symbol
             };
 
-            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetTokenInfo", @params);
+            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetTokenInfo", @params);
             return TokenInfo.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<GetBalanceOutput> GetBalanceAsync(string symbol)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
-
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
+            var address = await _walletManager.GetWalletAddressAsync();
             var @params = new GetBalanceInput
             {
                 Symbol = symbol,
-                Owner = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(cred.Item1.Address).Value }
+                Owner = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(address).Value }
             };
 
-            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetBalance", @params);
+            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetBalance", @params);
             return GetBalanceOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<TransactionResultDto> CreateAsync(string symbol, string tokenName, long totalSupply, int decimals, bool isBurnable)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
+            var address = await _walletManager.GetWalletAddressAsync();
+
+            var chainId = await _blockChainService.GetChainIdAsync();
 
             var @params = new CreateInput
             {
@@ -95,18 +100,18 @@ namespace Client.Infrastructure.Managers
                 TokenName = tokenName,
                 TotalSupply = totalSupply,
                 Decimals = decimals,
-                Issuer = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(cred.Item1.Address).Value },
+                Issuer = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(address).Value },
                 IsBurnable = isBurnable,
-                IssueChainId = ManagerToolkit.AelfSettings.ChainId
+                IssueChainId = chainId
             };
 
-            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "Create", @params);
+            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "Create", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
         public async Task<TransactionResultDto> IssueAsync(string symbol, long amount, string memo, string to)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new IssueInput
             {
@@ -116,13 +121,13 @@ namespace Client.Infrastructure.Managers
                 To = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(to).Value },
             };
 
-            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "Issue", @params);
+            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "Issue", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
         public async Task<TransactionResultDto> ApproveAsync(string spender, string symbol, long amount)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new ApproveInput
             {
@@ -131,13 +136,13 @@ namespace Client.Infrastructure.Managers
                 Amount = amount,
             };
 
-            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "Approve", @params);
+            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "Approve", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
         public async Task<TransactionResultDto> UnApproveAsync(string spender, string symbol, long amount)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new UnApproveInput
             {
@@ -146,13 +151,13 @@ namespace Client.Infrastructure.Managers
                 Amount = amount,
             };
 
-            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "UnApproveInput", @params);
+            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "UnApproveInput", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
         public async Task<GetAllowanceOutput> GetAllowanceAsync(string symbol, string owner, string spender)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new GetAllowanceInput
             {
@@ -161,7 +166,7 @@ namespace Client.Infrastructure.Managers
                 Spender = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(spender).Value },
             };
 
-            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetAllowance", @params);
+            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetAllowance", @params);
             return GetAllowanceOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
@@ -198,5 +203,66 @@ namespace Client.Infrastructure.Managers
             }
         }
 
+        //public async Task<Address> GetCrossChainTransferTokenContractAddress(int chainId)
+        //{
+        //    var keyPair = await _walletManager.GetWalletKeyPairAsync();
+
+        //    var @params = new GetCrossChainTransferTokenContractAddressInput
+        //    {
+        //       ChainId = chainId
+        //    };
+
+        //    var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetCrossChainTransferTokenContractAddress", @params);
+        //    return Address.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
+
+        //}
+        //public async Task<TransactionResultDto> CrossChainTransferAsync(string to, string symbol, long amount, string memo, int toChainId)
+        //{
+        //    var keyPair = await _walletManager.GetWalletKeyPairAsync();
+
+        //    var chainId = await _blockChainService.GetChainIdAsync();
+        //    var cA = await GetCrossChainTransferTokenContractAddress(chainId);
+        //    var @params = new CrossChainTransferInput
+        //    {
+        //        To = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(to).Value },
+        //        Symbol = symbol.ToUpper(),
+        //        Amount = amount,
+        //        Memo = memo,
+        //        ToChainId = toChainId,
+        //        IssueChainId = chainId
+        //    };
+
+        //    var crossChainTransferTxId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "CrossChainTransfer", @params);
+        //    var crossChainTransferTxResult = await _blockChainService.CheckTransactionResultAsync(crossChainTransferTxId);
+
+        //    if (crossChainTransferTxResult.Status == "MINED")
+        //    {
+        //        var merklePath = await _blockChainService.GetMerklePathByTransactionIdAsync(crossChainTransferTxId);
+        //        var generateRawTransaction = await _blockChainService.GenerateRawTransactionAsync(keyPair, ContactAddress, "CrossChainTransfer", @params);
+
+        //        var params2 = new CrossChainReceiveTokenInput
+        //        {
+        //            FromChainId = chainId,
+        //            ParentChainHeight = crossChainTransferTxResult.BlockNumber,
+        //            TransferTransactionBytes = ByteString.CopyFrom(ByteArrayHelper.HexStringToByteArray(generateRawTransaction)),
+        //            MerklePath = new MerklePath()
+        //        };
+
+        //        foreach (var node in merklePath.MerklePathNodes)
+        //        {
+        //            params2.MerklePath.MerklePathNodes.Add(new MerklePathNode()
+        //            {
+        //                Hash = new AElf.Client.Proto.Hash() { Value =  AElf.Types.Hash.LoadFromHex(node.Hash).Value },
+        //                IsLeftChildNode = node.IsLeftChildNode
+        //            });
+        //        }
+
+        //        var crossChainReceiveTxId = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "CrossChainReceiveToken", params2);
+        //        //var crossChainReceiveTxResult = await _blockChainService.CheckTransactionResultAsync2(crossChainReceiveTxId);
+        //        //return crossChainReceiveTxResult;
+        //    }
+
+        //    return crossChainTransferTxResult;
+        //}
     }
 }

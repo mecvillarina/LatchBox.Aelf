@@ -25,17 +25,17 @@ namespace Client.Infrastructure.Managers
 
         public async Task<TransactionResultDto> InitializeAsync()
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             IMessage @params = new Empty { };
 
-            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "Initialize", @params);
+            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "Initialize", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
         public async Task<TransactionResultDto> CreateAsync(CreateLaunchpadInputModel model)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new CreateInput()
             {
@@ -50,26 +50,26 @@ namespace Client.Infrastructure.Managers
                 LockUntilDurationInMinutes = model.LockUntilDurationInMinutes
             };
 
-            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "Create", @params);
+            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "Create", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
         public async Task<TransactionResultDto> CancelAsync(long crowdSaleId)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new CancelInput()
             {
                 CrowdSaleId = crowdSaleId
             };
 
-            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "Cancel", @params);
+            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "Cancel", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
         public async Task<TransactionResultDto> InvestAsync(long crowdSaleId, long amount)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new InvestInput()
             {
@@ -77,73 +77,73 @@ namespace Client.Infrastructure.Managers
                 TokenAmount = amount
             };
 
-            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "Invest", @params);
+            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "Invest", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
         public async Task<TransactionResultDto> CompleteAsync(long crowdSaleId)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new CompleteInput()
             {
                 CrowdSaleId = crowdSaleId
             };
 
-            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "Complete", @params);
+            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "Complete", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
         public async Task<TransactionResultDto> UpdateLockInfoAsync(long crowdSaleId, long lockId)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new UpdateLockInfoInput()
             {
-                CrowdSaleId = crowdSaleId, 
+                CrowdSaleId = crowdSaleId,
                 LockId = lockId,
             };
 
-            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "UpdateLockInfo", @params);
+            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "UpdateLockInfo", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
         public async Task<CrowdSaleOutput> GetCrowdSaleAsync(long crowdSaleId)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new GetCrowdSaleInput()
             {
                 CrowdSaleId = crowdSaleId
             };
 
-            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetCrowdSale", @params);
+            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetCrowdSale", @params);
             return CrowdSaleOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<CrowdSaleListOutput> GetCrowdSalesByInitiatorAsync(string initiator)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(initiator).Value };
 
-            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetCrowdSalesByInitiator", @params);
+            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetCrowdSalesByInitiator", @params);
             return CrowdSaleListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<CrowdSaleByInvestorListOuput> GetCrowdSalesByInvestorAsync(string investor)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(investor).Value };
 
-            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetCrowdSalesByInvestor", @params);
+            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetCrowdSalesByInvestor", @params);
             return CrowdSaleByInvestorListOuput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<CrowdSaleListOutput> GetCrowdSalesAsync(bool isUpcoming, bool isOngoing)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new GetCrowdSalesInput()
             {
@@ -151,20 +151,20 @@ namespace Client.Infrastructure.Managers
                 IsOngoing = isOngoing
             };
 
-            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetCrowdSales", @params);
+            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetCrowdSales", @params);
             return CrowdSaleListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<CrowdSaleInvestmentListOutput> GetCrowdSaleInvestments(long crowdSaleId)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new GetCrowdSaleInvestorsInput()
             {
                 CrowdSaleId = crowdSaleId
             };
 
-            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetCrowdSaleInvestments", @params);
+            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetCrowdSaleInvestments", @params);
             return CrowdSaleInvestmentListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 

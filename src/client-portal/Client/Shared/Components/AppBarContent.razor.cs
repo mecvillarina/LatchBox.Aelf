@@ -13,8 +13,6 @@ namespace Client.Shared.Components
         public bool IsLoaded { get; set; }
         public bool IsPlatformTokenLoaded { get; set; }
         public bool IsAuthenticated { get; set; }
-        public string Network { get; set; }
-        public string Node { get; set; }
         public string WalletAddress { get; set; }
         public bool IsClaimingElf { get; set; }
 
@@ -25,13 +23,10 @@ namespace Client.Shared.Components
                 await InvokeAsync(async () =>
                 {
                     IsAuthenticated = await AuthManager.IsAuthenticated();
-                    Network = BlockchainManager.Network;
-                    Node = BlockchainManager.Node;
 
                     if (IsAuthenticated)
                     {
-                        var wallet = await WalletManager.GetWalletInformationAsync();
-                        WalletAddress = wallet.Address;
+                        WalletAddress = await WalletManager.GetWalletAddressAsync();
                     }
 
                     IsLoaded = true;
@@ -67,7 +62,7 @@ namespace Client.Shared.Components
                         AppDialogService.ShowSuccess("Claim ELF Success.");
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     AppDialogService.ShowError(ex.Message);
                 }

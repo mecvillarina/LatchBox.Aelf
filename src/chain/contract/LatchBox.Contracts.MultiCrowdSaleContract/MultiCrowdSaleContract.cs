@@ -6,11 +6,6 @@ using System;
 
 namespace LatchBox.Contracts.MultiCrowdSaleContract
 {
-    /// <summary>
-    /// The C# implementation of the contract defined in multi_crowd_sale_contract.proto that is located in the "protobuf"
-    /// folder.
-    /// Notice that it inherits from the protobuf generated code. 
-    /// </summary>
     public partial class MultiCrowdSaleContract : MultiCrowdSaleContractContainer.MultiCrowdSaleContractBase
     {
         public override Empty Initialize(Empty input)
@@ -174,9 +169,9 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             var crowdSale = State.CrowdSales[crowdSaleId];
             Assert(crowdSale.IsActive, "Sale is not active anymore.");
             Assert(!crowdSale.IsCancelled, "Sale has been cancelled.");
-            //Assert(Context.CurrentBlockTime.ToDateTime() > crowdSale.SaleStartDate.ToDateTime(), "Sale is not yet started.");
-            //Assert(Context.CurrentBlockTime.ToDateTime() > crowdSale.SaleEndDate.ToDateTime(), "Sale has already ended.");
-            //Assert(crowdSale.Initiator != Context.Sender, "Only the non-issuer (creator) of the token can buy on a crowd sale.");
+            Assert(Context.CurrentBlockTime.ToDateTime() > crowdSale.SaleStartDate.ToDateTime(), "Sale is not yet started.");
+            Assert(Context.CurrentBlockTime.ToDateTime() > crowdSale.SaleEndDate.ToDateTime(), "Sale has already ended.");
+            Assert(crowdSale.Initiator != Context.Sender, "Only the non-issuer (creator) of the token can buy on a crowd sale.");
 
             var raiseAmount = State.CrowdSaleRaiseAmounts[crowdSaleId];
 
@@ -249,8 +244,8 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             Assert(crowdSale.Initiator == Context.Sender || Context.Sender == State.Admin.Value, "No authorization.");
             Assert(crowdSale.IsActive, "Sale is not active anymore.");
             Assert(!crowdSale.IsCancelled, "Sale has been cancelled.");
-            //Assert(Context.CurrentBlockTime.ToDateTime() > crowdSale.SaleStartDate.ToDateTime(), "Sale is not yet started.");
-            //Assert(Context.CurrentBlockTime.ToDateTime() < crowdSale.SaleEndDate.ToDateTime(), "Sale is still ongoing not yet ended.");
+            Assert(Context.CurrentBlockTime.ToDateTime() > crowdSale.SaleStartDate.ToDateTime(), "Sale is not yet started.");
+            Assert(Context.CurrentBlockTime.ToDateTime() < crowdSale.SaleEndDate.ToDateTime(), "Sale is still ongoing not yet ended.");
 
 
             var raiseAmount = State.CrowdSaleRaiseAmounts[crowdSaleId];

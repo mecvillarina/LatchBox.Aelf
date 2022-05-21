@@ -24,17 +24,17 @@ namespace Client.Infrastructure.Managers
 
         public async Task<TransactionResultDto> InitializeAsync()
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new Empty { };
 
-            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "Initialize", @params);
+            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "Initialize", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
         public async Task<TransactionResultDto> AddVestingAsync(AddVestingInputModel model)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new AddVestingInput
             {
@@ -65,88 +65,88 @@ namespace Client.Infrastructure.Managers
                 @params.Periods.Add(periodParams);
             }
 
-            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "AddVesting", @params);
+            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "AddVesting", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
         public async Task<TransactionResultDto> ClaimVestingAsync(long vestingId, long periodId)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new ClaimVestingInput { VestingId = vestingId, PeriodId = periodId };
 
-            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "ClaimVesting", @params);
+            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "ClaimVesting", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
         public async Task<TransactionResultDto> RevokeVestingAsync(long vestingId)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new RevokeVestingInput { VestingId = vestingId };
 
-            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "RevokeVesting", @params);
+            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "RevokeVesting", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
         public async Task<TransactionResultDto> ClaimRefundAsync(string tokenSymbol)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new ClaimRefundInput { TokenSymbol = tokenSymbol };
 
-            var txId = await _blockChainService.SendTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "ClaimRefund", @params);
+            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "ClaimRefund", @params);
             return await _blockChainService.CheckTransactionResultAsync(txId);
         }
 
         public async Task<Int64Value> GetVestingsCountAsync()
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new Empty();
 
-            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetVestingsCount", @params);
+            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetVestingsCount", @params);
             return Int64Value.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<GetVestingTransactionOutput> GetVestingTransactionAsync(long vestingId)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new Int64Value() { Value = vestingId };
 
-            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetVestingTransaction", @params);
+            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetVestingTransaction", @params);
             return GetVestingTransactionOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<GetVestingListOutput> GetVestingsByInitiatorAsync(string initiator)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(initiator).Value };
 
-            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetVestingsByInitiator", @params);
+            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetVestingsByInitiator", @params);
             return GetVestingListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<GetVestingReceiverListOutput> GetVestingsForReceiverAsync(string receiver)
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(receiver).Value };
 
-            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetVestingsForReceiver", @params);
+            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetVestingsForReceiver", @params);
             return GetVestingReceiverListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
 
         public async Task<GetRefundListOutput> GetRefundsAsync()
         {
-            var cred = await _walletManager.GetWalletCredentialsAsync();
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             var @params = new Empty();
 
-            var result = await _blockChainService.CallTransactionAsync(cred.Item1, cred.Item2, ContactAddress, "GetRefunds", @params);
+            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetRefunds", @params);
             return GetRefundListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 

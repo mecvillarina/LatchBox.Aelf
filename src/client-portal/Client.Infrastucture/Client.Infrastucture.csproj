@@ -23,6 +23,8 @@
 		<PackageReference Include="AElf.Types" Version="1.1.1-18963" />
 		<PackageReference Include="AElf.Core" Version="1.1.1-18963" />
 		<PackageReference Include="AElf.CSharp.Core" Version="1.1.1-18963" />
+
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.16.0" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,6 +1,7 @@
 ﻿using Client.Infrastructure.Managers.Interfaces;
 using Client.Pages.Locks.Modals;
 using Client.Pages.Vestings.Modals;
+using Client.Services;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -40,7 +41,7 @@ namespace Client.Pages
                         await FetchDataAsync();
                     });
                 });
-              
+
             }
         }
 
@@ -48,9 +49,16 @@ namespace Client.Pages
         {
             IsLoaded = false;
 
-            await MultiCrowdSaleManager.InitializeAsync();
-            await LockTokenVaultManager.InitializeAsync();
-            await VestingTokenVaultManager.InitializeAsync();
+            try
+            {
+                //await MultiCrowdSaleManager.InitializeAsync();
+                //var s = await LockTokenVaultManager.InitializeAsync();
+                //await VestingTokenVaultManager.InitializeAsync();
+            }
+            catch
+            {
+
+            }
 
             AppDialogService.ShowSuccess("Success");
             IsLoaded = true;

@@ -64,7 +64,7 @@ namespace Client.Pages.Locks.Modals
 
                         if (authenticated)
                         {
-                            var wallet = await WalletManager.GetWalletInformationAsync();
+                            var walletAddress = await WalletManager.GetWalletAddressAsync();
 
                             long totalAmount = 0;
 
@@ -94,7 +94,7 @@ namespace Client.Pages.Locks.Modals
                                 Remarks = Model.Remarks
                             };
 
-                            var getAllowanceResult = await TokenManager.GetAllowanceAsync(Model.TokenSymbol, wallet.Address, LockTokenVaultManager.ContactAddress);
+                            var getAllowanceResult = await TokenManager.GetAllowanceAsync(Model.TokenSymbol, walletAddress, LockTokenVaultManager.ContactAddress);
 
                             if (getAllowanceResult.Allowance < totalAmount)
                             {

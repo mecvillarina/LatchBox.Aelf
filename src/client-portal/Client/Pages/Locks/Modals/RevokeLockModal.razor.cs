@@ -18,7 +18,7 @@ namespace Client.Pages.Locks.Modals
         public bool IsProcessing { get; set; }
         public bool IsLoaded { get; set; }
 
-        protected async override Task OnAfterRenderAsync(bool firstRender)
+        protected override void OnAfterRender(bool firstRender)
         {
             if (firstRender)
             {

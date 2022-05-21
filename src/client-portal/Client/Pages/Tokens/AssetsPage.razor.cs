@@ -1,4 +1,5 @@
-﻿using Client.Infrastructure.Models;
+﻿using Client.Infrastructure.Extensions;
+using Client.Infrastructure.Models;
 using Client.Pages.Tokens.Modals;
 using Client.Parameters;
 using MudBlazor;
@@ -9,7 +10,7 @@ namespace Client.Pages.Tokens
     {
         public bool IsLoaded { get; set; }
         public bool IsCompletelyLoaded { get; set; }
-        public WalletInformation Wallet { get; set; }
+        public string WalletAddress { get; set; }
         public List<TokenInfoWithBalance> TokenInfoWithBalanceList { get; set; } = new();
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
@@ -22,7 +23,7 @@ namespace Client.Pages.Tokens
 
                     await InvokeAsync(async () =>
                     {
-                        Wallet = await WalletManager.GetWalletInformationAsync();
+                        WalletAddress = await WalletManager.GetWalletAddressAsync();
                         await FetchDataAsync();
                         try
                         {
@@ -30,7 +31,7 @@ namespace Client.Pages.Tokens
 
                             if (string.IsNullOrWhiteSpace(result.Error))
                             {
-                                await TokenManager.IssueAsync("LATCH", 10000000_00000000, "MINT1", Wallet.Address);
+                                await TokenManager.IssueAsync("LATCH", 10000000_00000000, "MINT1", WalletAddress);
                             }
                         }
                         catch

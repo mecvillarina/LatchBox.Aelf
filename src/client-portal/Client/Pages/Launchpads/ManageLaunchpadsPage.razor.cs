@@ -13,7 +13,7 @@ namespace Client.Pages.Launchpads
         public bool IsLoaded { get; set; }
 
         public TokenInfo NativeTokenInfo { get; set; }
-        public WalletInformation Wallet { get; set; }
+        public string WalletAddress { get; set; }
         public List<MyLaunchpadModel> LaunchpadList { get; set; } = new();
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
@@ -26,7 +26,7 @@ namespace Client.Pages.Launchpads
 
                     await InvokeAsync(async () =>
                     {
-                        Wallet = await WalletManager.GetWalletInformationAsync();
+                        WalletAddress = await WalletManager.GetWalletAddressAsync();
                         await FetchDataAsync();
                     });
                 });
@@ -39,7 +39,7 @@ namespace Client.Pages.Launchpads
             StateHasChanged();
 
             NativeTokenInfo = await TokenManager.GetNativeTokenInfoAsync();
-            var output = await MultiCrowdSaleManager.GetCrowdSalesByInitiatorAsync(Wallet.Address);
+            var output = await MultiCrowdSaleManager.GetCrowdSalesByInitiatorAsync(WalletAddress);
             LaunchpadList = output.List.Select(x => new MyLaunchpadModel(x)).ToList();
 
             IsLoaded = true;

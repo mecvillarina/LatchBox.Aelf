@@ -1,7 +1,7 @@
 ﻿using AElf;
 using AElf.Client.Dto;
+using AElf.Cryptography.ECDSA;
 using AElf.Types;
-using Client.Infrastructure.Models;
 using Client.Infrastructure.Services.Interfaces;
 using Google.Protobuf;
 using Newtonsoft.Json;
@@ -20,11 +20,23 @@ namespace Client.Infrastructure.Services
             _aelfClientFactory = aelfClientFactory;
         }
 
-        public async Task<string> SendTransactionAsync(WalletInformation wallet, string password, string contract, string method, string @params = null)
+        public async Task<int> GetChainIdAsync()
         {
+            return await _aelfClientFactory.CreateClient().GetChainIdAsync();
+        }
+
+        public async Task<MerklePathDto> GetMerklePathByTransactionIdAsync(string transactionId)
+        {
+            return await _aelfClientFactory.CreateClient().GetMerklePathByTransactionIdAsync(transactionId);
+        }
+
+        public async Task<string> SendTransactionAsync(ECKeyPair keyPair, string contract, string method, string @params = null)
+        {
+            var fromAddress = Address.FromPublicKey(keyPair.PublicKey);
+
             var contractAddress = await GetContractAddressAsync(contract);
-            var rawTransaction = await GenerateRawTransactionAsync(wallet.Address, contractAddress, method, FormatParams(@params));
-            var signature = await GetSignatureAsync(wallet.Filename, password, rawTransaction);
+            var rawTransaction = await GenerateRawTransactionAsync(fromAddress.ToBase58(), contractAddress, method, FormatParams(@params));
+            var signature = GetSignature(keyPair, rawTransaction);
 
             var rawTransactionResult = await _aelfClientFactory.CreateClient().SendRawTransactionAsync(new SendRawTransactionInput()
             {
@@ -35,11 +47,13 @@ namespace Client.Infrastructure.Services
             return rawTransactionResult.TransactionId;
         }
 
-        public async Task<string> SendTransactionAsync(WalletInformation wallet, string password, string contract, string method, IMessage @params)
+        public async Task<string> SendTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params)
         {
+            var fromAddress = Address.FromPublicKey(keyPair.PublicKey);
+
             var contractAddress = await GetContractAddressAsync(contract);
-            var tx = await _aelfClientFactory.CreateClient().GenerateTransactionAsync(wallet.Address, contractAddress, method, @params);
-            var txWithSign = await GetTransactionWithSignatureAsync(wallet.Filename, password, tx);
+            var tx = await _aelfClientFactory.CreateClient().GenerateTransactionAsync(fromAddress.ToBase58(), contractAddress, method, @params);
+            var txWithSign = GetTransactionWithSignature(keyPair, tx);
 
             var rawTransactionResult = await _aelfClientFactory.CreateClient().SendTransactionAsync(new SendTransactionInput()
             {
@@ -49,11 +63,13 @@ namespace Client.Infrastructure.Services
             return rawTransactionResult.TransactionId;
         }
 
-        public async Task<string> CallTransactionAsync(WalletInformation wallet, string password, string contract, string method, IMessage @params)
+        public async Task<string> CallTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params)
         {
+            var fromAddress = Address.FromPublicKey(keyPair.PublicKey);
+
             var contractAddress = await GetContractAddressAsync(contract);
-            var tx = await _aelfClientFactory.CreateClient().GenerateTransactionAsync(wallet.Address, contractAddress, method, @params);
-            var txWithSign = await GetTransactionWithSignatureAsync(wallet.Filename, password, tx);
+            var tx = await _aelfClientFactory.CreateClient().GenerateTransactionAsync(fromAddress.ToBase58(), contractAddress, method, @params);
+            var txWithSign = GetTransactionWithSignature(keyPair, tx);
 
             var rawTransactionResult = await _aelfClientFactory.CreateClient().ExecuteTransactionAsync(new ExecuteTransactionDto
             {
@@ -89,18 +105,17 @@ namespace Client.Infrastructure.Services
             return result;
         }
 
-        private async Task<string> GetSignatureAsync(string keyStoreFile, string password, string rawTransaction)
+        private string GetSignature(ECKeyPair keyPair, string rawTransaction)
         {
             var transactionId = HashHelper.ComputeFrom(ByteArrayHelper.HexStringToByteArray(rawTransaction));
-            var signature = await _accountsService.SignAsync(keyStoreFile, password,
-                transactionId.ToByteArray());
+            var signature = _accountsService.Sign(keyPair, transactionId.ToByteArray());
             return ByteString.CopyFrom(signature).ToHex();
         }
 
-        private async Task<Transaction> GetTransactionWithSignatureAsync(string keyStoreFile, string password, Transaction transaction)
+        private Transaction GetTransactionWithSignature(ECKeyPair keyPair, Transaction transaction)
         {
             byte[] hash = transaction.GetHash().ToByteArray();
-            byte[] bytes = await _accountsService.SignAsync(keyStoreFile, password, hash);
+            byte[] bytes = _accountsService.Sign(keyPair, hash);
             transaction.Signature = ByteString.CopyFrom(bytes);
             return transaction;
         }

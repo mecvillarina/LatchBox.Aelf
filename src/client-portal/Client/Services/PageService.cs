@@ -28,6 +28,5 @@ namespace Client.Services
 
             callback?.Invoke(isAuthenticated);
         }
-
     }
 }

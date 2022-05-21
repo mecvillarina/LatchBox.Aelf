@@ -15,7 +15,6 @@ namespace LatchBox.Contracts.VestingTokenVaultContract
             State.Admin.Value = Context.Sender;
 
             State.TokenContract.Value = Context.GetContractAddressByName(SmartContractConstants.TokenContractSystemName);
-            State.ConsensusContract.Value = Context.GetContractAddressByName(SmartContractConstants.ConsensusContractSystemName);
 
             State.SelfIncresingVestingId.Value = 1;
             State.SelfIncresingPeriodId.Value = 1;
@@ -116,7 +115,7 @@ namespace LatchBox.Contracts.VestingTokenVaultContract
 
             Assert(vestingObj.IsActive, "Vesting is not active anymore.");
             Assert(receiverObj.DateClaimed == null, "Vesting has been claimed.");
-            //Assert(Context.CurrentBlockTime.ToDateTime() > periodObj.UnlockTime.ToDateTime(), "Vesting selected period is not yet ready to be claimed.");
+            Assert(Context.CurrentBlockTime.ToDateTime() > periodObj.UnlockTime.ToDateTime(), "Vesting selected period is not yet ready to be claimed.");
 
             State.TokenContract.Transfer.Send(new TransferInput()
             {

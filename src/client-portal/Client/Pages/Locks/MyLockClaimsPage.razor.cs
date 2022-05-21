@@ -1,5 +1,4 @@
 ﻿using Client.Infrastructure.Extensions;
-using Client.Infrastructure.Models;
 using Client.Models;
 using Client.Pages.Locks.Modals;
 using Client.Parameters;
@@ -14,7 +13,7 @@ namespace Client.Pages.Locks
         public long? LockId { get; set; }
         public bool IsLoaded { get; set; }
         public bool IsCompletelyLoaded { get; set; }
-        public WalletInformation Wallet { get; set; }
+        public string WalletAddress { get; set; }
 
         public List<LockForReceiverModel> LockTransactions { get; set; } = new();
 
@@ -33,7 +32,7 @@ namespace Client.Pages.Locks
 
                     await InvokeAsync(async () =>
                     {
-                        Wallet = await WalletManager.GetWalletInformationAsync();
+                        WalletAddress = await WalletManager.GetWalletAddressAsync();
                         await FetchDataAsync();
                     });
                 });
@@ -49,7 +48,7 @@ namespace Client.Pages.Locks
 
             LockTransactions.Clear();
 
-            var lockListOutput = await LockTokenVaultManager.GetLocksForReceiverAsync(Wallet.Address);
+            var lockListOutput = await LockTokenVaultManager.GetLocksForReceiverAsync(WalletAddress);
 
             foreach (var lockTransaction in lockListOutput.LockTransactions)
             {

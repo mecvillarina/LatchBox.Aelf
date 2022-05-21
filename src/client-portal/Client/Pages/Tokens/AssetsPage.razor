@@ -66,7 +66,7 @@
                                 @context.Token.Issuer.ToStringAddress().ToMask(10)
                             </MudHidden>
 
-                            @if (Wallet.Address == @context.Token.Issuer.ToStringAddress())
+                            @if (WalletAddress == @context.Token.Issuer.ToStringAddress())
                             {
                             <span> (You)</span>
                             }
@@ -91,7 +91,7 @@
                 <MudTd DataLabel="Actions">
                     <MudMenu Variant="Variant.Filled" Color="Color.Primary" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" DisableElevation="true" Icon="@Icons.Filled.MoreVert" IconColor="Color.Secondary" Direction="Direction.Left" OffsetX="true">
                         <MudMenuItem Disabled="context.IsNative" OnClick="(() => InvokeRemoveFromList(context))">Remove from List</MudMenuItem>
-                        <MudMenuItem Disabled="Wallet.Address != context.Token.Issuer.ToStringAddress()" OnClick="(() => InvokeIssueTokenModalAsync(context))">Issue New Token</MudMenuItem>
+                        <MudMenuItem Disabled="WalletAddress != context.Token.Issuer.ToStringAddress()" OnClick="(() => InvokeIssueTokenModalAsync(context))">Issue New Token</MudMenuItem>
                     </MudMenu>
                 </MudTd>
             </RowTemplate>
