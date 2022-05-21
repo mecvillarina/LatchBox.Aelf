@@ -63,7 +63,7 @@ namespace Client.Infrastructure.Managers
                     var address = Address.FromPublicKey(keyPair.PublicKey);
                     await ManagerToolkit.SaveWalletAuthHandlerAsync(tokenHandler, address.ToBase58());
                 }
-                catch(Exception ex)
+                catch
                 {
                     _accountsService.RemoveKeyStore(filename);
                     throw;

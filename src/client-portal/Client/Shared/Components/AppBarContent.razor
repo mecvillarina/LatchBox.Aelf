@@ -3,11 +3,11 @@
     <MudSpacer />
     if (!IsAuthenticated)
     {
-        <MudButton OnClick="InvokeConnectWalletModalAsync" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small">Connect Wallet</MudButton>
+        <MudButton OnClick="InvokeConnectWalletModal" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small">Connect Wallet</MudButton>
     }
     else
     {
-        <MudHidden Breakpoint="Breakpoint.SmAndDown">
+        @*<MudHidden Breakpoint="Breakpoint.SmAndDown">
             <MudChip Class="ml-1" Color="Color.Primary" Disabled="IsClaimingElf" Variant="Variant.Outlined" OnClick="@(() => InvokeClaimELFAsync())">
                 @if (IsClaimingElf)
                 {
@@ -18,11 +18,11 @@
                     <span>Claim ELF</span>
                 }
             </MudChip>
-        </MudHidden>
+        </MudHidden>*@
 
         <MudMenu Class="ml-3" Label="@WalletAddress.ToMask(6)" Disabled="IsClaimingElf" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" StartIcon="@Icons.Material.Filled.ConnectedTv" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" Variant="Variant.Filled" Color="Color.Secondary">
             <ChildContent>
-                <MudHidden Breakpoint="Breakpoint.MdAndUp">
+                @*<MudHidden Breakpoint="Breakpoint.MdAndUp">
                     <MudMenuItem OnClick="@(() => InvokeClaimELFAsync())">
                         @if (IsClaimingElf)
                         {
@@ -33,8 +33,8 @@
                             <span>Claim ELF</span>
                         }
                     </MudMenuItem>
-                </MudHidden>
-                <MudMenuItem OnClick="@(() => InvokeDisconnectWalletDialogAsync())">Disconnect Wallet</MudMenuItem>
+                </MudHidden>*@
+                <MudMenuItem OnClick="@(() => InvokeDisconnectWalletDialog())">Disconnect Wallet</MudMenuItem>
             </ChildContent>
         </MudMenu>
     }

@@ -71,6 +71,13 @@ namespace Client.Infrastructure.Managers
             var authTokenResult = _authTokenService.ValidateToken(wallet.TokenHandler.Token);
             if (authTokenResult.Status != AuthTokenStatus.Valid) return null;
 
+            var currentChainId = await _blockChainService.GetChainIdAsync();
+            var chainIdClaimIdentifier = authTokenResult.Principal.Claims.FirstOrDefault(x => x.Type == "ChainId");
+            if (chainIdClaimIdentifier == null || chainIdClaimIdentifier.Value != currentChainId.ToString()) return null;
+
+            var nodeClaimIdentifier = authTokenResult.Principal.Claims.FirstOrDefault(x => x.Type == "Node");
+            if (nodeClaimIdentifier == null || nodeClaimIdentifier.Value != AelfSettings.Node) return null;
+
             return wallet;
         }
 

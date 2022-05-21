@@ -1,4 +1,5 @@
-﻿using Client.Infrastructure.Managers.Interfaces;
+﻿using AElf;
+using Client.Infrastructure.Managers.Interfaces;
 using Client.Infrastructure.Services.Interfaces;
 using System.Threading.Tasks;
 
@@ -15,6 +16,11 @@ namespace Client.Infrastructure.Managers
         public string Network => ManagerToolkit.AelfSettings.Network;
         public string Node => ManagerToolkit.AelfSettings.Node;
 
-        public Task<int> GetChainIdAsync() => _blockChainService.GetChainIdAsync();
+        public Task<int> GetChainIdIntValueAsync() => _blockChainService.GetChainIdAsync();
+        public async Task<string> GetChainIdAsync()
+        {
+            var value = await _blockChainService.GetChainIdAsync();
+            return ChainHelper.ConvertChainIdToBase58(value);
+        }
     }
 }

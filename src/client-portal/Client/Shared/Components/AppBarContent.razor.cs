@@ -13,8 +13,6 @@ namespace Client.Shared.Components
         public bool IsLoaded { get; set; }
         public bool IsPlatformTokenLoaded { get; set; }
         public bool IsAuthenticated { get; set; }
-        public string Network { get; set; }
-        public string Node { get; set; }
         public string WalletAddress { get; set; }
         public bool IsClaimingElf { get; set; }
 
@@ -25,8 +23,6 @@ namespace Client.Shared.Components
                 await InvokeAsync(async () =>
                 {
                     IsAuthenticated = await AuthManager.IsAuthenticated();
-                    Network = BlockchainManager.Network;
-                    Node = BlockchainManager.Node;
 
                     if (IsAuthenticated)
                     {
@@ -35,50 +31,14 @@ namespace Client.Shared.Components
 
                     IsLoaded = true;
                     StateHasChanged();
-
-                    //Network = BlockchainManager.Network;
-                    //Node = BlockchainManager.Node;
-
-                    //IsAuthenticated = await NightElfService.IsConnectedAsync();
-
-                    //if (IsAuthenticated)
-                    //{
-                    //    var walletAddress = await NightElfService.GetAddressAsync();
-                    //    WalletAddress = walletAddress;
-                    //}
-
-                    //IsLoaded = true;
-                    //StateHasChanged();
                 });
             }
         }
 
-        private async Task InvokeConnectWalletModalAsync()
+        private void InvokeConnectWalletModal()
         {
             var options = new DialogOptions() { MaxWidth = MaxWidth.ExtraSmall };
             DialogService.Show<ConnectWalletModal>("Connect Wallet (JSON)", options);
-
-            //var hasNightElf = await NightElfService.HasNightElfAsync();
-
-            //if (!hasNightElf)
-            //{
-            //    AppDialogService.ShowError("Install Night Elf Extension.");
-            //    return;
-            //}
-
-            //await NightElfService.InitializeNightElfAsync("LatchBox", BlockchainManager.Node);
-
-            //var isConnected = await NightElfService.IsConnectedAsync();
-
-            //if (!isConnected)
-            //{
-            //    var result = await NightElfService.LoginAsync();
-            //    if(result != null)
-            //    {
-            //        WalletAddress = await NightElfService.GetAddressAsync();
-            //        IsAuthenticated = true;
-            //    }
-            //}
         }
 
         private async Task InvokeClaimELFAsync()
@@ -111,7 +71,7 @@ namespace Client.Shared.Components
             IsClaimingElf = false;
         }
 
-        private async Task InvokeDisconnectWalletDialogAsync()
+        private void InvokeDisconnectWalletDialog()
         {
             var parameters = new DialogParameters
             {
@@ -121,8 +81,6 @@ namespace Client.Shared.Components
             };
 
             DialogService.Show<DisconnectWalletDialog>("Logout", parameters);
-            //await NightElfService.LogoutAsync();
-            //IsAuthenticated = false;
         }
     }
 }

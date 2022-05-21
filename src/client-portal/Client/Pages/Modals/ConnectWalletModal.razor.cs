@@ -1,5 +1,4 @@
 ﻿using Blazored.FluentValidation;
-using Client.Infrastructure.Exceptions;
 using Client.Parameters;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -21,15 +20,20 @@ namespace Client.Pages.Modals
         private InputType PasswordInput = InputType.Password;
         private string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
         public string Node { get; set; }
-        public string Network { get; set; }
+        public string Chain { get; set; }
 
-        protected override void OnAfterRender(bool firstRender)
+        protected async override Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
             {
-                Network = BlockchainManager.Network;
-                Node = BlockchainManager.Node;
-                StateHasChanged();
+                await InvokeAsync(async () =>
+                {
+                    var chainIdInt = await BlockchainManager.GetChainIdIntValueAsync();
+                    var chainId = await BlockchainManager.GetChainIdAsync();
+                    Chain = $"{chainId} ({chainIdInt})";
+                    Node = BlockchainManager.Node;
+                    StateHasChanged();
+                });
             }
         }
 

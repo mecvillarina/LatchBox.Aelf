@@ -51,7 +51,12 @@ namespace Client.Shared.Dialogs
                     bool isAuthenticated = await WalletManager.AuthenticateAsync(Model.Password);
 
                     if (isAuthenticated)
+                    {
                         MudDialog.Close(true);
+                        return;
+                    }
+
+                    AppDialogService.ShowError("Invalid password.");
 
                 }
                 catch (Exception ex)

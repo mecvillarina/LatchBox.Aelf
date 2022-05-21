@@ -6,6 +6,7 @@ namespace Client.Infrastructure.Managers.Interfaces
     {
         string Network { get; }
         string Node { get; }
-        Task<int> GetChainIdAsync();
+        Task<string> GetChainIdAsync();
+        Task<int> GetChainIdIntValueAsync();
     }
 }
