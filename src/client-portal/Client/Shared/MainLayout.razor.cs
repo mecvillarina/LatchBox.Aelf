@@ -1,4 +1,5 @@
-﻿using MudBlazor;
+﻿using Client.Infrastructure.Extensions;
+using MudBlazor;
 
 namespace Client.Shared
 {
@@ -25,8 +26,8 @@ namespace Client.Shared
                 {
                     IsAuthenticated = await AuthManager.IsAuthenticated();
                     await AppBreakpointService.InitAsync();
-                    MainChain = await BlockchainManager.GetMainChainIdInformationAsync();
-                    SideChain = await BlockchainManager.GetSideChainIdInformationAsync();
+                    MainChain = $"Main {(await BlockchainManager.GetMainChainIdAsync()).ToStringChainId()}";
+                    SideChain = $"Side {(await BlockchainManager.GetSideChainIdAsync()).ToStringChainId()}";
                     MainChainNode = BlockchainManager.MainChainNode;
                     SideChainNode = BlockchainManager.SideChainNode;
                     StateHasChanged();

@@ -63,7 +63,7 @@ namespace Client.Pages.Locks
 
             foreach (var lockTransaction in LockTransactions)
             {
-                var tokenInfo = await TokenManager.GetTokenInfoAsync(lockTransaction.Lock.TokenSymbol);
+                var tokenInfo = await TokenManager.GetTokenInfoOnSideChainAsync(lockTransaction.Lock.TokenSymbol);
                 lockTransaction.SetTokenInfo(tokenInfo);
             }
 

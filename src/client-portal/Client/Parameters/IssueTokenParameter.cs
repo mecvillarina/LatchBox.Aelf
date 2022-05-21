@@ -11,6 +11,7 @@ namespace Client.Parameters
         public double Amount { get; set; }
         public string To { get; set; }
         public string Memo { get; set; }
+        public int IssuedChainId { get; set; }
     }
 
     public class IssueTokenParameterValidator : AbstractValidator<IssueTokenParameter>

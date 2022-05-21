@@ -44,7 +44,7 @@ namespace Client.Pages.Launchpads.Modals
 
                     var crowdSaleOutput = await MultiCrowdSaleManager.GetCrowdSaleAsync(Model.Launchpad.Id);
                     var investmentsOutput = await MultiCrowdSaleManager.GetCrowdSaleInvestments(Model.Launchpad.Id);
-                    var nativeTokenInfo = await TokenManager.GetNativeTokenInfoAsync();
+                    var nativeTokenInfo = await TokenManager.GetNativeTokenInfoOnSideChainAsync();
 
                     long totalAmount = 0;
                     var inputReceivers = new List<AddLockReceiverInputModel>();

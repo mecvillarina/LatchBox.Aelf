@@ -29,7 +29,7 @@ namespace Client.Pages.Locks.Modals
             try
             {
                 var transactionOutput = await LockTokenVaultManager.GetLockTransactionAsync(LockId);
-                var tokenInfo = await TokenManager.GetTokenInfoAsync(transactionOutput.Lock.TokenSymbol);
+                var tokenInfo = await TokenManager.GetTokenInfoOnSideChainAsync(transactionOutput.Lock.TokenSymbol);
 
                 Model = new LockTransactionModel(transactionOutput.Lock, transactionOutput.Receivers.ToList(), tokenInfo);
                 ShareLink = $"{NavigationManager.BaseUri}view/locks/{LockId}";

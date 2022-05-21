@@ -8,7 +8,7 @@ namespace Client.Infrastructure.Managers.Interfaces
         string MainChainExplorer { get; }
         string SideChainNode { get; }
         string SideChainExplorer { get; }
-        Task<string> GetMainChainIdInformationAsync();
-        Task<string> GetSideChainIdInformationAsync();
+        Task<int> GetMainChainIdAsync();
+        Task<int> GetSideChainIdAsync();
     }
 }

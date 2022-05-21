@@ -15,7 +15,20 @@ namespace Client.Pages.Tokens.Modals
         private FluentValidationValidator _fluentValidationValidator;
         private bool Validated => _fluentValidationValidator.Validate(options => { options.IncludeAllRuleSets(); });
         public bool IsProcessing { get; set; }
-
+        public string MainChainId { get; set; }
+        public string SideChainId { get; set; }
+        protected override async void OnAfterRender(bool firstRender)
+        {
+            if (firstRender)
+            {
+                await InvokeAsync(async () =>
+                {
+                    MainChainId = $"Main {(await BlockchainManager.GetMainChainIdAsync()).ToStringChainId()}";
+                    SideChainId = $"Side {(await BlockchainManager.GetSideChainIdAsync()).ToStringChainId()}";
+                    StateHasChanged();
+                });
+            }
+        }
         private async Task SubmitAsync()
         {
             if (Validated)
@@ -31,14 +44,14 @@ namespace Client.Pages.Tokens.Modals
                     if (authenticated)
                     {
                         var walletAddress = await WalletManager.GetWalletAddressAsync();
-                        var createTokenResult = await TokenManager.CreateAsync(Model.Symbol, Model.TokenName, totalSupply, Model.Decimals, Model.IsBurnable);
+                        var createTokenResult = await TokenManager.CreateAsync(Model.Symbol.ToUpper(), Model.TokenName, totalSupply, Model.Decimals, Model.IsBurnable);
 
                         if (!string.IsNullOrEmpty(createTokenResult.Error))
                             throw new GeneralException(createTokenResult.Error);
 
                         if (initialSupply > 0)
                         {
-                            var issueTokenResult = await TokenManager.IssueAsync(Model.Symbol, initialSupply, "Initial Supply", walletAddress);
+                            var issueTokenResult = await TokenManager.IssueOnMainChainAsync(Model.Symbol, initialSupply, "Initial Supply", walletAddress);
 
                             if (!string.IsNullOrEmpty(issueTokenResult.Error))
                                 throw new GeneralException(issueTokenResult.Error);

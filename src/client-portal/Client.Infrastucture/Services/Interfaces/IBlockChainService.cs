@@ -8,11 +8,13 @@ namespace Client.Infrastructure.Services.Interfaces
     public interface IBlockChainService
     {
         Task<int> GetMainChainIdAsync();
+        Task<ChainStatusDto> GetMainChainStatusAsync();
         Task<int> GetSideChainIdAsync();
+        Task<ChainStatusDto> GetSideChainStatusAsync();
         Task<MerklePathDto> GetMainChainMerklePathByTransactionIdAsync(string transactionId);
         Task<MerklePathDto> GetSideChainMerklePathByTransactionIdAsync(string transactionId);
 
-        Task<string> SendMainChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params);
+        Task<(string, string)> SendMainChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params);
         Task<string> SendSideChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params);
         Task<string> CallMainChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params);
         Task<string> CallSideChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params);

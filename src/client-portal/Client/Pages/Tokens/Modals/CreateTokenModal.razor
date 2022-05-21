@@ -6,6 +6,12 @@
                 <MudContainer MaxWidth="MaxWidth.False">
                     <MudGrid Class="pt-0 pb-4" Spacing="2">
                         <MudItem xs="12">
+                            <MudText Typo="Typo.body1" Class="text-white">
+                                LatchBox will create a token on <b>@MainChainId</b> chain. After the token has created, if you want to create the same token on <b>@SideChainId</b> chain, please select the add button and 'Add Existing Token' to add your token on <b>@SideChainId</b> chain.
+                            </MudText>
+                        </MudItem>
+
+                        <MudItem xs="12">
                             <MudTextField Label="Symbol" Variant="Variant.Outlined" Disabled="IsProcessing"
                                           @bind-Value="Model.Symbol" For="@(() => Model.Symbol)" />
                         </MudItem>
@@ -25,16 +31,24 @@
                                           @bind-Value="Model.TotalSupply" For="@(() => Model.TotalSupply)" />
                         </MudItem>
 
+
                         <MudItem xs="12">
                             <MudTextField Label="Initial Token Supply" Variant="Variant.Outlined" Disabled="IsProcessing"
                                           @bind-Value="Model.InitialSupply" For="@(() => Model.InitialSupply)" />
                         </MudItem>
+
 
                         <MudItem xs="12">
                             <MudSelect T="bool" Disabled="IsProcessing" Label="Burnable" Variant="Variant.Outlined" MultiSelection="false" @bind-Value="Model.IsBurnable">
                                 <MudSelectItem Value="true">Yes</MudSelectItem>
                                 <MudSelectItem Value="false">No</MudSelectItem>
                             </MudSelect>
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.caption" Class="text-white" Color="Color.Info">
+                                Before creating a token, you must ensure that you have enough funds on <b>@MainChainId</b> chain. This process may take a while.
+                            </MudText>
                         </MudItem>
                     </MudGrid>
                 </MudContainer>

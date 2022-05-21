@@ -1,4 +1,5 @@
-﻿using Client.Infrastructure.Extensions;
+﻿using AElf;
+using Client.Infrastructure.Extensions;
 using Client.Infrastructure.Models;
 using Client.Pages.Tokens.Modals;
 using Client.Parameters;
@@ -12,7 +13,8 @@ namespace Client.Pages.Tokens
         public bool IsCompletelyLoaded { get; set; }
         public string WalletAddress { get; set; }
         public List<TokenInfoWithBalance> TokenInfoWithBalanceList { get; set; } = new();
-
+        public string MainChain { get; set; }
+        public string SideChain { get; set; }
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
@@ -24,20 +26,9 @@ namespace Client.Pages.Tokens
                     await InvokeAsync(async () =>
                     {
                         WalletAddress = await WalletManager.GetWalletAddressAsync();
+                        MainChain = $"Main {(await BlockchainManager.GetMainChainIdAsync()).ToStringChainId()}";
+                        SideChain = $"Side {(await BlockchainManager.GetSideChainIdAsync()).ToStringChainId()}";
                         await FetchDataAsync();
-                        try
-                        {
-                            var result = await TokenManager.CreateAsync("LATCH", "LATCH", 300000000_00000000, 8, true);
-
-                            if (string.IsNullOrWhiteSpace(result.Error))
-                            {
-                                await TokenManager.IssueAsync("LATCH", 10000000_00000000, "MINT1", WalletAddress);
-                            }
-                        }
-                        catch
-                        {
-
-                        }
                     });
                 });
             }
@@ -51,18 +42,38 @@ namespace Client.Pages.Tokens
 
             TokenInfoWithBalanceList.Clear();
 
-            var nativeToken = await TokenManager.GetNativeTokenInfoAsync();
-            TokenInfoWithBalanceList.Add(new TokenInfoWithBalance() { Token = nativeToken, IsNative = true });
+            var sideChainNativeToken = await TokenManager.GetNativeTokenInfoOnSideChainAsync();
+            TokenInfoWithBalanceList.Add(new TokenInfoWithBalance()
+            {
+                IsNative = true,
+                Decimals = sideChainNativeToken.Decimals,
+                Issuer = sideChainNativeToken.Issuer,
+                Symbol = sideChainNativeToken.Symbol,
+                TokenName = sideChainNativeToken.TokenName,
+                SideChainSupply = sideChainNativeToken.Supply,
+                TotalSupply = sideChainNativeToken.TotalSupply,
+                IssueChainId = sideChainNativeToken.IssueChainId
+            });
 
             var tokenSymbolList = await TokenManager.GetTokenSymbolsFromStorageAsync();
 
             foreach (var symbol in tokenSymbolList)
             {
-                var token = await TokenManager.GetTokenInfoAsync(symbol);
+                var sideChainToken = await TokenManager.GetTokenInfoOnSideChainAsync(symbol);
 
-                if (!string.IsNullOrEmpty(token.Symbol))
+                if (!string.IsNullOrEmpty(sideChainToken.Symbol))
                 {
-                    TokenInfoWithBalanceList.Add(new TokenInfoWithBalance() { Token = token });
+                    var tokenInfo = new TokenInfoWithBalance()
+                    {
+                        Decimals = sideChainToken.Decimals,
+                        Issuer = sideChainToken.Issuer,
+                        Symbol = sideChainToken.Symbol,
+                        TokenName = sideChainToken.TokenName,
+                        SideChainSupply = sideChainToken.Supply,
+                        TotalSupply = sideChainToken.TotalSupply,
+                        IssueChainId = sideChainToken.IssueChainId
+                    };
+                    TokenInfoWithBalanceList.Add(tokenInfo);
                 }
                 else
                 {
@@ -70,13 +81,43 @@ namespace Client.Pages.Tokens
                 }
             }
 
+            TokenInfoWithBalanceList = TokenInfoWithBalanceList.OrderByDescending(x => x.IsNative).ThenBy(x => x.TokenName).ToList();
             IsLoaded = true;
             StateHasChanged();
 
             foreach (var tokenInfo in TokenInfoWithBalanceList)
             {
-                var getBalanceOutput = await TokenManager.GetBalanceAsync(tokenInfo.Token.Symbol);
-                tokenInfo.Balance = getBalanceOutput.Balance;
+                var mainChainToken = await TokenManager.GetTokenInfoOnMainChainAsync(tokenInfo.Symbol);
+
+                tokenInfo.MainChainSupply = mainChainToken.Supply;
+                StateHasChanged();
+            }
+
+            await FetchBalanceAsync();
+
+            IsCompletelyLoaded = true;
+            StateHasChanged();
+        }
+
+
+        private async Task FetchBalanceAsync()
+        {
+            IsCompletelyLoaded = false;
+            foreach (var tokenInfo in TokenInfoWithBalanceList)
+            {
+                tokenInfo.MainChainBalance = null;
+                tokenInfo.SideChainBalance = null;
+            }
+
+            StateHasChanged();
+
+            foreach (var tokenInfo in TokenInfoWithBalanceList)
+            {
+                var mainChainGetBalanceOutput = await TokenManager.GetBalanceOnMainChainAsync(tokenInfo.Symbol);
+                var sideChainGetBalanceOutput = await TokenManager.GetBalanceOnSideChainAsync(tokenInfo.Symbol);
+
+                tokenInfo.MainChainBalance = mainChainGetBalanceOutput.Balance;
+                tokenInfo.SideChainBalance = sideChainGetBalanceOutput.Balance;
                 StateHasChanged();
             }
 
@@ -110,22 +151,22 @@ namespace Client.Pages.Tokens
         {
             TokenInfoWithBalanceList.Remove(tokenInfo);
             StateHasChanged();
-            await TokenManager.RemoveTokenSymbolFromStorageAsync(tokenInfo.Token.Symbol);
+            await TokenManager.RemoveTokenSymbolFromStorageAsync(tokenInfo.Symbol);
         }
 
         private async Task InvokeIssueTokenModalAsync(TokenInfoWithBalance tokenInfo)
         {
             var parameters = new DialogParameters()
             {
-                { nameof(IssueTokenModal.Model), new IssueTokenParameter() { Symbol = tokenInfo.Token.Symbol, TokenName = tokenInfo.Token.TokenName, Decimals = tokenInfo.Token.Decimals } }
+                { nameof(IssueTokenModal.Model), new IssueTokenParameter() { Symbol = tokenInfo.Symbol, TokenName = tokenInfo.TokenName, Decimals = tokenInfo.Decimals, IssuedChainId = tokenInfo.IssueChainId } }
             };
 
-            var dialog = DialogService.Show<IssueTokenModal>($"Issue New Token", parameters);
+            var dialog = DialogService.Show<IssueTokenModal>($"Issue Token ({ChainHelper.ConvertChainIdToBase58(tokenInfo.IssueChainId)} Chain)", parameters);
             var dialogResult = await dialog.Result;
 
             if (!dialogResult.Cancelled)
             {
-                await FetchDataAsync();
+                await FetchBalanceAsync();
             }
         }
     }

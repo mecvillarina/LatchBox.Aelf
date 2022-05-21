@@ -18,16 +18,14 @@ namespace Client.Infrastructure.Managers
         public string SideChainNode => ManagerToolkit.AelfSettings.SideChainNode;
         public string SideChainExplorer => ManagerToolkit.AelfSettings.SideChainExplorer;
 
-        public async Task<string> GetMainChainIdInformationAsync()
+        public async Task<int> GetMainChainIdAsync()
         {
-            var value = await _blockChainService.GetMainChainIdAsync();
-            return $"{ChainHelper.ConvertChainIdToBase58(value)} ({value})";
+            return await _blockChainService.GetMainChainIdAsync();
         }
 
-        public async Task<string> GetSideChainIdInformationAsync()
+        public async Task<int> GetSideChainIdAsync()
         {
-            var value = await _blockChainService.GetSideChainIdAsync();
-            return $"{ChainHelper.ConvertChainIdToBase58(value)} ({value})";
+            return await _blockChainService.GetSideChainIdAsync();
         }
     }
 }

@@ -6,6 +6,12 @@
                 <MudContainer MaxWidth="MaxWidth.False">
                     <MudGrid Class="pt-0 pb-4" Spacing="2">
                         <MudItem xs="12">
+                            <MudText Typo="Typo.body1" Class="text-white">
+                                LatchBox will attempt to find your token. If you're the token issuer and your token exists <b>@MainChainId</b> chain and not on <b>@SideChainId</b> chain, LatchBox will send transaction to Token Contract with method CrossChainCreateToken on <b>@SideChainId</b> chain. 
+                            </MudText>
+                        </MudItem>
+
+                        <MudItem xs="12">
                             <MudTextField Label="Symbol" Variant="Variant.Outlined" Disabled="IsProcessing"
                                           @bind-Value="Model.Symbol" For="@(() => Model.Symbol)" />
                         </MudItem>

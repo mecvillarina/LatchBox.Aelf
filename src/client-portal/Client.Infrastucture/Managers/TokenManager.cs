@@ -1,13 +1,12 @@
 ﻿using AElf;
 using AElf.Client.Dto;
 using AElf.Client.MultiToken;
-using AElf.Client.Proto;
+using AElf.Types;
 using Blazored.LocalStorage;
 using Client.Infrastructure.Constants;
 using Client.Infrastructure.Managers.Interfaces;
 using Client.Infrastructure.Services.Interfaces;
 using Google.Protobuf;
-using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +29,17 @@ namespace Client.Infrastructure.Managers
 
         public string ContactAddress => ManagerToolkit.AelfSettings.MultiTokenContractAddress;
 
-        public async Task<TokenInfo> GetNativeTokenInfoAsync()
+        public async Task<TokenInfo> GetNativeTokenInfoOnMainChainAsync()
+        {
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
+
+            IMessage @params = new Empty { };
+
+            var result = await _blockChainService.CallMainChainTransactionAsync(keyPair, ContactAddress, "GetNativeTokenInfo", @params);
+            return TokenInfo.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
+        }
+
+        public async Task<TokenInfo> GetNativeTokenInfoOnSideChainAsync()
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
@@ -40,27 +49,20 @@ namespace Client.Infrastructure.Managers
             return TokenInfo.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
-        public async Task<StringValue> GetPrimaryTokenSymbolAsync()
+        public async Task<TokenInfo> GetTokenInfoOnMainChainAsync(string symbol)
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
-            IMessage @params = new Empty { };
+            var @params = new GetTokenInfoInput()
+            {
+                Symbol = symbol
+            };
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetPrimaryTokenSymbol", @params);
-            return StringValue.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
+            var result = await _blockChainService.CallMainChainTransactionAsync(keyPair, ContactAddress, "GetTokenInfo", @params);
+            return TokenInfo.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
-        public async Task<TokenInfoList> GetResourceTokenInfoListAsync()
-        {
-            var keyPair = await _walletManager.GetWalletKeyPairAsync();
-
-            IMessage @params = new Empty { };
-
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetResourceTokenInfo", @params);
-            return TokenInfoList.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
-        }
-
-        public async Task<TokenInfo> GetTokenInfoAsync(string symbol)
+        public async Task<TokenInfo> GetTokenInfoOnSideChainAsync(string symbol)
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
@@ -73,7 +75,21 @@ namespace Client.Infrastructure.Managers
             return TokenInfo.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
-        public async Task<GetBalanceOutput> GetBalanceAsync(string symbol)
+        public async Task<GetBalanceOutput> GetBalanceOnMainChainAsync(string symbol)
+        {
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
+            var address = await _walletManager.GetWalletAddressAsync();
+            var @params = new GetBalanceInput
+            {
+                Symbol = symbol,
+                Owner = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(address).Value }
+            };
+
+            var result = await _blockChainService.CallMainChainTransactionAsync(keyPair, ContactAddress, "GetBalance", @params);
+            return GetBalanceOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
+        }
+
+        public async Task<GetBalanceOutput> GetBalanceOnSideChainAsync(string symbol)
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
             var address = await _walletManager.GetWalletAddressAsync();
@@ -92,7 +108,7 @@ namespace Client.Infrastructure.Managers
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
             var address = await _walletManager.GetWalletAddressAsync();
 
-            var chainId = await _blockChainService.GetSideChainIdAsync();
+            var issueChainId = await _blockChainService.GetSideChainIdAsync();
 
             var @params = new CreateInput
             {
@@ -102,14 +118,30 @@ namespace Client.Infrastructure.Managers
                 Decimals = decimals,
                 Issuer = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(address).Value },
                 IsBurnable = isBurnable,
-                IssueChainId = chainId
+                IssueChainId = issueChainId
             };
 
-            var txId = await _blockChainService.SendSideChainTransactionAsync(keyPair, ContactAddress, "Create", @params);
-            return await _blockChainService.CheckSideChainTransactionResultAsync(txId);
+            var tx = await _blockChainService.SendMainChainTransactionAsync(keyPair, ContactAddress, "Create", @params);
+            return await _blockChainService.CheckMainChainTransactionResultAsync(tx.Item1);
         }
 
-        public async Task<TransactionResultDto> IssueAsync(string symbol, long amount, string memo, string to)
+        public async Task<TransactionResultDto> IssueOnMainChainAsync(string symbol, long amount, string memo, string to)
+        {
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
+
+            var @params = new IssueInput
+            {
+                Symbol = symbol.ToUpper(),
+                Amount = amount,
+                Memo = memo,
+                To = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(to).Value },
+            };
+
+            var txId = await _blockChainService.SendMainChainTransactionAsync(keyPair, ContactAddress, "Issue", @params);
+            return await _blockChainService.CheckMainChainTransactionResultAsync(txId.Item1);
+        }
+
+        public async Task<TransactionResultDto> IssueOnSideChainAsync(string symbol, long amount, string memo, string to)
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
@@ -201,6 +233,64 @@ namespace Client.Infrastructure.Managers
                 tokenSymbolList.Remove(symbol);
                 await _localStorageService.SetItemAsync(StorageConstants.Local.TokenSymbols, tokenSymbolList);
             }
+        }
+
+        public async Task<TransactionResultDto> CreateSideChainTokenAsync(TokenInfo tokenInfo)
+        {
+            var keyPair = await _walletManager.GetWalletKeyPairAsync();
+
+            var validateParams = new ValidateTokenInfoExistsInput
+            {
+                Symbol = tokenInfo.Symbol,
+                TokenName = tokenInfo.TokenName,
+                Decimals = tokenInfo.Decimals,
+                IsBurnable = tokenInfo.IsBurnable,
+                IssueChainId = tokenInfo.IssueChainId,
+                Issuer = tokenInfo.Issuer,
+                TotalSupply = tokenInfo.TotalSupply
+            };
+
+            var validateTx = await _blockChainService.SendMainChainTransactionAsync(keyPair, ContactAddress, "ValidateTokenInfoExists", validateParams);
+            var validateTxResult = await _blockChainService.CheckMainChainTransactionResultAsync(validateTx.Item1);
+
+            if (validateTxResult.Status == TransactionResultStatus.Mined.ToString().ToUpper())
+            {
+                while (true)
+                {
+                    var chainStatus = await _blockChainService.GetMainChainStatusAsync();
+                    if ((chainStatus.LastIrreversibleBlockHeight - validateTxResult.BlockNumber) > 80)
+                        break;
+
+                    await Task.Delay(15000);
+                }
+
+                await Task.Delay(3000);
+
+                var mainChainId = await _blockChainService.GetMainChainIdAsync();
+                var merklePath = await _blockChainService.GetMainChainMerklePathByTransactionIdAsync(validateTx.Item1);
+                var createTokenParams = new CrossChainCreateTokenInput
+                {
+                    FromChainId = mainChainId,
+                    ParentChainHeight = validateTxResult.BlockNumber,
+                    TransactionBytes = ByteString.CopyFrom(ByteArrayHelper.HexStringToByteArray(validateTx.Item2)),
+                    MerklePath = new AElf.Client.Proto.MerklePath()
+                };
+
+                foreach (var node in merklePath.MerklePathNodes)
+                {
+                    createTokenParams.MerklePath.MerklePathNodes.Add(new AElf.Client.Proto.MerklePathNode()
+                    {
+                        Hash = new AElf.Client.Proto.Hash() { Value = AElf.Types.Hash.LoadFromHex(node.Hash).Value },
+                        IsLeftChildNode = node.IsLeftChildNode
+                    });
+                }
+
+                var createTokenTxId = await _blockChainService.SendSideChainTransactionAsync(keyPair, ContactAddress, "CrossChainCreateToken", createTokenParams);
+                var createTokenTxResult = await _blockChainService.CheckSideChainTransactionResultAsync(createTokenTxId);
+                return createTokenTxResult;
+            }
+
+            return validateTxResult;
         }
 
         //public async Task<Address> GetCrossChainTransferTokenContractAddress(int chainId)

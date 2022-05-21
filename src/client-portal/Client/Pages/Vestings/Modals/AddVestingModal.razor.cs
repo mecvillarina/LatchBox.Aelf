@@ -50,7 +50,7 @@ namespace Client.Pages.Vestings.Modals
                     IsProcessing = true;
                     try
                     {
-                        var token = await TokenManager.GetBalanceAsync(TokenInfo.Symbol);
+                        var token = await TokenManager.GetBalanceOnSideChainAsync(TokenInfo.Symbol);
 
                         if (token.Balance.ToAmount(TokenInfo.Decimals) < Convert.ToDecimal(Model.Periods.Sum(x => x.Receivers.Sum(y => y.Amount))))
                             throw new GeneralException($"Insufficient {TokenInfo.Symbol} balance.");
