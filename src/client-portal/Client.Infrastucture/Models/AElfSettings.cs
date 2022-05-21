@@ -2,7 +2,6 @@
 {
     public class AElfSettings
     {
-        public string Network { get; set; }
         public string Node { get; set; }
         public string PlatformTokenSymbol { get; set; }
         public string MultiTokenContractAddress { get; set; }

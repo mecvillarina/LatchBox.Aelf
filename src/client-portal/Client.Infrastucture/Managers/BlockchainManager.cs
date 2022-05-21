@@ -13,7 +13,6 @@ namespace Client.Infrastructure.Managers
             _blockChainService = blockChainService;
         }
 
-        public string Network => ManagerToolkit.AelfSettings.Network;
         public string Node => ManagerToolkit.AelfSettings.Node;
 
         public Task<int> GetChainIdIntValueAsync() => _blockChainService.GetChainIdAsync();
