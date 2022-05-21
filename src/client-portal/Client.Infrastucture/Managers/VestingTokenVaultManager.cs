@@ -28,8 +28,8 @@ namespace Client.Infrastructure.Managers
 
             var @params = new Empty { };
 
-            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "Initialize", @params);
-            return await _blockChainService.CheckTransactionResultAsync(txId);
+            var txId = await _blockChainService.SendSideChainTransactionAsync(keyPair, ContactAddress, "Initialize", @params);
+            return await _blockChainService.CheckSideChainTransactionResultAsync(txId);
         }
 
         public async Task<TransactionResultDto> AddVestingAsync(AddVestingInputModel model)
@@ -65,8 +65,8 @@ namespace Client.Infrastructure.Managers
                 @params.Periods.Add(periodParams);
             }
 
-            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "AddVesting", @params);
-            return await _blockChainService.CheckTransactionResultAsync(txId);
+            var txId = await _blockChainService.SendSideChainTransactionAsync(keyPair, ContactAddress, "AddVesting", @params);
+            return await _blockChainService.CheckSideChainTransactionResultAsync(txId);
         }
 
         public async Task<TransactionResultDto> ClaimVestingAsync(long vestingId, long periodId)
@@ -75,8 +75,8 @@ namespace Client.Infrastructure.Managers
 
             var @params = new ClaimVestingInput { VestingId = vestingId, PeriodId = periodId };
 
-            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "ClaimVesting", @params);
-            return await _blockChainService.CheckTransactionResultAsync(txId);
+            var txId = await _blockChainService.SendSideChainTransactionAsync(keyPair, ContactAddress, "ClaimVesting", @params);
+            return await _blockChainService.CheckSideChainTransactionResultAsync(txId);
         }
 
         public async Task<TransactionResultDto> RevokeVestingAsync(long vestingId)
@@ -85,8 +85,8 @@ namespace Client.Infrastructure.Managers
 
             var @params = new RevokeVestingInput { VestingId = vestingId };
 
-            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "RevokeVesting", @params);
-            return await _blockChainService.CheckTransactionResultAsync(txId);
+            var txId = await _blockChainService.SendSideChainTransactionAsync(keyPair, ContactAddress, "RevokeVesting", @params);
+            return await _blockChainService.CheckSideChainTransactionResultAsync(txId);
         }
 
         public async Task<TransactionResultDto> ClaimRefundAsync(string tokenSymbol)
@@ -95,8 +95,8 @@ namespace Client.Infrastructure.Managers
 
             var @params = new ClaimRefundInput { TokenSymbol = tokenSymbol };
 
-            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "ClaimRefund", @params);
-            return await _blockChainService.CheckTransactionResultAsync(txId);
+            var txId = await _blockChainService.SendSideChainTransactionAsync(keyPair, ContactAddress, "ClaimRefund", @params);
+            return await _blockChainService.CheckSideChainTransactionResultAsync(txId);
         }
 
         public async Task<Int64Value> GetVestingsCountAsync()
@@ -105,7 +105,7 @@ namespace Client.Infrastructure.Managers
 
             var @params = new Empty();
 
-            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetVestingsCount", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetVestingsCount", @params);
             return Int64Value.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
@@ -115,7 +115,7 @@ namespace Client.Infrastructure.Managers
 
             var @params = new Int64Value() { Value = vestingId };
 
-            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetVestingTransaction", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetVestingTransaction", @params);
             return GetVestingTransactionOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
@@ -125,7 +125,7 @@ namespace Client.Infrastructure.Managers
 
             var @params = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(initiator).Value };
 
-            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetVestingsByInitiator", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetVestingsByInitiator", @params);
             return GetVestingListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
@@ -135,7 +135,7 @@ namespace Client.Infrastructure.Managers
 
             var @params = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(receiver).Value };
 
-            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetVestingsForReceiver", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetVestingsForReceiver", @params);
             return GetVestingReceiverListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
@@ -146,7 +146,7 @@ namespace Client.Infrastructure.Managers
 
             var @params = new Empty();
 
-            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetRefunds", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetRefunds", @params);
             return GetRefundListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 

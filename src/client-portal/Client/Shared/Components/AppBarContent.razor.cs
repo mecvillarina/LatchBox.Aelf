@@ -41,35 +41,35 @@ namespace Client.Shared.Components
             DialogService.Show<ConnectWalletModal>("Connect Wallet (JSON)", options);
         }
 
-        private async Task InvokeClaimELFAsync()
-        {
-            IsClaimingElf = true;
+        //private async Task InvokeClaimELFAsync()
+        //{
+        //    IsClaimingElf = true;
 
-            var authenticated = await AppDialogService.ShowConfirmWalletTransactionAsync();
+        //    var authenticated = await AppDialogService.ShowConfirmWalletTransactionAsync();
 
-            if (authenticated)
-            {
-                try
-                {
-                    var result = await FaucetManager.TakeAsync("ELF", 100_00000000);
+        //    if (authenticated)
+        //    {
+        //        try
+        //        {
+        //            var result = await FaucetManager.TakeAsync("ELF", 100_00000000);
 
-                    if (!string.IsNullOrEmpty(result.Error))
-                    {
-                        AppDialogService.ShowError(result.Error);
-                    }
-                    else
-                    {
-                        AppDialogService.ShowSuccess("Claim ELF Success.");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    AppDialogService.ShowError(ex.Message);
-                }
-            }
+        //            if (!string.IsNullOrEmpty(result.Error))
+        //            {
+        //                AppDialogService.ShowError(result.Error);
+        //            }
+        //            else
+        //            {
+        //                AppDialogService.ShowSuccess("Claim ELF Success.");
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            AppDialogService.ShowError(ex.Message);
+        //        }
+        //    }
 
-            IsClaimingElf = false;
-        }
+        //    IsClaimingElf = false;
+        //}
 
         private void InvokeDisconnectWalletDialog()
         {

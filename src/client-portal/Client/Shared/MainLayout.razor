@@ -23,17 +23,35 @@
                 <div>
                     <MudText Typo="Typo.h4" Color="Color.Primary" Class="text-logo my-1">LatchBox</MudText>
 
-                    @if (!string.IsNullOrEmpty(Chain))
+                    @if (!string.IsNullOrEmpty(MainChain))
                     {
-                        <div class="mt-4 mb-0">
-                            <MudChip Color="Color.Secondary" Variant="Variant.Filled" Size="Size.Small">CHAIN: @Chain</MudChip>
+                        <MudText Typo="Typo.body2" Color="Color.Primary" Class="text-lightgray mt-4">Main Chain</MudText>
+
+                        <div class="mt-0 mb-0">
+                            <MudChip Color="Color.Secondary" Variant="Variant.Filled" Size="Size.Small">@MainChain</MudChip>
                         </div>
                     }
 
-                    @if (!string.IsNullOrEmpty(Node))
+                    @if (!string.IsNullOrEmpty(MainChainNode))
                     {
                         <div>
-                            <MudChip Color="Color.Secondary" Variant="Variant.Filled" Size="Size.Small">NODE: @Node</MudChip>
+                            <MudChip Color="Color.Secondary" Variant="Variant.Filled" Size="Size.Small">@MainChainNode</MudChip>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(SideChain))
+                    {
+                        <MudText Typo="Typo.body2" Color="Color.Primary" Class="text-lightgray mt-2">Side Chain</MudText>
+
+                        <div class="mt-0 mb-0">
+                            <MudChip Color="Color.Secondary" Variant="Variant.Filled" Size="Size.Small">@SideChain</MudChip>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(SideChainNode))
+                    {
+                        <div>
+                            <MudChip Color="Color.Secondary" Variant="Variant.Filled" Size="Size.Small">@SideChainNode</MudChip>
                         </div>
                     }
 

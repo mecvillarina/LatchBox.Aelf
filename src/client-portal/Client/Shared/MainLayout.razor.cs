@@ -7,8 +7,10 @@ namespace Client.Shared
         private bool IsAuthenticated { get; set; }
         private bool DrawerOpen { get; set; } = true;
         private MudTheme CurrentTheme { get; set; }
-        public string Chain { get; set; }
-        public string Node { get; set; }
+        public string MainChain { get; set; }
+        public string SideChain { get; set; }
+        public string MainChainNode { get; set; }
+        public string SideChainNode { get; set; }
 
         protected override void OnInitialized()
         {
@@ -23,10 +25,10 @@ namespace Client.Shared
                 {
                     IsAuthenticated = await AuthManager.IsAuthenticated();
                     await AppBreakpointService.InitAsync();
-                    var chainIdInt = await BlockchainManager.GetChainIdIntValueAsync();
-                    var chainId = await BlockchainManager.GetChainIdAsync();
-                    Chain = $"{chainId} ({chainIdInt})";
-                    Node = BlockchainManager.Node;
+                    MainChain = await BlockchainManager.GetMainChainIdInformationAsync();
+                    SideChain = await BlockchainManager.GetSideChainIdInformationAsync();
+                    MainChainNode = BlockchainManager.MainChainNode;
+                    SideChainNode = BlockchainManager.SideChainNode;
                     StateHasChanged();
                 });
             }
