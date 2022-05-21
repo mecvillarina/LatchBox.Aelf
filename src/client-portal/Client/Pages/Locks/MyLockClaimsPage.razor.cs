@@ -14,6 +14,7 @@ namespace Client.Pages.Locks
         public bool IsLoaded { get; set; }
         public bool IsCompletelyLoaded { get; set; }
         public string WalletAddress { get; set; }
+        public string ContractLink => $"{BlockchainManager.SideChainExplorer}/address/{LockTokenVaultManager.ContactAddress}";
 
         public List<LockForReceiverModel> LockTransactions { get; set; } = new();
 

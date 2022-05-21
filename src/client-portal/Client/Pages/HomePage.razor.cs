@@ -53,7 +53,7 @@ namespace Client.Pages
             {
                 //await MultiCrowdSaleManager.InitializeAsync();
                 //var s = await LockTokenVaultManager.InitializeAsync();
-                //await VestingTokenVaultManager.InitializeAsync();
+                //var s = await VestingTokenVaultManager.InitializeAsync();
             }
             catch
             {

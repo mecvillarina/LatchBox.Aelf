@@ -4,11 +4,17 @@
         <DialogContent>
             <MudContainer MaxWidth="MaxWidth.False">
                 <MudGrid Class="pt-0 pb-4">
-
                     <MudItem xs="12">
                         <div>
-                            <MudText Typo="Typo.body1" Class="text-white"><b>Chain:</b> @Chain</MudText>
-                            <MudText Typo="Typo.body1" Class="text-white"><b>Node:</b> @Node</MudText>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Main Chain</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white">@MainChain</MudText>
+                            <MudText Typo="Typo.body1" Class="text-white">@MainChainNode</MudText>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Side Chain</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white">@SideChain</MudText>
+                            <MudText Typo="Typo.body1" Class="text-white">@SideChainNode</MudText>
                         </div>
                     </MudItem>
 

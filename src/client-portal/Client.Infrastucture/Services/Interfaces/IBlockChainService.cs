@@ -7,12 +7,16 @@ namespace Client.Infrastructure.Services.Interfaces
 {
     public interface IBlockChainService
     {
-        Task<int> GetChainIdAsync();
-        Task<MerklePathDto> GetMerklePathByTransactionIdAsync(string transactionId);
+        Task<int> GetMainChainIdAsync();
+        Task<int> GetSideChainIdAsync();
+        Task<MerklePathDto> GetMainChainMerklePathByTransactionIdAsync(string transactionId);
+        Task<MerklePathDto> GetSideChainMerklePathByTransactionIdAsync(string transactionId);
 
-        Task<string> SendTransactionAsync(ECKeyPair keyPair, string contract, string method, string @params = null);
-        Task<string> SendTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params);
-        Task<string> CallTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params);
-        Task<TransactionResultDto> CheckTransactionResultAsync(string txId);
+        Task<string> SendMainChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params);
+        Task<string> SendSideChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params);
+        Task<string> CallMainChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params);
+        Task<string> CallSideChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params);
+        Task<TransactionResultDto> CheckMainChainTransactionResultAsync(string txId);
+        Task<TransactionResultDto> CheckSideChainTransactionResultAsync(string txId);
     }
 }

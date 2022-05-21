@@ -6,21 +6,32 @@ namespace Client.Infrastructure.Services
 {
     public class AElfClientFactory
     {
-        private AElfClient _client;
+        private AElfClient _mainChainNodeClient;
+        private AElfClient _sideChainNodeClient;
         private readonly AElfSettings _settings;
         public AElfClientFactory(IOptions<AElfSettings> settingsOptions)
         {
             _settings = settingsOptions.Value;
         }
 
-        public AElfClient CreateClient()
+        public AElfClient CreateSideChainNodeClient()
         {
-            if (_client == null)
+            if (_sideChainNodeClient == null)
             {
-                _client = new AElfClient(_settings.Node);
+                _sideChainNodeClient = new AElfClient(_settings.SideChainNode);
             }
 
-            return _client;
+            return _sideChainNodeClient;
+        }
+
+        public AElfClient CreateMainChainNodeClient()
+        {
+            if (_mainChainNodeClient == null)
+            {
+                _mainChainNodeClient = new AElfClient(_settings.MainChainNode);
+            }
+
+            return _mainChainNodeClient;
         }
     }
 }

@@ -21,8 +21,8 @@
 
     <div class="my-2">
         <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
-            <MudChip Class="ma-0" Color="Color.Primary" Variant="Variant.Text" Size="Size.Small" OnClick="(() => OnTextToClipboardAsync(ManagerToolkit.AelfSettings.LockTokenVaultContractAddress))">
-                @ManagerToolkit.AelfSettings.LockTokenVaultContractAddress
+            <MudChip Class="ma-0 cursor-pointer" Color="Color.Primary" Variant="Variant.Text" Size="Size.Small" Href="@ContractLink" Target="_blank">
+                @ManagerToolkit.AelfSettings.LockTokenVaultContractAddress (Side Chain)
             </MudChip>
         </MudHidden>
     </div>

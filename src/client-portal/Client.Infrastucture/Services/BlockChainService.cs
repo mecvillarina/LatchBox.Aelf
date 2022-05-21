@@ -20,42 +20,36 @@ namespace Client.Infrastructure.Services
             _aelfClientFactory = aelfClientFactory;
         }
 
-        public async Task<int> GetChainIdAsync()
+        public async Task<int> GetMainChainIdAsync()
         {
-            return await _aelfClientFactory.CreateClient().GetChainIdAsync();
+            return await _aelfClientFactory.CreateMainChainNodeClient().GetChainIdAsync();
         }
 
-        public async Task<MerklePathDto> GetMerklePathByTransactionIdAsync(string transactionId)
+
+        public async Task<int> GetSideChainIdAsync()
         {
-            return await _aelfClientFactory.CreateClient().GetMerklePathByTransactionIdAsync(transactionId);
+            return await _aelfClientFactory.CreateSideChainNodeClient().GetChainIdAsync();
         }
 
-        public async Task<string> SendTransactionAsync(ECKeyPair keyPair, string contract, string method, string @params = null)
+        public async Task<MerklePathDto> GetMainChainMerklePathByTransactionIdAsync(string transactionId)
+        {
+            return await _aelfClientFactory.CreateMainChainNodeClient().GetMerklePathByTransactionIdAsync(transactionId);
+        }
+
+        public async Task<MerklePathDto> GetSideChainMerklePathByTransactionIdAsync(string transactionId)
+        {
+            return await _aelfClientFactory.CreateSideChainNodeClient().GetMerklePathByTransactionIdAsync(transactionId);
+        }
+
+        public async Task<string> SendMainChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params)
         {
             var fromAddress = Address.FromPublicKey(keyPair.PublicKey);
 
             var contractAddress = await GetContractAddressAsync(contract);
-            var rawTransaction = await GenerateRawTransactionAsync(fromAddress.ToBase58(), contractAddress, method, FormatParams(@params));
-            var signature = GetSignature(keyPair, rawTransaction);
-
-            var rawTransactionResult = await _aelfClientFactory.CreateClient().SendRawTransactionAsync(new SendRawTransactionInput()
-            {
-                Transaction = rawTransaction,
-                Signature = signature,
-            });
-
-            return rawTransactionResult.TransactionId;
-        }
-
-        public async Task<string> SendTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params)
-        {
-            var fromAddress = Address.FromPublicKey(keyPair.PublicKey);
-
-            var contractAddress = await GetContractAddressAsync(contract);
-            var tx = await _aelfClientFactory.CreateClient().GenerateTransactionAsync(fromAddress.ToBase58(), contractAddress, method, @params);
+            var tx = await _aelfClientFactory.CreateMainChainNodeClient().GenerateTransactionAsync(fromAddress.ToBase58(), contractAddress, method, @params);
             var txWithSign = GetTransactionWithSignature(keyPair, tx);
 
-            var rawTransactionResult = await _aelfClientFactory.CreateClient().SendTransactionAsync(new SendTransactionInput()
+            var rawTransactionResult = await _aelfClientFactory.CreateMainChainNodeClient().SendTransactionAsync(new SendTransactionInput()
             {
                 RawTransaction = txWithSign.ToByteArray().ToHex()
             });
@@ -63,15 +57,31 @@ namespace Client.Infrastructure.Services
             return rawTransactionResult.TransactionId;
         }
 
-        public async Task<string> CallTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params)
+        public async Task<string> SendSideChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params)
         {
             var fromAddress = Address.FromPublicKey(keyPair.PublicKey);
 
             var contractAddress = await GetContractAddressAsync(contract);
-            var tx = await _aelfClientFactory.CreateClient().GenerateTransactionAsync(fromAddress.ToBase58(), contractAddress, method, @params);
+            var tx = await _aelfClientFactory.CreateSideChainNodeClient().GenerateTransactionAsync(fromAddress.ToBase58(), contractAddress, method, @params);
             var txWithSign = GetTransactionWithSignature(keyPair, tx);
 
-            var rawTransactionResult = await _aelfClientFactory.CreateClient().ExecuteTransactionAsync(new ExecuteTransactionDto
+            var rawTransactionResult = await _aelfClientFactory.CreateSideChainNodeClient().SendTransactionAsync(new SendTransactionInput()
+            {
+                RawTransaction = txWithSign.ToByteArray().ToHex()
+            });
+
+            return rawTransactionResult.TransactionId;
+        }
+
+        public async Task<string> CallMainChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params)
+        {
+            var fromAddress = Address.FromPublicKey(keyPair.PublicKey);
+
+            var contractAddress = await GetContractAddressAsync(contract);
+            var tx = await _aelfClientFactory.CreateMainChainNodeClient().GenerateTransactionAsync(fromAddress.ToBase58(), contractAddress, method, @params);
+            var txWithSign = GetTransactionWithSignature(keyPair, tx);
+
+            var rawTransactionResult = await _aelfClientFactory.CreateMainChainNodeClient().ExecuteTransactionAsync(new ExecuteTransactionDto
             {
                 RawTransaction = txWithSign.ToByteArray().ToHex()
             });
@@ -79,9 +89,25 @@ namespace Client.Infrastructure.Services
             return rawTransactionResult;
         }
 
-        public async Task<TransactionResultDto> CheckTransactionResultAsync(string txId)
+        public async Task<string> CallSideChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params)
         {
-            var client = _aelfClientFactory.CreateClient();
+            var fromAddress = Address.FromPublicKey(keyPair.PublicKey);
+
+            var contractAddress = await GetContractAddressAsync(contract);
+            var tx = await _aelfClientFactory.CreateSideChainNodeClient().GenerateTransactionAsync(fromAddress.ToBase58(), contractAddress, method, @params);
+            var txWithSign = GetTransactionWithSignature(keyPair, tx);
+
+            var rawTransactionResult = await _aelfClientFactory.CreateSideChainNodeClient().ExecuteTransactionAsync(new ExecuteTransactionDto
+            {
+                RawTransaction = txWithSign.ToByteArray().ToHex()
+            });
+
+            return rawTransactionResult;
+        }
+
+        public async Task<TransactionResultDto> CheckMainChainTransactionResultAsync(string txId)
+        {
+            var client = _aelfClientFactory.CreateMainChainNodeClient();
 
             var result = await client.GetTransactionResultAsync(txId);
             var i = 0;
@@ -105,11 +131,30 @@ namespace Client.Infrastructure.Services
             return result;
         }
 
-        private string GetSignature(ECKeyPair keyPair, string rawTransaction)
+        public async Task<TransactionResultDto> CheckSideChainTransactionResultAsync(string txId)
         {
-            var transactionId = HashHelper.ComputeFrom(ByteArrayHelper.HexStringToByteArray(rawTransaction));
-            var signature = _accountsService.Sign(keyPair, transactionId.ToByteArray());
-            return ByteString.CopyFrom(signature).ToHex();
+            var client = _aelfClientFactory.CreateSideChainNodeClient();
+
+            var result = await client.GetTransactionResultAsync(txId);
+            var i = 0;
+            while (i < 10)
+            {
+                if (result.Status == TransactionResultStatus.Mined.ToString().ToUpper())
+                {
+                    break;
+                }
+
+                if (result.Status == TransactionResultStatus.Failed.ToString().ToUpper() || result.Status == TransactionResultStatus.NodeValidationFailed.ToString().ToUpper())
+                {
+                    break;
+                }
+
+                await Task.Delay(1000);
+                result = await client.GetTransactionResultAsync(txId);
+                i++;
+            }
+
+            return result;
         }
 
         private Transaction GetTransactionWithSignature(ECKeyPair keyPair, Transaction transaction)
@@ -125,41 +170,10 @@ namespace Client.Infrastructure.Services
             var contractAddress = contract;
             if (contract.StartsWith("AElf.ContractNames."))
             {
-                contractAddress = (await _aelfClientFactory.CreateClient().GetContractAddressByNameAsync(HashHelper.ComputeFrom(contract))).ToBase58();
+                contractAddress = (await _aelfClientFactory.CreateSideChainNodeClient().GetContractAddressByNameAsync(HashHelper.ComputeFrom(contract))).ToBase58();
             }
 
             return contractAddress;
-        }
-
-        private async Task<string> GenerateRawTransactionAsync(string from, string to, string method, string @params)
-        {
-            var client = _aelfClientFactory.CreateClient();
-            var status = await client.GetChainStatusAsync();
-            var height = status.BestChainHeight;
-            var blockHash = status.BestChainHash;
-
-            var rawTransaction = await client.CreateRawTransactionAsync(new CreateRawTransactionInput
-            {
-                From = from,
-                To = to,
-                MethodName = method,
-                Params = @params,
-                RefBlockNumber = height,
-                RefBlockHash = blockHash
-            });
-
-            return rawTransaction.RawTransaction;
-        }
-
-        private string FormatParams(string @params)
-        {
-            if (string.IsNullOrWhiteSpace(@params))
-            {
-                @params = "{}";
-            }
-
-            var json = JsonConvert.DeserializeObject(@params);
-            return JsonConvert.SerializeObject(json);
         }
     }
 }

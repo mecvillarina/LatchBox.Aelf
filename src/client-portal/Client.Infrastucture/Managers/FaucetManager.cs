@@ -18,16 +18,17 @@ namespace Client.Infrastructure.Managers
             _walletManager = walletManager;
         }
 
-        public async Task<TransactionResultDto> TakeAsync(string symbol, long amount)
-        {
-            var keyPair = await _walletManager.GetWalletKeyPairAsync();
+        //public async Task<TransactionResultDto> TakeAsync(string symbol, long amount)
+        //{
+        //    var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
-            var @params = new JObject();
-            @params["symbol"] = symbol;
-            @params["amount"] = amount;
+        //    var @params = new JObject();
+        //    @params["symbol"] = symbol;
+        //    @params["amount"] = amount;
 
-            var txId = await _blockChainService.SendTransactionAsync(keyPair, ManagerToolkit.AelfSettings.FaucetContractAddress, "Take", JsonConvert.SerializeObject(@params));
-            return await _blockChainService.CheckTransactionResultAsync(txId);
-        }
+        //    var txId = await _blockChainService.SendSideChainTransactionAsync(keyPair, ManagerToolkit.AelfSettings.FaucetContractAddress, "Take", JsonConvert.SerializeObject(@params));
+        //    return await _blockChainService.CheckTransactionResultAsync(txId);
+        //    return null;
+        //}
     }
 }

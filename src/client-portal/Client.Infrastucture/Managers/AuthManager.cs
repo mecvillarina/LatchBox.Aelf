@@ -47,8 +47,8 @@ namespace Client.Infrastructure.Managers
                     _accountsService.SaveKeyStoreJsonContent(filename, content);
                     var keyPair = await _accountsService.GetAccountKeyPairFromFileAsync(filename, password);
 
-                    var chainId = await _blockChainService.GetChainIdAsync();
-                    var node = ManagerToolkit.AelfSettings.Node;
+                    var chainId = await _blockChainService.GetSideChainIdAsync();
+                    var node = ManagerToolkit.AelfSettings.SideChainNode;
                     var claims = new Dictionary<string, string>()
                     {
                         { "PrivateKey", keyPair.PrivateKey.ToHex() },

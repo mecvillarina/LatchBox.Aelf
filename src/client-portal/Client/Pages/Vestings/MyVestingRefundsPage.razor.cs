@@ -8,7 +8,7 @@ namespace Client.Pages.Vestings
     {
         public bool IsLoaded { get; set; }
         public bool IsCompletelyLoaded { get; set; }
-
+        public string ContractLink => $"{BlockchainManager.SideChainExplorer}/address/{VestingTokenVaultManager.ContactAddress}";
         public List<VestingAssetRefundModel> Refunds { get; set; } = new();
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
@@ -68,12 +68,6 @@ namespace Client.Pages.Vestings
             {
                 await FetchDataAsync();
             }
-        }
-
-        private async Task OnTextToClipboardAsync(string text)
-        {
-            await ClipboardService.WriteTextAsync(text);
-            AppDialogService.ShowSuccess("Contract Address copied to clipboard.");
         }
 
     }

@@ -28,8 +28,8 @@ namespace Client.Infrastructure.Managers
 
             var @params = new Empty();
 
-            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "Initialize", @params);
-            return await _blockChainService.CheckTransactionResultAsync(txId);
+            var txId = await _blockChainService.SendSideChainTransactionAsync(keyPair, ContactAddress, "Initialize", @params);
+            return await _blockChainService.CheckSideChainTransactionResultAsync(txId);
         }
 
         public async Task<TransactionResultDto> AddLockAsync(AddLockInputModel model)
@@ -54,8 +54,8 @@ namespace Client.Infrastructure.Managers
                 });
             }
 
-            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "AddLock", @params);
-            return await _blockChainService.CheckTransactionResultAsync(txId);
+            var txId = await _blockChainService.SendSideChainTransactionAsync(keyPair, ContactAddress, "AddLock", @params);
+            return await _blockChainService.CheckSideChainTransactionResultAsync(txId);
         }
 
         public async Task<TransactionResultDto> ClaimLockAsync(long lockId)
@@ -67,8 +67,8 @@ namespace Client.Infrastructure.Managers
                 LockId = lockId,
             };
 
-            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "ClaimLock", @params);
-            return await _blockChainService.CheckTransactionResultAsync(txId);
+            var txId = await _blockChainService.SendSideChainTransactionAsync(keyPair, ContactAddress, "ClaimLock", @params);
+            return await _blockChainService.CheckSideChainTransactionResultAsync(txId);
         }
 
         public async Task<TransactionResultDto> RevokeLockAsync(long lockId)
@@ -80,8 +80,8 @@ namespace Client.Infrastructure.Managers
                 LockId = lockId,
             };
 
-            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "RevokeLock", @params);
-            return await _blockChainService.CheckTransactionResultAsync(txId);
+            var txId = await _blockChainService.SendSideChainTransactionAsync(keyPair, ContactAddress, "RevokeLock", @params);
+            return await _blockChainService.CheckSideChainTransactionResultAsync(txId);
         }
 
         public async Task<TransactionResultDto> ClaimRefundAsync(string tokenSymbol)
@@ -93,8 +93,8 @@ namespace Client.Infrastructure.Managers
                 TokenSymbol = tokenSymbol
             };
 
-            var txId = await _blockChainService.SendTransactionAsync(keyPair, ContactAddress, "ClaimRefund", @params);
-            return await _blockChainService.CheckTransactionResultAsync(txId);
+            var txId = await _blockChainService.SendSideChainTransactionAsync(keyPair, ContactAddress, "ClaimRefund", @params);
+            return await _blockChainService.CheckSideChainTransactionResultAsync(txId);
         }
 
         public async Task<Int64Value> GetLocksCountAsync()
@@ -103,7 +103,7 @@ namespace Client.Infrastructure.Managers
 
             var @params = new Empty();
 
-            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetLocksCount", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetLocksCount", @params);
             return Int64Value.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
@@ -113,7 +113,7 @@ namespace Client.Infrastructure.Managers
 
             var @params = new Int64Value() { Value = lockId };
 
-            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetLockTransaction", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetLockTransaction", @params);
             return GetLockTransactionOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
@@ -123,7 +123,7 @@ namespace Client.Infrastructure.Managers
 
             var @params = new Empty();
 
-            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetLocks", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetLocks", @params);
             return GetLockListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
@@ -133,7 +133,7 @@ namespace Client.Infrastructure.Managers
 
             var @params = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(initiator).Value };
 
-            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetLocksByInitiator", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetLocksByInitiator", @params);
             return GetLockListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
@@ -143,7 +143,7 @@ namespace Client.Infrastructure.Managers
 
             var @params = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(receiver).Value };
 
-            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetLocksForReceiver", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetLocksForReceiver", @params);
             return GetLockReceiverListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
@@ -153,7 +153,7 @@ namespace Client.Infrastructure.Managers
 
             var @params = new StringValue() { Value = tokenSymbol };
 
-            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetLocksByAsset", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetLocksByAsset", @params);
             return GetLockListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
@@ -163,7 +163,7 @@ namespace Client.Infrastructure.Managers
 
             var @params = new Empty();
 
-            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetRefunds", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetRefunds", @params);
             return GetRefundListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
@@ -173,7 +173,7 @@ namespace Client.Infrastructure.Managers
 
             var @params = new Empty();
 
-            var result = await _blockChainService.CallTransactionAsync(keyPair, ContactAddress, "GetAssetsCounter", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetAssetsCounter", @params);
             return GetLockAssetCounterListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
     }

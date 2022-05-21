@@ -9,6 +9,7 @@ namespace Client.Pages.Locks
     {
         public bool IsLoaded { get; set; }
         public bool IsCompletelyLoaded { get; set; }
+        public string ContractLink => $"{BlockchainManager.SideChainExplorer}/address/{LockTokenVaultManager.ContactAddress}";
 
         public List<AssetCounterModel> AssetCounters { get; set; } = new();
 

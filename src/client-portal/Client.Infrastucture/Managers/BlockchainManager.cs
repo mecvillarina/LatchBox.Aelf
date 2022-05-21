@@ -13,13 +13,21 @@ namespace Client.Infrastructure.Managers
             _blockChainService = blockChainService;
         }
 
-        public string Node => ManagerToolkit.AelfSettings.Node;
+        public string MainChainNode => ManagerToolkit.AelfSettings.MainChainNode;
+        public string MainChainExplorer => ManagerToolkit.AelfSettings.MainChainExplorer;
+        public string SideChainNode => ManagerToolkit.AelfSettings.SideChainNode;
+        public string SideChainExplorer => ManagerToolkit.AelfSettings.SideChainExplorer;
 
-        public Task<int> GetChainIdIntValueAsync() => _blockChainService.GetChainIdAsync();
-        public async Task<string> GetChainIdAsync()
+        public async Task<string> GetMainChainIdInformationAsync()
         {
-            var value = await _blockChainService.GetChainIdAsync();
-            return ChainHelper.ConvertChainIdToBase58(value);
+            var value = await _blockChainService.GetMainChainIdAsync();
+            return $"{ChainHelper.ConvertChainIdToBase58(value)} ({value})";
+        }
+
+        public async Task<string> GetSideChainIdInformationAsync()
+        {
+            var value = await _blockChainService.GetSideChainIdAsync();
+            return $"{ChainHelper.ConvertChainIdToBase58(value)} ({value})";
         }
     }
 }
