@@ -5,6 +5,7 @@ using AElf.Types;
 using Blazored.LocalStorage;
 using Client.Infrastructure.Constants;
 using Client.Infrastructure.Managers.Interfaces;
+using Client.Infrastructure.Models;
 using Client.Infrastructure.Services.Interfaces;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
@@ -202,7 +203,7 @@ namespace Client.Infrastructure.Managers
             return GetAllowanceOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
-        public async Task AddTokenSymbolToStorageAsync(string symbol)
+        public async Task AddToTokenSymbolsStorageAsync(string symbol)
         {
             symbol = symbol.ToUpper();
             var tokenSymbolList = await _localStorageService.GetItemAsync<List<string>>(StorageConstants.Local.TokenSymbols);
@@ -222,7 +223,7 @@ namespace Client.Infrastructure.Managers
             return tokenSymbolList;
         }
 
-        public async Task RemoveTokenSymbolFromStorageAsync(string symbol)
+        public async Task RemoveFromTokenSymbolsStorageAsync(string symbol)
         {
             symbol = symbol.ToUpper();
             var tokenSymbolList = await _localStorageService.GetItemAsync<List<string>>(StorageConstants.Local.TokenSymbols);
@@ -233,6 +234,22 @@ namespace Client.Infrastructure.Managers
                 tokenSymbolList.Remove(symbol);
                 await _localStorageService.SetItemAsync(StorageConstants.Local.TokenSymbols, tokenSymbolList);
             }
+        }
+
+        public async Task CacheTokenInfoAsync(int chainId, TokenInfoBase tokenInfo)
+        {
+            await _localStorageService.SetItemAsync($"{chainId}_{tokenInfo.Symbol}", tokenInfo);
+        }
+
+        public async Task<TokenInfoBase> GetCacheTokenInfoAsync(int chainId, string symbol)
+        {
+            var isExists = await _localStorageService.ContainKeyAsync($"{chainId}_{symbol}");
+            if (isExists)
+            {
+                return await _localStorageService.GetItemAsync<TokenInfoBase>($"{chainId}_{symbol}");
+            }
+
+            return null;
         }
 
         public async Task<TransactionResultDto> CreateSideChainTokenAsync(TokenInfo tokenInfo)

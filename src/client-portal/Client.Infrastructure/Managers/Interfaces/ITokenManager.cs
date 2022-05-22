@@ -1,5 +1,6 @@
 ﻿using AElf.Client.Dto;
 using AElf.Client.MultiToken;
+using Client.Infrastructure.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -23,8 +24,11 @@ namespace Client.Infrastructure.Managers.Interfaces
         Task<TransactionResultDto> CreateSideChainTokenAsync(TokenInfo tokenInfo);
         //Task<TransactionResultDto> CrossChainTransferAsync(string to, string symbol, long amount, string memo, int toChainId);
 
-        Task AddTokenSymbolToStorageAsync(string symbol);
+        Task AddToTokenSymbolsStorageAsync(string symbol);
         Task<List<string>> GetTokenSymbolsFromStorageAsync();
-        Task RemoveTokenSymbolFromStorageAsync(string symbol);
+        Task RemoveFromTokenSymbolsStorageAsync(string symbol);
+
+        Task CacheTokenInfoAsync(int chainId, TokenInfoBase tokenInfo);
+        Task<TokenInfoBase> GetCacheTokenInfoAsync(int chainId, string symbol);
     }
 }

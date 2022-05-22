@@ -57,7 +57,7 @@ namespace Client.Pages.Tokens.Modals
                         //        throw new GeneralException(issueTokenResult.Error);
                         //}
 
-                        await TokenManager.AddTokenSymbolToStorageAsync(Model.Symbol.ToUpper());
+                        await TokenManager.AddToTokenSymbolsStorageAsync(Model.Symbol.ToUpper());
                         AppDialogService.ShowSuccess("Token creation success.");
                         MudDialog.Close();
                     }

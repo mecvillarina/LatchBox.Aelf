@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using AElf.Client.Dto;
@@ -128,6 +129,7 @@ namespace AElf.Client.Service
             }
             catch (Exception ex)
             {
+                Debug.WriteLine(ex.Message);
                 return null;
             }
         }

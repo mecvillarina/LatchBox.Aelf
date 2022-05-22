@@ -1,4 +1,4 @@
-﻿using Client.Infrastucture.Enums;
+﻿using Client.Infrastructure.Enums;
 using System;
 using System.Security.Claims;
 

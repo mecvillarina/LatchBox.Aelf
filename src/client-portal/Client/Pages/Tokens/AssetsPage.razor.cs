@@ -13,6 +13,8 @@ namespace Client.Pages.Tokens
         public bool IsCompletelyLoaded { get; set; }
         public string WalletAddress { get; set; }
         public List<TokenInfoWithBalance> TokenInfoWithBalanceList { get; set; } = new();
+        public int MainChainId { get; set; }
+        public int SideChainId { get; set; }
         public string MainChain { get; set; }
         public string SideChain { get; set; }
         protected async override Task OnAfterRenderAsync(bool firstRender)
@@ -23,13 +25,12 @@ namespace Client.Pages.Tokens
                 {
                     if (!authenticated) return;
 
-                    await InvokeAsync(async () =>
-                    {
-                        WalletAddress = await WalletManager.GetWalletAddressAsync();
-                        MainChain = $"Main {(await BlockchainManager.GetMainChainIdAsync()).ToStringChainId()}";
-                        SideChain = $"Side {(await BlockchainManager.GetSideChainIdAsync()).ToStringChainId()}";
-                        await FetchDataAsync();
-                    });
+                    WalletAddress = await WalletManager.GetWalletAddressAsync();
+                    MainChainId = await BlockchainManager.GetMainChainIdAsync();
+                    SideChainId = await BlockchainManager.GetSideChainIdAsync();
+                    MainChain = $"Main {MainChainId.ToStringChainId()}";
+                    SideChain = $"Side {SideChainId.ToStringChainId()}";
+                    await FetchDataAsync();
                 });
             }
         }
@@ -42,42 +43,33 @@ namespace Client.Pages.Tokens
 
             TokenInfoWithBalanceList.Clear();
 
-            var sideChainNativeToken = await TokenManager.GetNativeTokenInfoOnSideChainAsync();
-            TokenInfoWithBalanceList.Add(new TokenInfoWithBalance()
+            var sideChainNativeTokenInfo = await TokenManager.GetNativeTokenInfoOnSideChainAsync();
+            var sideChainNativeToken = new TokenInfoBase(sideChainNativeTokenInfo);
+            TokenInfoWithBalanceList.Add(new TokenInfoWithBalance(sideChainNativeToken)
             {
-                IsNative = true,
-                Decimals = sideChainNativeToken.Decimals,
-                Issuer = sideChainNativeToken.Issuer,
-                Symbol = sideChainNativeToken.Symbol,
-                TokenName = sideChainNativeToken.TokenName,
-                SideChainSupply = sideChainNativeToken.Supply,
-                TotalSupply = sideChainNativeToken.TotalSupply,
-                IssueChainId = sideChainNativeToken.IssueChainId
+                IsNative = true
             });
 
             var tokenSymbolList = await TokenManager.GetTokenSymbolsFromStorageAsync();
 
             foreach (var symbol in tokenSymbolList)
             {
-                var sideChainToken = await TokenManager.GetTokenInfoOnSideChainAsync(symbol);
+                var sideChainToken = await TokenManager.GetCacheTokenInfoAsync(SideChainId, symbol);
+                if (sideChainToken == null)
+                {
+                    var sideChainTokenInfo = await TokenManager.GetTokenInfoOnSideChainAsync(symbol);
+                    sideChainToken = new TokenInfoBase(sideChainTokenInfo);
+                }
 
                 if (!string.IsNullOrEmpty(sideChainToken.Symbol))
                 {
-                    var tokenInfo = new TokenInfoWithBalance()
-                    {
-                        Decimals = sideChainToken.Decimals,
-                        Issuer = sideChainToken.Issuer,
-                        Symbol = sideChainToken.Symbol,
-                        TokenName = sideChainToken.TokenName,
-                        SideChainSupply = sideChainToken.Supply,
-                        TotalSupply = sideChainToken.TotalSupply,
-                        IssueChainId = sideChainToken.IssueChainId
-                    };
+                    await TokenManager.CacheTokenInfoAsync(SideChainId, sideChainToken);
+                    TokenInfoWithBalance tokenInfo = new TokenInfoWithBalance(sideChainToken);
                     TokenInfoWithBalanceList.Add(tokenInfo);
                 }
                 else
                 {
-                    await TokenManager.RemoveTokenSymbolFromStorageAsync(symbol);
+                    await TokenManager.RemoveFromTokenSymbolsStorageAsync(symbol);
                 }
             }
 
@@ -85,19 +77,23 @@ namespace Client.Pages.Tokens
             IsLoaded = true;
             StateHasChanged();
 
-            var tasks = new List<Task>();
+            foreach (var tokenInfo in TokenInfoWithBalanceList)
+            {
+                var mainChainToken = await TokenManager.GetTokenInfoOnMainChainAsync(tokenInfo.Symbol);
+                tokenInfo.MainChainSupply = mainChainToken.Supply;
+                StateHasChanged();
+            }
 
             foreach (var tokenInfo in TokenInfoWithBalanceList)
             {
-                tasks.Add(InvokeAsync(async () =>
+                if (!tokenInfo.SideChainSupply.HasValue)
                 {
-                    var mainChainToken = await TokenManager.GetTokenInfoOnMainChainAsync(tokenInfo.Symbol);
-                    tokenInfo.MainChainSupply = mainChainToken.Supply;
+                    var sideChainToken = await TokenManager.GetTokenInfoOnSideChainAsync(tokenInfo.Symbol);
+                    tokenInfo.SideChainSupply = sideChainToken.Supply;
                     StateHasChanged();
-                }));
+                }
             }
 
-            await Task.WhenAll(tasks);
             await FetchBalanceAsync();
 
             IsCompletelyLoaded = true;
@@ -115,29 +111,19 @@ namespace Client.Pages.Tokens
                 StateHasChanged();
             }
 
-            var tasks = new List<Task>();
-
             foreach (var tokenInfo in TokenInfoWithBalanceList)
             {
-                tasks.Add(InvokeAsync(async () =>
-                {
-                    var mainChainGetBalanceOutput = await TokenManager.GetBalanceOnMainChainAsync(tokenInfo.Symbol);
-                    tokenInfo.MainChainBalance = mainChainGetBalanceOutput.Balance;
-                    StateHasChanged();
-                }));
+                var mainChainGetBalanceOutput = await TokenManager.GetBalanceOnMainChainAsync(tokenInfo.Symbol);
+                tokenInfo.MainChainBalance = mainChainGetBalanceOutput.Balance;
+                StateHasChanged();
             }
 
             foreach (var tokenInfo in TokenInfoWithBalanceList)
             {
-                tasks.Add(InvokeAsync(async () =>
-                {
-                    var sideChainGetBalanceOutput = await TokenManager.GetBalanceOnSideChainAsync(tokenInfo.Symbol);
-                    tokenInfo.SideChainBalance = sideChainGetBalanceOutput.Balance;
-                    StateHasChanged();
-                }));
+                var sideChainGetBalanceOutput = await TokenManager.GetBalanceOnSideChainAsync(tokenInfo.Symbol);
+                tokenInfo.SideChainBalance = sideChainGetBalanceOutput.Balance;
+                StateHasChanged();
             }
-
-            await Task.WhenAll(tasks);
 
             IsCompletelyLoaded = true;
             StateHasChanged();
@@ -169,7 +155,7 @@ namespace Client.Pages.Tokens
         {
             TokenInfoWithBalanceList.Remove(tokenInfo);
             StateHasChanged();
-            await TokenManager.RemoveTokenSymbolFromStorageAsync(tokenInfo.Symbol);
+            await TokenManager.RemoveFromTokenSymbolsStorageAsync(tokenInfo.Symbol);
         }
 
         private async Task InvokeIssueTokenModalAsync(TokenInfoWithBalance tokenInfo)

@@ -22,7 +22,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\AElf.Client\AElf.Client.csproj" />
-		<ProjectReference Include="..\Client.Infrastucture\Client.Infrastucture.csproj" />
+		<ProjectReference Include="..\Client.Infrastructure\Client.Infrastructure.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
