@@ -45,7 +45,7 @@ namespace Client.Pages.Tokens.Modals
 
                     if (!string.IsNullOrEmpty(sideChainTokenInfo.Symbol))
                     {
-                        await TokenManager.AddTokenSymbolToStorageAsync(Model.Symbol.ToUpper());
+                        await TokenManager.AddToTokenSymbolsStorageAsync(Model.Symbol.ToUpper());
                         MudDialog.Close();
                     }
                     else
@@ -64,7 +64,7 @@ namespace Client.Pages.Tokens.Modals
                                 if (!string.IsNullOrEmpty(createSideChainTokenResult.Error))
                                     throw new GeneralException(createSideChainTokenResult.Error);
 
-                                await TokenManager.AddTokenSymbolToStorageAsync(Model.Symbol.ToUpper());
+                                await TokenManager.AddToTokenSymbolsStorageAsync(Model.Symbol.ToUpper());
                                 MudDialog.Close();
                             }
                         }

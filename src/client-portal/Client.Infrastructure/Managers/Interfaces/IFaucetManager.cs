@@ -6,5 +6,6 @@ namespace Client.Infrastructure.Managers.Interfaces
 {
     public interface IFaucetManager : IManager
     {
+        Task<TransactionResultDto> TakeAsync(string symbol, long amount);
     }
 }

@@ -11,7 +11,7 @@
             <MudText Class="mr-4 align-self-center" Typo="Typo.h4" Color="Color.Primary" GutterBottom="false">Assets/Tokens</MudText>
         </MudHidden>
 
-        @if (IsLoaded)
+        @if (IsCompletelyLoaded)
         {
             <MudMenu AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
                 <ActivatorContent>
@@ -22,10 +22,6 @@
                     <MudMenuItem OnClick="InvokeAddTokenModalAsync">Add Exisitng Token</MudMenuItem>
                 </ChildContent>
             </MudMenu>
-        }
-
-        @if (IsCompletelyLoaded)
-        {
             <MudIconButton Class="align-self-center mx-1" Icon="@Icons.Material.Filled.Refresh" Color="Color.Secondary" Variant="Variant.Filled" Size="Size.Small" OnClick="FetchBalanceAsync" />
         }
     </div>
@@ -65,13 +61,13 @@
                     <MudTd DataLabel="Issuer">
                         <span>
                             <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
-                                @context.Issuer.ToStringAddress().ToMask(6)
+                                @context.IssuerAddress.ToMask(6)
                             </MudHidden>
                             <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
-                                @context.Issuer.ToStringAddress().ToMask(10)
+                                @context.IssuerAddress.ToMask(10)
                             </MudHidden>
 
-                            @if (WalletAddress == @context.Issuer.ToStringAddress())
+                            @if (WalletAddress == @context.IssuerAddress)
                             {
                             <span> (You)</span>
                             }
@@ -125,10 +121,13 @@
                         }
                 </MudTd>
                 <MudTd DataLabel="Actions">
-                    <MudMenu Variant="Variant.Filled" Color="Color.Primary" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" DisableElevation="true" Icon="@Icons.Filled.MoreVert" IconColor="Color.Secondary" Direction="Direction.Left" OffsetX="true">
-                        <MudMenuItem Disabled="context.IsNative" OnClick="(() => InvokeRemoveFromList(context))">Remove from List</MudMenuItem>
-                        <MudMenuItem Disabled="WalletAddress != context.Issuer.ToStringAddress()" OnClick="(() => InvokeIssueTokenModalAsync(context))">Issue New Token</MudMenuItem>
-                    </MudMenu>
+                    @if (IsCompletelyLoaded)
+                        {
+                        <MudMenu Variant="Variant.Filled" Color="Color.Primary" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" DisableElevation="true" Icon="@Icons.Filled.MoreVert" IconColor="Color.Secondary" Direction="Direction.Left" OffsetX="true">
+                            <MudMenuItem Disabled="context.IsNative" OnClick="(() => InvokeRemoveFromList(context))">Remove from List</MudMenuItem>
+                            <MudMenuItem Disabled="WalletAddress != context.IssuerAddress" OnClick="(() => InvokeIssueTokenModalAsync(context))">Issue New Token</MudMenuItem>
+                        </MudMenu>
+                        }
                 </MudTd>
             </RowTemplate>
         </MudTable>

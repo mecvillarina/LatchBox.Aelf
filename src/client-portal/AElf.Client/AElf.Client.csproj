@@ -31,8 +31,20 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Remove="Protobuf\Proto\faucet_contract.proto" />
       <None Remove="Protobuf\Proto\multi_crowd_sale_contract.proto" />
       <None Remove="Protobuf\Proto\vesting_token_vault_contract.proto" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Protobuf Update="Protobuf\Proto\faucet_contract.proto">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <ProtoRoot>Protobuf/Proto</ProtoRoot>
+        <GrpcServices>none</GrpcServices>
+        <OutputDir>./Protobuf/Generated</OutputDir>
+        <BeforeTargets>BeforeBuild</BeforeTargets>
+        <GrpcOutputDir>./Protobuf/Generated</GrpcOutputDir>
+      </Protobuf>
     </ItemGroup>
 
     <ItemGroup>

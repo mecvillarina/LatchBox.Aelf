@@ -1,4 +1,4 @@
-﻿namespace Client.Infrastucture.Enums
+﻿namespace Client.Infrastructure.Enums
 {
     public enum AuthTokenStatus
     {

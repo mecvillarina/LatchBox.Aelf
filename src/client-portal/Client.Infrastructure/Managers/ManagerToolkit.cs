@@ -1,9 +1,9 @@
 ﻿using Blazored.LocalStorage;
 using Client.Infrastructure.Constants;
+using Client.Infrastructure.Enums;
 using Client.Infrastructure.Managers.Interfaces;
 using Client.Infrastructure.Models;
 using Client.Infrastructure.Services.Interfaces;
-using Client.Infrastucture.Enums;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.IO;
