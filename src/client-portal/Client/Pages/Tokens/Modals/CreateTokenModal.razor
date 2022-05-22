@@ -31,12 +31,12 @@
                                           @bind-Value="Model.TotalSupply" For="@(() => Model.TotalSupply)" />
                         </MudItem>
 
-
+@*
                         <MudItem xs="12">
                             <MudTextField Label="Initial Token Supply" Variant="Variant.Outlined" Disabled="IsProcessing"
                                           @bind-Value="Model.InitialSupply" For="@(() => Model.InitialSupply)" />
                         </MudItem>
-
+*@
 
                         <MudItem xs="12">
                             <MudSelect T="bool" Disabled="IsProcessing" Label="Burnable" Variant="Variant.Outlined" MultiSelection="false" @bind-Value="Model.IsBurnable">
