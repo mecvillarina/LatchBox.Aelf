@@ -11,7 +11,7 @@
 
 ## Instruction
 - After completing the Azure Cloud Prerequisites
-- Open LatchBox.Portal.sln on Visual Studio
+- Open Aelf.LatchBox.Portal.sln on Visual Studio
 - On **Client** Project, find the file named **appsettings.json** and make sure that the content of it is same with the one below:
 	- ```json
 		{
