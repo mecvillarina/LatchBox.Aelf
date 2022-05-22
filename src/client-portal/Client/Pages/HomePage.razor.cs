@@ -23,14 +23,18 @@ namespace Client.Pages
         //Node
         public string MainChainNode => BlockchainManager.MainChainNode;
         public string SideChainNode => BlockchainManager.SideChainNode;
+
         //Lock
+        public string LockContractExplorerLink => $"{BlockchainManager.SideChainExplorer}/address/{LockTokenVaultManager.ContactAddress}";
         public long LockTotalCount { get; set; }
         public long LockedTokenCount { get; set; }
 
         //Vesting
+        public string VestingContractExplorerLink => $"{BlockchainManager.SideChainExplorer}/address/{VestingTokenVaultManager.ContactAddress}";
         public long VestingTotalCount { get; set; }
 
         //Launchpad
+        public string LaunchpadContractExplorerLink => $"{BlockchainManager.SideChainExplorer}/address/{MultiCrowdSaleManager.ContactAddress}";
         public long LaunchpadUpcomingCount { get; set; }
         public long LaunchpadOngoingCount { get; set; }
         public long LaunchpadTotalCount { get; set; }
