@@ -104,25 +104,24 @@ namespace Client.Pages.Tokens
         private async Task FetchBalanceAsync()
         {
             IsCompletelyLoaded = false;
+            StateHasChanged();
+
             foreach (var tokenInfo in TokenInfoWithBalanceList)
             {
                 tokenInfo.MainChainBalance = null;
                 tokenInfo.SideChainBalance = null;
-                StateHasChanged();
             }
 
             foreach (var tokenInfo in TokenInfoWithBalanceList)
             {
                 var mainChainGetBalanceOutput = await TokenManager.GetBalanceOnMainChainAsync(tokenInfo.Symbol);
                 tokenInfo.MainChainBalance = mainChainGetBalanceOutput.Balance;
-                StateHasChanged();
             }
 
             foreach (var tokenInfo in TokenInfoWithBalanceList)
             {
                 var sideChainGetBalanceOutput = await TokenManager.GetBalanceOnSideChainAsync(tokenInfo.Symbol);
                 tokenInfo.SideChainBalance = sideChainGetBalanceOutput.Balance;
-                StateHasChanged();
             }
 
             IsCompletelyLoaded = true;
