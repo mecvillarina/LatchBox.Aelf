@@ -224,7 +224,11 @@ namespace AElf.Client.Service
         private HttpClient GetHttpClient(string version = null)
         {
             if (Client != null) return Client;
-            Client = new HttpClient
+
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+
+            Client = new HttpClient(clientHandler)
             {
                 Timeout = TimeSpan.FromSeconds(TimeoutSeconds)
             };

@@ -85,14 +85,19 @@ namespace Client.Pages.Tokens
             IsLoaded = true;
             StateHasChanged();
 
+            var tasks = new List<Task>();
+
             foreach (var tokenInfo in TokenInfoWithBalanceList)
             {
-                var mainChainToken = await TokenManager.GetTokenInfoOnMainChainAsync(tokenInfo.Symbol);
-
-                tokenInfo.MainChainSupply = mainChainToken.Supply;
-                StateHasChanged();
+                tasks.Add(InvokeAsync(async () =>
+                {
+                    var mainChainToken = await TokenManager.GetTokenInfoOnMainChainAsync(tokenInfo.Symbol);
+                    tokenInfo.MainChainSupply = mainChainToken.Supply;
+                    StateHasChanged();
+                }));
             }
 
+            await Task.WhenAll(tasks);
             await FetchBalanceAsync();
 
             IsCompletelyLoaded = true;
@@ -110,19 +115,29 @@ namespace Client.Pages.Tokens
                 StateHasChanged();
             }
 
+            var tasks = new List<Task>();
+
             foreach (var tokenInfo in TokenInfoWithBalanceList)
             {
-                var mainChainGetBalanceOutput = await TokenManager.GetBalanceOnMainChainAsync(tokenInfo.Symbol);
-                tokenInfo.MainChainBalance = mainChainGetBalanceOutput.Balance;
-                StateHasChanged();
+                tasks.Add(InvokeAsync(async () =>
+                {
+                    var mainChainGetBalanceOutput = await TokenManager.GetBalanceOnMainChainAsync(tokenInfo.Symbol);
+                    tokenInfo.MainChainBalance = mainChainGetBalanceOutput.Balance;
+                    StateHasChanged();
+                }));
             }
 
             foreach (var tokenInfo in TokenInfoWithBalanceList)
             {
-                var sideChainGetBalanceOutput = await TokenManager.GetBalanceOnSideChainAsync(tokenInfo.Symbol);
-                tokenInfo.SideChainBalance = sideChainGetBalanceOutput.Balance;
-                StateHasChanged();
+                tasks.Add(InvokeAsync(async () =>
+                {
+                    var sideChainGetBalanceOutput = await TokenManager.GetBalanceOnSideChainAsync(tokenInfo.Symbol);
+                    tokenInfo.SideChainBalance = sideChainGetBalanceOutput.Balance;
+                    StateHasChanged();
+                }));
             }
+
+            await Task.WhenAll(tasks);
 
             IsCompletelyLoaded = true;
             StateHasChanged();
