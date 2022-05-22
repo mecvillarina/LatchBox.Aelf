@@ -107,16 +107,19 @@ namespace Client.Pages.Tokens
             {
                 tokenInfo.MainChainBalance = null;
                 tokenInfo.SideChainBalance = null;
+                StateHasChanged();
             }
-
-            StateHasChanged();
 
             foreach (var tokenInfo in TokenInfoWithBalanceList)
             {
                 var mainChainGetBalanceOutput = await TokenManager.GetBalanceOnMainChainAsync(tokenInfo.Symbol);
-                var sideChainGetBalanceOutput = await TokenManager.GetBalanceOnSideChainAsync(tokenInfo.Symbol);
-
                 tokenInfo.MainChainBalance = mainChainGetBalanceOutput.Balance;
+                StateHasChanged();
+            }
+
+            foreach (var tokenInfo in TokenInfoWithBalanceList)
+            {
+                var sideChainGetBalanceOutput = await TokenManager.GetBalanceOnSideChainAsync(tokenInfo.Symbol);
                 tokenInfo.SideChainBalance = sideChainGetBalanceOutput.Balance;
                 StateHasChanged();
             }
