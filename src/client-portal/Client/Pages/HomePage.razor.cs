@@ -88,16 +88,15 @@ namespace Client.Pages
                 LockedTokenCount = (await LockTokenVaultManager.GetAssetsCounterAsync()).Assets.Count;
                 VestingTotalCount = (await VestingTokenVaultManager.GetVestingsCountAsync()).Value;
 
-                //await MultiCrowdSaleManager.InitializeAsync();
-                //var s = await LockTokenVaultManager.InitializeAsync();
-                //var s = await VestingTokenVaultManager.InitializeAsync();
+                LaunchpadTotalCount = (await MultiCrowdSaleManager.GetCrowdSaleCountAsync()).Value;
+                LaunchpadUpcomingCount = (await MultiCrowdSaleManager.GetUpcomingCrowdSaleCountAsync()).Value;
+                LaunchpadOngoingCount = (await MultiCrowdSaleManager.GetOngoingCrowdSaleCountAsync()).Value;
             }
             catch
             {
 
             }
 
-            AppDialogService.ShowSuccess("Success");
             IsDataLoaded = true;
             StateHasChanged();
         }

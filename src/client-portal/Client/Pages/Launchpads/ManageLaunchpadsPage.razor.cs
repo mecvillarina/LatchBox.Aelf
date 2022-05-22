@@ -1,4 +1,5 @@
 ﻿using AElf.Client.MultiToken;
+using Client.Infrastructure.Extensions;
 using Client.Infrastructure.Models;
 using Client.Pages.Launchpads.Modals;
 using Client.Pages.Modals;
@@ -15,6 +16,8 @@ namespace Client.Pages.Launchpads
         public TokenInfo NativeTokenInfo { get; set; }
         public string WalletAddress { get; set; }
         public List<MyLaunchpadModel> LaunchpadList { get; set; } = new();
+        public string SideChain { get; set; }
+        public string ContractLink => $"{BlockchainManager.SideChainExplorer}/address/{MultiCrowdSaleManager.ContactAddress}";
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
@@ -27,6 +30,8 @@ namespace Client.Pages.Launchpads
                     await InvokeAsync(async () =>
                     {
                         WalletAddress = await WalletManager.GetWalletAddressAsync();
+                        SideChain = $"Side {(await BlockchainManager.GetSideChainIdAsync()).ToStringChainId()}";
+
                         await FetchDataAsync();
                     });
                 });
@@ -46,9 +51,9 @@ namespace Client.Pages.Launchpads
             StateHasChanged();
         }
 
-        private async Task InvokeAddTokenModalAsync()
+        private async Task InvokeAddLaunchpadModalAsync()
         {
-            var searchTokenDialog = DialogService.Show<SearchTokenModal>($"Search Token");
+            var searchTokenDialog = DialogService.Show<SearchTokenModal>($"Search Token ({SideChain} Chain)");
             var searchTokenDialogResult = await searchTokenDialog.Result;
 
             if (!searchTokenDialogResult.Cancelled)
