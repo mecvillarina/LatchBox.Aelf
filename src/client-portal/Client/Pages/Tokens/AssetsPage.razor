@@ -41,8 +41,8 @@
                     <MudTh>Name</MudTh>
                     <MudTh>Issuer</MudTh>
                     <MudTh>Total Supply</MudTh>
-                    <MudTh>@MainChain Chain Supply</MudTh>
-                    <MudTh>@SideChain Chain Supply</MudTh>
+@*                    <MudTh>@MainChain Chain Supply</MudTh>
+                    <MudTh>@SideChain Chain Supply</MudTh>*@
                     <MudTh>@MainChain Chain Balance</MudTh>
                     <MudTh>@SideChain Chain Balance</MudTh>
                     <MudTh>Actions</MudTh>
@@ -76,7 +76,7 @@
                 <MudTd DataLabel="Total Supply">
                     @context.TotalSupply.ToAmountDisplay(@context.Decimals)
                 </MudTd>
-                <MudTd DataLabel="@(string.Concat(MainChain, " Chain Supply"))">
+                @*<MudTd DataLabel="@(string.Concat(MainChain, " Chain Supply"))">
                     @if (!@context.MainChainSupply.HasValue)
                         {
                         <MudSkeleton Height="20px" Width="100px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" />
@@ -99,7 +99,7 @@
                             @context.SideChainSupply.Value.ToAmountDisplay(@context.Decimals)
                         </span>
                         }
-                </MudTd>
+                </MudTd>*@
                 <MudTd DataLabel="@(string.Concat(MainChain, " Chain Balance"))">
                     @if (!@context.MainChainBalance.HasValue)
                         {
