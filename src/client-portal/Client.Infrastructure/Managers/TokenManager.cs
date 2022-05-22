@@ -76,7 +76,7 @@ namespace Client.Infrastructure.Managers
             return TokenInfo.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
-        public async Task<GetBalanceOutput> GetBalanceOnMainChainAsync(string symbol)
+        public async Task<GetBalanceOutput> GetBalanceOnMainChainAsync(ChainStatusDto chainStatus, string symbol)
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
             var address = await _walletManager.GetWalletAddressAsync();
@@ -86,11 +86,11 @@ namespace Client.Infrastructure.Managers
                 Owner = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(address).Value }
             };
 
-            var result = await _blockChainService.CallMainChainTransactionAsync(keyPair, ContactAddress, "GetBalance", @params);
+            var result = await _blockChainService.CallMainChainTransactionAsync(keyPair, ContactAddress, "GetBalance", @params, chainStatus);
             return GetBalanceOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
-        public async Task<GetBalanceOutput> GetBalanceOnSideChainAsync(string symbol)
+        public async Task<GetBalanceOutput> GetBalanceOnSideChainAsync(ChainStatusDto chainStatus, string symbol)
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
             var address = await _walletManager.GetWalletAddressAsync();
@@ -100,7 +100,7 @@ namespace Client.Infrastructure.Managers
                 Owner = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(address).Value }
             };
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetBalance", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetBalance", @params, chainStatus);
             return GetBalanceOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 

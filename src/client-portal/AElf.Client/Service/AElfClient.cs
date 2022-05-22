@@ -108,12 +108,15 @@ namespace AElf.Client.Service
         /// <param name="input"></param>
         /// <returns>Transaction unsigned</returns>
         public async Task<Transaction> GenerateTransactionAsync(string from, string to,
-            string methodName, IMessage input)
+            string methodName, IMessage input, ChainStatusDto chainStatus = null)
         {
             try
             {
                 AssertValidAddress(from, to);
-                var chainStatus = await GetChainStatusAsync();
+
+                if(chainStatus == null)
+                    chainStatus = await GetChainStatusAsync();
+
                 var transaction = new Transaction
                 {
                     From = Address.FromBase58(from),

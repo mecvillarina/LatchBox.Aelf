@@ -81,12 +81,12 @@ namespace Client.Infrastructure.Services
             return rawTransactionResult.TransactionId;
         }
 
-        public async Task<string> CallMainChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params)
+        public async Task<string> CallMainChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params, ChainStatusDto chainStatus = null)
         {
             var fromAddress = Address.FromPublicKey(keyPair.PublicKey);
 
             var contractAddress = await GetMainChainContractAddressAsync(contract);
-            var tx = await _aelfClientFactory.CreateMainChainNodeClient().GenerateTransactionAsync(fromAddress.ToBase58(), contractAddress, method, @params);
+            var tx = await _aelfClientFactory.CreateMainChainNodeClient().GenerateTransactionAsync(fromAddress.ToBase58(), contractAddress, method, @params, chainStatus);
             var txWithSign = GetTransactionWithSignature(keyPair, tx);
 
             var rawTransactionResult = await _aelfClientFactory.CreateMainChainNodeClient().ExecuteTransactionAsync(new ExecuteTransactionDto
@@ -97,12 +97,12 @@ namespace Client.Infrastructure.Services
             return rawTransactionResult;
         }
 
-        public async Task<string> CallSideChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params)
+        public async Task<string> CallSideChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params, ChainStatusDto chainStatus = null)
         {
             var fromAddress = Address.FromPublicKey(keyPair.PublicKey);
 
             var contractAddress = await GetSideChainContractAddressAsync(contract);
-            var tx = await _aelfClientFactory.CreateSideChainNodeClient().GenerateTransactionAsync(fromAddress.ToBase58(), contractAddress, method, @params);
+            var tx = await _aelfClientFactory.CreateSideChainNodeClient().GenerateTransactionAsync(fromAddress.ToBase58(), contractAddress, method, @params, chainStatus);
             var txWithSign = GetTransactionWithSignature(keyPair, tx);
 
             var rawTransactionResult = await _aelfClientFactory.CreateSideChainNodeClient().ExecuteTransactionAsync(new ExecuteTransactionDto

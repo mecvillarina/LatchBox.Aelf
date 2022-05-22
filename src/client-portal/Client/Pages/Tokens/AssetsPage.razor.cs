@@ -1,4 +1,5 @@
 ﻿using AElf;
+using AElf.Client.Dto;
 using Client.Infrastructure.Extensions;
 using Client.Infrastructure.Models;
 using Client.Pages.Tokens.Modals;
@@ -17,6 +18,8 @@ namespace Client.Pages.Tokens
         public int SideChainId { get; set; }
         public string MainChain { get; set; }
         public string SideChain { get; set; }
+        public ChainStatusDto MainChainStatus { get; set; }
+        public ChainStatusDto SideChainStatus { get; set; }
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
@@ -42,6 +45,9 @@ namespace Client.Pages.Tokens
             StateHasChanged();
 
             TokenInfoWithBalanceList.Clear();
+
+            MainChainStatus = await BlockchainManager.GetMainChainStatusAsync();
+            SideChainStatus = await BlockchainManager.GetSideChainStatusAsync();
 
             var sideChainNativeTokenInfo = await TokenManager.GetNativeTokenInfoOnSideChainAsync();
             var sideChainNativeToken = new TokenInfoBase(sideChainNativeTokenInfo);
@@ -114,14 +120,11 @@ namespace Client.Pages.Tokens
 
             foreach (var tokenInfo in TokenInfoWithBalanceList)
             {
-                var mainChainGetBalanceOutput = await TokenManager.GetBalanceOnMainChainAsync(tokenInfo.Symbol);
+                var mainChainGetBalanceOutput = await TokenManager.GetBalanceOnMainChainAsync(MainChainStatus, tokenInfo.Symbol);
                 tokenInfo.MainChainBalance = mainChainGetBalanceOutput.Balance;
-            }
-
-            foreach (var tokenInfo in TokenInfoWithBalanceList)
-            {
-                var sideChainGetBalanceOutput = await TokenManager.GetBalanceOnSideChainAsync(tokenInfo.Symbol);
+                var sideChainGetBalanceOutput = await TokenManager.GetBalanceOnSideChainAsync(SideChainStatus, tokenInfo.Symbol);
                 tokenInfo.SideChainBalance = sideChainGetBalanceOutput.Balance;
+                StateHasChanged();
             }
 
             IsCompletelyLoaded = true;

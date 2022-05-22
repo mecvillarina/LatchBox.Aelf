@@ -13,8 +13,8 @@ namespace Client.Infrastructure.Managers.Interfaces
         Task<TokenInfo> GetNativeTokenInfoOnSideChainAsync();
         Task<TokenInfo> GetTokenInfoOnMainChainAsync(string symbol);
         Task<TokenInfo> GetTokenInfoOnSideChainAsync(string symbol);
-        Task<GetBalanceOutput> GetBalanceOnMainChainAsync(string symbol);
-        Task<GetBalanceOutput> GetBalanceOnSideChainAsync(string symbol);
+        Task<GetBalanceOutput> GetBalanceOnMainChainAsync(ChainStatusDto chainStatus, string symbol);
+        Task<GetBalanceOutput> GetBalanceOnSideChainAsync(ChainStatusDto chainStatus, string symbol);
         Task<TransactionResultDto> CreateAsync(string symbol, string tokenName, long totalSupply, int decimals, bool isBurnable);
         Task<TransactionResultDto> IssueOnMainChainAsync(string symbol, long amount, string memo, string to);
         Task<TransactionResultDto> IssueOnSideChainAsync(string symbol, long amount, string memo, string to);

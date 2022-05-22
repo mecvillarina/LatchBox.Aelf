@@ -33,7 +33,7 @@ namespace Client.Pages.Locks.Modals
                     Model.UnlockDate = MinDateValue.AddDays(1);
                     Model.IsRevocable = true;
                     Model.Remarks = "";
-                    var balanceOutput = await TokenManager.GetBalanceOnSideChainAsync(TokenInfo.Symbol);
+                    var balanceOutput = await TokenManager.GetBalanceOnSideChainAsync(null, TokenInfo.Symbol);
                     TokenBalanceDisplay = $"{balanceOutput.Balance.ToAmountDisplay(TokenInfo.Decimals)} {TokenInfo.Symbol}";
                     IsLoaded = true;
                     StateHasChanged();
@@ -55,7 +55,7 @@ namespace Client.Pages.Locks.Modals
 
                     try
                     {
-                        var token = await TokenManager.GetBalanceOnSideChainAsync(TokenInfo.Symbol);
+                        var token = await TokenManager.GetBalanceOnSideChainAsync(null, TokenInfo.Symbol);
 
                         if (token.Balance.ToAmount(TokenInfo.Decimals) < Convert.ToDecimal(Model.Receivers.Sum(x => x.Amount)))
                             throw new GeneralException($"Insufficient {TokenInfo.Symbol} balance.");

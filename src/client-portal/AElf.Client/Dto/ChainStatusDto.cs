@@ -6,9 +6,9 @@ namespace AElf.Client.Dto
     {
         public string ChainId { get; set; }
         
-        public Dictionary<string,long> Branches { get; set; }
+        //public Dictionary<string,long> Branches { get; set; }
         
-        public Dictionary<string,string>  NotLinkedBlocks { get; set; }
+        //public Dictionary<string,string>  NotLinkedBlocks { get; set; }
         
         public long LongestChainHeight { get; set; }
         

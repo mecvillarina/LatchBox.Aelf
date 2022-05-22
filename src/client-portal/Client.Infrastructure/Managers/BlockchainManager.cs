@@ -1,4 +1,5 @@
 ﻿using AElf;
+using AElf.Client.Dto;
 using Client.Infrastructure.Managers.Interfaces;
 using Client.Infrastructure.Services.Interfaces;
 using System.Threading.Tasks;
@@ -26,6 +27,16 @@ namespace Client.Infrastructure.Managers
         public async Task<int> GetSideChainIdAsync()
         {
             return await _blockChainService.GetSideChainIdAsync();
+        }
+
+        public async Task<ChainStatusDto> GetMainChainStatusAsync()
+        {
+            return await _blockChainService.GetMainChainStatusAsync();
+        }
+
+        public async Task<ChainStatusDto> GetSideChainStatusAsync()
+        {
+            return await _blockChainService.GetSideChainStatusAsync();
         }
     }
 }
