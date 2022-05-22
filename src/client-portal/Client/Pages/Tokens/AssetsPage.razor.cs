@@ -77,22 +77,22 @@ namespace Client.Pages.Tokens
             IsLoaded = true;
             StateHasChanged();
 
-            foreach (var tokenInfo in TokenInfoWithBalanceList)
-            {
-                var mainChainToken = await TokenManager.GetTokenInfoOnMainChainAsync(tokenInfo.Symbol);
-                tokenInfo.MainChainSupply = mainChainToken.Supply;
-                StateHasChanged();
-            }
+            //foreach (var tokenInfo in TokenInfoWithBalanceList)
+            //{
+            //    var mainChainToken = await TokenManager.GetTokenInfoOnMainChainAsync(tokenInfo.Symbol);
+            //    tokenInfo.MainChainSupply = mainChainToken.Supply;
+            //    StateHasChanged();
+            //}
 
-            foreach (var tokenInfo in TokenInfoWithBalanceList)
-            {
-                if (!tokenInfo.SideChainSupply.HasValue)
-                {
-                    var sideChainToken = await TokenManager.GetTokenInfoOnSideChainAsync(tokenInfo.Symbol);
-                    tokenInfo.SideChainSupply = sideChainToken.Supply;
-                    StateHasChanged();
-                }
-            }
+            //foreach (var tokenInfo in TokenInfoWithBalanceList)
+            //{
+            //    if (!tokenInfo.SideChainSupply.HasValue)
+            //    {
+            //        var sideChainToken = await TokenManager.GetTokenInfoOnSideChainAsync(tokenInfo.Symbol);
+            //        tokenInfo.SideChainSupply = sideChainToken.Supply;
+            //        StateHasChanged();
+            //    }
+            //}
 
             await FetchBalanceAsync();
 
