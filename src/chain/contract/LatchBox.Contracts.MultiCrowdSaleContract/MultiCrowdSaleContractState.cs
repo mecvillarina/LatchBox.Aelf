@@ -1,4 +1,3 @@
-using AElf.Contracts.Consensus.AEDPoS;
 using AElf.Contracts.MultiToken;
 using AElf.Sdk.CSharp.State;
 using AElf.Types;
@@ -11,7 +10,6 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
     public class MultiCrowdSaleContractState : ContractState
     {
         internal TokenContractContainer.TokenContractReferenceState TokenContract { get; set; }
-        internal AEDPoSContractContainer.AEDPoSContractReferenceState ConsensusContract { get; set; }
 
         public SingletonState<Address> Admin { get; set; }
         public SingletonState<NativeToken> NativeToken { get; set; }

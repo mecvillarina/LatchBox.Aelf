@@ -3,7 +3,9 @@
 @attribute [Authorize]
 
 <MudContainer MaxWidth="MaxWidth.False">
-    <div class="d-flex">
+     <MudText Class="mb-0 text-lightgray" Typo="Typo.body1" GutterBottom="false">Launchpads</MudText>
+
+    <div class="d-flex mt-0">
         <MudHidden Breakpoint="Breakpoint.SmAndUp">
             <MudText Class="mr-2 align-self-center" Typo="Typo.h5" Color="Color.Primary" GutterBottom="false">All launchpads</MudText>
         </MudHidden>
@@ -15,6 +17,14 @@
         {
             <MudIconButton Class="align-self-center mx-1" Icon="@Icons.Material.Filled.Refresh" Color="Color.Secondary" Variant="Variant.Filled" Size="Size.Small" OnClick="FetchDataAsync" />
         }
+    </div>
+
+    <div class="my-2">
+        <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+            <MudChip Class="ma-0 cursor-pointer" Color="Color.Primary" Variant="Variant.Text" Size="Size.Small" Href="@ContractLink" Target="_blank">
+                @ManagerToolkit.AelfSettings.MultiCrowdSaleContractAddress
+            </MudChip>
+        </MudHidden>
     </div>
 </MudContainer>
 
@@ -49,7 +59,7 @@
                                 <div class="mb-2 d-flex justify-space-between">
                                     <div>
                                         <MudText Typo="Typo.h6" Color="Color.Primary"><b>@output.Launchpad.Name.ToUpper()</b></MudText>
-                                        <MudText Typo="Typo.caption">1 @NativeTokenInfo.Symbol - @output.Launchpad.TokenAmountPerNativeToken.ToAmountDisplay(output.TokenDecimals) @output.Launchpad.TokenSymbol </MudText>
+                                        <MudText Typo="Typo.caption">1 @NativeTokenInfo.Symbol = @output.Launchpad.TokenAmountPerNativeToken.ToAmountDisplay(output.TokenDecimals) @output.Launchpad.TokenSymbol </MudText>
                                     </div>
                                     <div class="d-flex flex-column">
                                         <MudChip Color="output.StatusColor" Size="Size.Small" Variant="Variant.Filled" Class="align-self-end">

@@ -6,12 +6,273 @@
 
 <MudContainer MaxWidth="MaxWidth.False">
     <div class="d-flex">
-        <MudHidden Breakpoint="Breakpoint.SmAndUp">
-            <MudText Class="mr-2 align-self-center" Color="Color.Primary" Typo="Typo.h5" GutterBottom="false">Dashboard</MudText>
-        </MudHidden>
-        <MudHidden Breakpoint="Breakpoint.Xs">
-            <MudText Class="mr-4 align-self-center" Color="Color.Primary" Typo="Typo.h4" GutterBottom="false">Dashboard</MudText>
-        </MudHidden>
+        <MudText Class="mr-2 align-self-center" Color="Color.Primary" Typo="Typo.h4" GutterBottom="false">Dashboard</MudText>
 
+        @if (IsDataLoaded)
+        {
+            <MudIconButton Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" Color="Color.Secondary" Variant="Variant.Filled" Size="Size.Small" OnClick="FetchDataAsync" />
+        }
     </div>
+</MudContainer>
+
+<MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
+    <MudGrid Spacing="4" Class="pa-0">
+        <MudItem xs="12">
+            <MudText Class="mr-2 align-self-center" Typo="Typo.h5" GutterBottom="false" Color="Color.Primary">Nodes</MudText>
+
+            <MudGrid Spacing="2" Class="mt-2">
+                <MudItem xs="12" xl="6">
+                    <MudCard Elevation="10" Class="palette-primary">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                @if (!IsLoaded)
+                                {
+                                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="23px" Width="100%" />
+                                }
+                                else
+                                {
+                                    <MudText Typo="Typo.body1" Class="text-limit-1"><b>Main Chain (@MainChain Chain)</b></MudText>
+                                }
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent Class="pt-0">
+                            @if (!IsLoaded)
+                            {
+                                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="32px" Width="100%" />
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.h6" Class="py-0 text-limit-1">@MainChainNode</MudText>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+
+                <MudItem xs="12" xl="6">
+                    <MudCard Elevation="10" Class="palette-primary">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                @if (!IsLoaded)
+                                {
+                                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="23px" Width="100%" />
+                                }
+                                else
+                                {
+                                    <MudText Typo="Typo.body1" Class="text-limit-1"><b>Side Chain (Side @SideChain Chain)</b></MudText>
+                                }
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent Class="pt-0">
+                            @if (!IsLoaded)
+                            {
+                                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="32px" Width="100%" />
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.h6" Class="py-0 text-limit-1">@SideChainNode</MudText>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudText Class="mr-2 align-self-center" Typo="Typo.h5" GutterBottom="false" Color="Color.Primary">Locks</MudText>
+
+            <MudGrid Spacing="2" Class="mt-2">
+                <MudItem xs="12" xl="6">
+                    <MudCard Elevation="10" Class="palette-secondary">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.body1" Class="text-limit-1"><b>Contract Address (Side @SideChain Chain)</b></MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent Class="pt-0">
+                            @if (!IsLoaded)
+                            {
+                                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="32px" Width="100%" />
+                            }
+                            else
+                            {
+                                <MudLink Typo="Typo.h6" Class="py-0 text-limit-1 link-text-white" Href="@LockContractExplorerLink" Target="_blank">@LockTokenVaultManager.ContactAddress</MudLink>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+
+                <MudItem xs="12" xl="3">
+                    <MudCard Elevation="10" Class="palette-secondary">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.body1" Class="text-limit-1"><b>Total Locks</b></MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent Class="pt-0">
+                            @if (!IsDataLoaded)
+                            {
+                                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="32px" Width="100%" />
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.h6" Class="py-0 text-limit-1">@LockTotalCount</MudText>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+
+                <MudItem xs="12" xl="3">
+                    <MudCard Elevation="10" Class="palette-secondary">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.body1" Class="text-limit-1"><b>Locked Tokens</b></MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent Class="pt-0">
+                            @if (!IsDataLoaded)
+                            {
+                                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="32px" Width="100%" />
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.h6" Class="py-0 text-limit-1">@LockedTokenCount</MudText>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudText Class="mr-2 align-self-center" Typo="Typo.h5" GutterBottom="false" Color="Color.Primary">Vestings</MudText>
+
+            <MudGrid Spacing="2" Class="mt-2">
+                <MudItem xs="12" xl="6">
+                    <MudCard Elevation="10" Class="palette-secondary">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.body1" Class="text-limit-1"><b>Contract Address (Side @SideChain Chain)</b></MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent Class="pt-0">
+                            @if (!IsLoaded)
+                            {
+                                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="32px" Width="100%" />
+                            }
+                            else
+                            {
+                                <MudLink Typo="Typo.h6" Class="py-0 text-limit-1 link-text-white" Href="@VestingContractExplorerLink" Target="_blank">@VestingTokenVaultManager.ContactAddress</MudLink>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+
+                <MudItem xs="12" xl="6">
+                    <MudCard Elevation="10" Class="palette-secondary">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.body1" Class="text-limit-1"><b>Total Vestings</b></MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent Class="pt-0">
+                            @if (!IsDataLoaded)
+                            {
+                                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="32px" Width="100%" />
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.h6" Class="py-0 text-limit-1">@VestingTotalCount</MudText>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudText Class="mr-2 align-self-center" Typo="Typo.h5" GutterBottom="false" Color="Color.Primary">Launchpads</MudText>
+
+            <MudGrid Spacing="2" Class="mt-2">
+                <MudItem xs="12" xl="6">
+                    <MudCard Elevation="10" Class="palette-secondary">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.body1" Class="text-limit-1"><b>Contract Address (Side @SideChain Chain)</b></MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent Class="pt-0">
+                            @if (!IsLoaded)
+                            {
+                                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="32px" Width="100%" />
+                            }
+                            else
+                            {
+                                <MudLink Typo="Typo.h6" Class="py-0 text-limit-1 link-text-white" Href="@LaunchpadContractExplorerLink" Target="_blank">@MultiCrowdSaleManager.ContactAddress</MudLink>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+
+                <MudItem xs="12" xl="2">
+                    <MudCard Elevation="10" Class="palette-secondary">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.body1" Class="text-limit-1"><b>Upcoming Launchpads</b></MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent Class="pt-0">
+                            @if (!IsDataLoaded)
+                            {
+                                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="32px" Width="100%" />
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.h6" Class="py-0 text-limit-1">@LaunchpadUpcomingCount</MudText>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+
+                <MudItem xs="12" xl="2">
+                    <MudCard Elevation="10" Class="palette-secondary">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.body1" Class="text-limit-1"><b>Ongoing Launchpads</b></MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent Class="pt-0">
+                            @if (!IsDataLoaded)
+                            {
+                                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="32px" Width="100%" />
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.h6" Class="py-0 text-limit-1">@LaunchpadOngoingCount</MudText>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+
+                <MudItem xs="12" xl="2">
+                    <MudCard Elevation="10" Class="palette-secondary">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.body1" Class="text-limit-1"><b>Total Launchpads</b></MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent Class="pt-0">
+                            @if (!IsDataLoaded)
+                            {
+                                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="32px" Width="100%" />
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.h6" Class="py-0 text-limit-1">@LaunchpadTotalCount</MudText>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+    </MudGrid>
 </MudContainer>

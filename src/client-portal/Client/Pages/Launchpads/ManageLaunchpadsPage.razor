@@ -3,7 +3,9 @@
 @attribute [Authorize]
 
 <MudContainer MaxWidth="MaxWidth.False">
-    <div class="d-flex">
+     <MudText Class="mb-0 text-lightgray" Typo="Typo.body1" GutterBottom="false">Launchpads</MudText>
+
+     <div class="d-flex mt-0">
         <MudHidden Breakpoint="Breakpoint.SmAndUp">
             <MudText Class="mr-2 align-self-center" Typo="Typo.h5" Color="Color.Primary" GutterBottom="false">My launchpads</MudText>
         </MudHidden>
@@ -13,9 +15,17 @@
 
         @if (IsLoaded)
         {
-            <MudIconButton Class="align-self-center" Icon="@Icons.Material.Filled.Add" Color="Color.Secondary" Variant="Variant.Filled" Size="Size.Small" OnClick="InvokeAddTokenModalAsync" />
+            <MudIconButton Class="align-self-center" Icon="@Icons.Material.Filled.Add" Color="Color.Secondary" Variant="Variant.Filled" Size="Size.Small" OnClick="InvokeAddLaunchpadModalAsync" />
             <MudIconButton Class="align-self-center mx-1" Icon="@Icons.Material.Filled.Refresh" Color="Color.Secondary" Variant="Variant.Filled" Size="Size.Small" OnClick="FetchDataAsync" />
         }
+    </div>
+
+      <div class="my-2">
+        <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+            <MudChip Class="ma-0 cursor-pointer" Color="Color.Primary" Variant="Variant.Text" Size="Size.Small" Href="@ContractLink" Target="_blank">
+                @ManagerToolkit.AelfSettings.MultiCrowdSaleContractAddress
+            </MudChip>
+        </MudHidden>
     </div>
 </MudContainer>
 
@@ -56,7 +66,7 @@
                         <span>@context.Launchpad.SoftCapNativeTokenAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol - @context.Launchpad.HardCapNativeTokenAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol</span>
                     </MudTd>
                     <MudTd DataLabel="Sale Conversion">
-                        <span>1 @NativeTokenInfo.Symbol - @context.Launchpad.TokenAmountPerNativeToken.ToAmountDisplay(context.TokenDecimals) @context.Launchpad.TokenSymbol </span>
+                        <span>1 @NativeTokenInfo.Symbol = @context.Launchpad.TokenAmountPerNativeToken.ToAmountDisplay(context.TokenDecimals) @context.Launchpad.TokenSymbol </span>
                     </MudTd>
                     <MudTd DataLabel="Raised Amount">
                         <span>@context.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol / @context.Launchpad.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol (@(context.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) / context.Launchpad.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) * 100) %)</span>

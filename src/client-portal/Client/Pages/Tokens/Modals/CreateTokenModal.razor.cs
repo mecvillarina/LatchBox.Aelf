@@ -38,24 +38,24 @@ namespace Client.Pages.Tokens.Modals
                 try
                 {
                     var totalSupply = Model.TotalSupply.ToChainAmount(Model.Decimals);
-                    var initialSupply = Model.InitialSupply.ToChainAmount(Model.Decimals);
+                    //var initialSupply = Model.InitialSupply.ToChainAmount(Model.Decimals);
                     var authenticated = await AppDialogService.ShowConfirmWalletTransactionAsync();
 
                     if (authenticated)
                     {
-                        var walletAddress = await WalletManager.GetWalletAddressAsync();
+                        //var walletAddress = await WalletManager.GetWalletAddressAsync();
                         var createTokenResult = await TokenManager.CreateAsync(Model.Symbol.ToUpper(), Model.TokenName, totalSupply, Model.Decimals, Model.IsBurnable);
 
                         if (!string.IsNullOrEmpty(createTokenResult.Error))
                             throw new GeneralException(createTokenResult.Error);
 
-                        if (initialSupply > 0)
-                        {
-                            var issueTokenResult = await TokenManager.IssueOnMainChainAsync(Model.Symbol, initialSupply, "Initial Supply", walletAddress);
+                        //if (initialSupply > 0)
+                        //{
+                        //    var issueTokenResult = await TokenManager.IssueOnMainChainAsync(Model.Symbol, initialSupply, "Initial Supply", walletAddress);
 
-                            if (!string.IsNullOrEmpty(issueTokenResult.Error))
-                                throw new GeneralException(issueTokenResult.Error);
-                        }
+                        //    if (!string.IsNullOrEmpty(issueTokenResult.Error))
+                        //        throw new GeneralException(issueTokenResult.Error);
+                        //}
 
                         await TokenManager.AddTokenSymbolToStorageAsync(Model.Symbol.ToUpper());
                         AppDialogService.ShowSuccess("Token creation success.");

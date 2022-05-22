@@ -23,6 +23,18 @@ service MultiCrowdSaleContract {
 
     rpc Invest (InvestInput) returns (google.protobuf.Empty) { }
 
+    rpc GetCrowdSaleCount(google.protobuf.Empty) returns (google.protobuf.Int64Value) {
+        option (aelf.is_view) = true;
+    }
+
+    rpc GetUpcomingCrowdSaleCount(google.protobuf.Empty) returns (google.protobuf.Int64Value) {
+        option (aelf.is_view) = true;
+    }
+
+    rpc GetOngoingCrowdSaleCount(google.protobuf.Empty) returns (google.protobuf.Int64Value) {
+        option (aelf.is_view) = true;
+    }
+
     rpc GetCrowdSale (GetCrowdSaleInput) returns (CrowdSaleOutput) { 
         option (aelf.is_view) = true;
     }

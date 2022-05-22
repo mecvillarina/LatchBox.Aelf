@@ -13,6 +13,7 @@ namespace Client.Pages.Launchpads
         public TokenInfo NativeTokenInfo { get; set; }
         public List<LaunchpadModel> LaunchpadList { get; set; } = new();
         public int LaunchpadStatus { get; set; }
+        public string ContractLink => $"{BlockchainManager.SideChainExplorer}/address/{MultiCrowdSaleManager.ContactAddress}";
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)

@@ -1,9 +1,49 @@
 ﻿using AElf.Types;
+using Google.Protobuf.WellKnownTypes;
 
 namespace LatchBox.Contracts.MultiCrowdSaleContract
 {
     public partial class MultiCrowdSaleContract
     {
+        public override Int64Value GetCrowdSaleCount(Empty input)
+        {
+            return new Int64Value { Value = State.SelfIncresingCrowdSaleId.Value - 1 };
+        }
+
+        public override Int64Value GetUpcomingCrowdSaleCount(Empty input)
+        {
+            var crowdSaleIds = State.ActiveCrowdSales.Value.Ids;
+            long count = 0;
+            foreach (var crowdSaleId in crowdSaleIds)
+            {
+                var sale = GetCrowdSaleOutput(crowdSaleId);
+                if (sale.CrowdSale.SaleStartDate >= Context.CurrentBlockTime)
+                {
+                    count++;
+                }
+            }
+
+            return new Int64Value { Value = count };
+        }
+
+        public override Int64Value GetOngoingCrowdSaleCount(Empty input)
+        {
+            var crowdSaleIds = State.ActiveCrowdSales.Value.Ids;
+            long count = 0;
+
+            foreach (var crowdSaleId in crowdSaleIds)
+            {
+                var sale = GetCrowdSaleOutput(crowdSaleId);
+                if (sale.CrowdSale.SaleStartDate < Context.CurrentBlockTime && sale.CrowdSale.SaleEndDate > Context.CurrentBlockTime)
+                {
+                    count++;
+                }
+            }
+
+            return new Int64Value { Value = count };
+        }
+
+
         public override CrowdSaleOutput GetCrowdSale(GetCrowdSaleInput input)
         {
             Assert(input.CrowdSaleId < State.SelfIncresingCrowdSaleId.Value, "Invalid Sale Id");

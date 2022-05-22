@@ -2,6 +2,15 @@
     background-color: var(--mud-palette-background);
 }
 
+.link-text-white {
+    color: var(--mud-palette-white) !important;
+}
+
+.palette-primary {
+    background-color: var(--mud-palette-primary);
+    color: var(--mud-palette-primary-text);
+}
+
 .palette-secondary {
     background-color: var(--mud-palette-secondary);
     color: var(--mud-palette-secondary-text);
