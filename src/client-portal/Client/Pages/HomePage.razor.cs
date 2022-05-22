@@ -1,8 +1,7 @@
-﻿using Client.Infrastructure.Managers.Interfaces;
+﻿using Client.Infrastructure.Extensions;
 using Client.Pages.Locks.Modals;
 using Client.Pages.Vestings.Modals;
 using Client.Services;
-using Google.Protobuf.WellKnownTypes;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
@@ -16,7 +15,25 @@ namespace Client.Pages
         [Parameter]
         public long? VestingId { get; set; }
 
+        public string MainChain { get; set; }
+        public string SideChain { get; set; }
         public bool IsLoaded { get; set; }
+        public bool IsDataLoaded { get; set; }
+
+        //Node
+        public string MainChainNode => BlockchainManager.MainChainNode;
+        public string SideChainNode => BlockchainManager.SideChainNode;
+        //Lock
+        public long LockTotalCount { get; set; }
+        public long LockedTokenCount { get; set; }
+
+        //Vesting
+        public long VestingTotalCount { get; set; }
+
+        //Launchpad
+        public long LaunchpadUpcomingCount { get; set; }
+        public long LaunchpadOngoingCount { get; set; }
+        public long LaunchpadTotalCount { get; set; }
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
@@ -38,6 +55,7 @@ namespace Client.Pages
 
                     await InvokeAsync(async () =>
                     {
+                        await InitAsync();
                         await FetchDataAsync();
                     });
                 });
@@ -45,12 +63,27 @@ namespace Client.Pages
             }
         }
 
-        private async Task FetchDataAsync()
+        private async Task InitAsync()
         {
             IsLoaded = false;
+            StateHasChanged();
+            MainChain = (await BlockchainManager.GetMainChainIdAsync()).ToStringChainId();
+            SideChain = (await BlockchainManager.GetSideChainIdAsync()).ToStringChainId();
+
+            IsLoaded = true;
+            StateHasChanged();
+        }
+
+        private async Task FetchDataAsync()
+        {
+            IsDataLoaded = false;
 
             try
             {
+                LockTotalCount = (await LockTokenVaultManager.GetLocksCountAsync()).Value;
+                LockedTokenCount = (await LockTokenVaultManager.GetAssetsCounterAsync()).Assets.Count;
+                VestingTotalCount = (await VestingTokenVaultManager.GetVestingsCountAsync()).Value;
+
                 //await MultiCrowdSaleManager.InitializeAsync();
                 //var s = await LockTokenVaultManager.InitializeAsync();
                 //var s = await VestingTokenVaultManager.InitializeAsync();
@@ -61,7 +94,7 @@ namespace Client.Pages
             }
 
             AppDialogService.ShowSuccess("Success");
-            IsLoaded = true;
+            IsDataLoaded = true;
             StateHasChanged();
         }
 

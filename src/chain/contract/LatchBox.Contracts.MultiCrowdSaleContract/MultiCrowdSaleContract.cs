@@ -15,7 +15,6 @@ namespace LatchBox.Contracts.MultiCrowdSaleContract
             State.Admin.Value = Context.Sender;
 
             State.TokenContract.Value = Context.GetContractAddressByName(SmartContractConstants.TokenContractSystemName);
-            State.ConsensusContract.Value = Context.GetContractAddressByName(SmartContractConstants.ConsensusContractSystemName);
 
             var nativeToken = GetNativeToken();
 
