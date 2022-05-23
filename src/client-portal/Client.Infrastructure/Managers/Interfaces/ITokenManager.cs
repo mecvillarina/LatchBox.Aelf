@@ -9,10 +9,10 @@ namespace Client.Infrastructure.Managers.Interfaces
     public interface ITokenManager : IManager
     {
         string ContactAddress { get; }
-        Task<TokenInfo> GetNativeTokenInfoOnMainChainAsync();
-        Task<TokenInfo> GetNativeTokenInfoOnSideChainAsync();
+        Task<TokenInfo> GetNativeTokenInfoOnMainChainAsync(ChainStatusDto chainStatus = null);
+        Task<TokenInfo> GetNativeTokenInfoOnSideChainAsync(ChainStatusDto chainStatus = null);
         Task<TokenInfo> GetTokenInfoOnMainChainAsync(string symbol);
-        Task<TokenInfo> GetTokenInfoOnSideChainAsync(string symbol);
+        Task<TokenInfo> GetTokenInfoOnSideChainAsync(string symbol, ChainStatusDto chainStatus = null);
         Task<GetBalanceOutput> GetBalanceOnMainChainAsync(ChainStatusDto chainStatus, string symbol);
         Task<GetBalanceOutput> GetBalanceOnSideChainAsync(ChainStatusDto chainStatus, string symbol);
         Task<TransactionResultDto> CreateAsync(string symbol, string tokenName, long totalSupply, int decimals, bool isBurnable);

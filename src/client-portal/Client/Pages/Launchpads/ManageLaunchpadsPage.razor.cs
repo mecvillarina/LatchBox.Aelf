@@ -30,7 +30,7 @@ namespace Client.Pages.Launchpads
                     await InvokeAsync(async () =>
                     {
                         WalletAddress = await WalletManager.GetWalletAddressAsync();
-                        SideChain = $"Side {(await BlockchainManager.GetSideChainIdAsync()).ToStringChainId()}";
+                        SideChain = $"Side {BlockchainManager.GetSideChainId().ToStringChainId()}";
 
                         await FetchDataAsync();
                     });

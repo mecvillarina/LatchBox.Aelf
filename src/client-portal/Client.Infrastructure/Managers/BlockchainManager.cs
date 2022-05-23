@@ -2,6 +2,7 @@
 using AElf.Client.Dto;
 using Client.Infrastructure.Managers.Interfaces;
 using Client.Infrastructure.Services.Interfaces;
+using Microsoft.Extensions.Caching.Memory;
 using System.Threading.Tasks;
 
 namespace Client.Infrastructure.Managers
@@ -9,9 +10,11 @@ namespace Client.Infrastructure.Managers
     public class BlockchainManager : ManagerBase, IBlockchainManager
     {
         private readonly IBlockChainService _blockChainService;
-        public BlockchainManager(IManagerToolkit managerToolkit, IBlockChainService blockChainService) : base(managerToolkit)
+        private readonly IMemoryCache _cache;
+        public BlockchainManager(IManagerToolkit managerToolkit, IBlockChainService blockChainService, IMemoryCache cache) : base(managerToolkit)
         {
             _blockChainService = blockChainService;
+            _cache = cache;
         }
 
         public string MainChainNode => ManagerToolkit.AelfSettings.MainChainNode;
@@ -19,24 +22,64 @@ namespace Client.Infrastructure.Managers
         public string SideChainNode => ManagerToolkit.AelfSettings.SideChainNode;
         public string SideChainExplorer => ManagerToolkit.AelfSettings.SideChainExplorer;
 
-        public async Task<int> GetMainChainIdAsync()
+        public int GetMainChainId()
         {
-            return await _blockChainService.GetMainChainIdAsync();
+            var chainStatus = FetchMainChainStatus();
+
+            if (chainStatus == null) return 0;
+
+            return ChainHelper.ConvertBase58ToChainId(chainStatus.ChainId);
         }
 
-        public async Task<int> GetSideChainIdAsync()
+        public int GetSideChainId()
         {
-            return await _blockChainService.GetSideChainIdAsync();
+            var chainStatus = FetchSideChainStatus();
+
+            if (chainStatus == null) return 0;
+
+            return ChainHelper.ConvertBase58ToChainId(chainStatus.ChainId);
+        }
+
+        public ChainStatusDto FetchMainChainStatus()
+        {
+            return _cache.Get<ChainStatusDto>("MainChainStatus");
         }
 
         public async Task<ChainStatusDto> GetMainChainStatusAsync()
         {
-            return await _blockChainService.GetMainChainStatusAsync();
+            var chainStatus = await _blockChainService.GetMainChainStatusAsync();
+
+            if (chainStatus != null)
+            {
+                _cache.Set("MainChainStatus", chainStatus);
+            }
+            else
+            {
+                chainStatus = FetchSideChainStatus();
+            }
+
+            return chainStatus;
+        }
+
+        public ChainStatusDto FetchSideChainStatus()
+        {
+            return _cache.Get<ChainStatusDto>("SideChainStatus");
         }
 
         public async Task<ChainStatusDto> GetSideChainStatusAsync()
         {
-            return await _blockChainService.GetSideChainStatusAsync();
+            var chainStatus = await _blockChainService.GetSideChainStatusAsync();
+
+            if (chainStatus != null)
+            {
+                _cache.Set("SideChainStatus", chainStatus);
+            }
+            else
+            {
+                chainStatus = FetchSideChainStatus();
+            }
+
+            return chainStatus;
         }
     }
 }

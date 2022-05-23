@@ -71,8 +71,8 @@ namespace Client.Pages
         {
             IsLoaded = false;
             StateHasChanged();
-            MainChain = (await BlockchainManager.GetMainChainIdAsync()).ToStringChainId();
-            SideChain = (await BlockchainManager.GetSideChainIdAsync()).ToStringChainId();
+            MainChain = BlockchainManager.GetMainChainId().ToStringChainId();
+            SideChain = BlockchainManager.GetSideChainId().ToStringChainId();
 
             IsLoaded = true;
             StateHasChanged();

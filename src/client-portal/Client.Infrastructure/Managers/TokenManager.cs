@@ -30,23 +30,23 @@ namespace Client.Infrastructure.Managers
 
         public string ContactAddress => ManagerToolkit.AelfSettings.MultiTokenContractAddress;
 
-        public async Task<TokenInfo> GetNativeTokenInfoOnMainChainAsync()
+        public async Task<TokenInfo> GetNativeTokenInfoOnMainChainAsync(ChainStatusDto chainStatus = null)
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             IMessage @params = new Empty { };
 
-            var result = await _blockChainService.CallMainChainTransactionAsync(keyPair, ContactAddress, "GetNativeTokenInfo", @params);
+            var result = await _blockChainService.CallMainChainTransactionAsync(keyPair, ContactAddress, "GetNativeTokenInfo", @params, chainStatus);
             return TokenInfo.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
-        public async Task<TokenInfo> GetNativeTokenInfoOnSideChainAsync()
+        public async Task<TokenInfo> GetNativeTokenInfoOnSideChainAsync(ChainStatusDto chainStatus = null)
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
             IMessage @params = new Empty { };
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetNativeTokenInfo", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetNativeTokenInfo", @params, chainStatus);
             return TokenInfo.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
@@ -63,7 +63,7 @@ namespace Client.Infrastructure.Managers
             return TokenInfo.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
-        public async Task<TokenInfo> GetTokenInfoOnSideChainAsync(string symbol)
+        public async Task<TokenInfo> GetTokenInfoOnSideChainAsync(string symbol, ChainStatusDto chainStatus = null)
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
 
@@ -72,7 +72,7 @@ namespace Client.Infrastructure.Managers
                 Symbol = symbol
             };
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetTokenInfo", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetTokenInfo", @params, chainStatus);
             return TokenInfo.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 

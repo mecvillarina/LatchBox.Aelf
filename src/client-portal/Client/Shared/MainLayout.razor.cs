@@ -12,7 +12,7 @@ namespace Client.Shared
         public string SideChain { get; set; }
         public string MainChainNode { get; set; }
         public string SideChainNode { get; set; }
-
+        public bool IsLoaded { get; set; }
         protected override void OnInitialized()
         {
             CurrentTheme = ClientPreferenceManager.GetCurrentTheme();
@@ -26,10 +26,18 @@ namespace Client.Shared
                 {
                     IsAuthenticated = await AuthManager.IsAuthenticated();
                     await AppBreakpointService.InitAsync();
-                    MainChain = $"Main {(await BlockchainManager.GetMainChainIdAsync()).ToStringChainId()}";
-                    SideChain = $"Side {(await BlockchainManager.GetSideChainIdAsync()).ToStringChainId()}";
+
+                    var mainChainStatus = await BlockchainManager.GetMainChainStatusAsync();
+                    if (mainChainStatus == null) return;
+                    
+                    var sideChainStatus = await BlockchainManager.GetSideChainStatusAsync();
+                    if (sideChainStatus == null) return;
+
+                    MainChain = $"Main {BlockchainManager.GetMainChainId().ToStringChainId()}";
+                    SideChain = $"Side {BlockchainManager.GetSideChainId().ToStringChainId()}";
                     MainChainNode = BlockchainManager.MainChainNode;
                     SideChainNode = BlockchainManager.SideChainNode;
+                    IsLoaded = true;
                     StateHasChanged();
                 });
             }
