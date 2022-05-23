@@ -13,11 +13,13 @@ namespace Client.Infrastructure.Managers
     {
         private readonly IBlockChainService _blockChainService;
         private readonly IWalletManager _walletManager;
+        private readonly IBlockchainManager _blockchainManager;
 
-        public LockTokenVaultManager(IManagerToolkit managerToolkit, IBlockChainService blockChainService, IWalletManager walletManager) : base(managerToolkit)
+        public LockTokenVaultManager(IManagerToolkit managerToolkit, IBlockChainService blockChainService, IWalletManager walletManager, IBlockchainManager blockchainManager) : base(managerToolkit)
         {
             _blockChainService = blockChainService;
             _walletManager = walletManager;
+            _blockchainManager = blockchainManager;
         }
 
         public string ContactAddress => ManagerToolkit.AelfSettings.LockTokenVaultContractAddress;
@@ -100,80 +102,87 @@ namespace Client.Infrastructure.Managers
         public async Task<Int64Value> GetLocksCountAsync()
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
-
+            var chainStatus = _blockchainManager.FetchSideChainStatus();
             var @params = new Empty();
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetLocksCount", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetLocksCount", @params, chainStatus);
             return Int64Value.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<GetLockTransactionOutput> GetLockTransactionAsync(long lockId)
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
+            var chainStatus = _blockchainManager.FetchSideChainStatus();
 
             var @params = new Int64Value() { Value = lockId };
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetLockTransaction", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetLockTransaction", @params, chainStatus);
             return GetLockTransactionOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<GetLockListOutput> GetLocksAsync()
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
+            var chainStatus = _blockchainManager.FetchSideChainStatus();
 
             var @params = new Empty();
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetLocks", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetLocks", @params, chainStatus);
             return GetLockListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<GetLockListOutput> GetLocksByInitiatorAsync(string initiator)
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
+            var chainStatus = _blockchainManager.FetchSideChainStatus();
 
             var @params = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(initiator).Value };
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetLocksByInitiator", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetLocksByInitiator", @params, chainStatus);
             return GetLockListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<GetLockReceiverListOutput> GetLocksForReceiverAsync(string receiver)
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
+            var chainStatus = _blockchainManager.FetchSideChainStatus();
 
             var @params = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(receiver).Value };
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetLocksForReceiver", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetLocksForReceiver", @params, chainStatus);
             return GetLockReceiverListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<GetLockListOutput> GetLocksByAssetAsync(string tokenSymbol)
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
+            var chainStatus = _blockchainManager.FetchSideChainStatus();
 
             var @params = new StringValue() { Value = tokenSymbol };
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetLocksByAsset", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetLocksByAsset", @params, chainStatus);
             return GetLockListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<GetRefundListOutput> GetRefundsAsync()
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
+            var chainStatus = _blockchainManager.FetchSideChainStatus();
 
             var @params = new Empty();
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetRefunds", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetRefunds", @params, chainStatus);
             return GetRefundListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<GetLockAssetCounterListOutput> GetAssetsCounterAsync()
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
+            var chainStatus = _blockchainManager.FetchSideChainStatus();
 
             var @params = new Empty();
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetAssetsCounter", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetAssetsCounter", @params, chainStatus);
             return GetLockAssetCounterListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
     }

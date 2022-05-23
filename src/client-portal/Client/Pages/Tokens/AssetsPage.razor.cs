@@ -1,4 +1,5 @@
 ﻿using AElf;
+using AElf.Client.Dto;
 using Client.Infrastructure.Extensions;
 using Client.Infrastructure.Models;
 using Client.Pages.Tokens.Modals;
@@ -17,6 +18,8 @@ namespace Client.Pages.Tokens
         public int SideChainId { get; set; }
         public string MainChain { get; set; }
         public string SideChain { get; set; }
+        public ChainStatusDto MainChainStatus { get; set; }
+        public ChainStatusDto SideChainStatus { get; set; }
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
@@ -26,8 +29,8 @@ namespace Client.Pages.Tokens
                     if (!authenticated) return;
 
                     WalletAddress = await WalletManager.GetWalletAddressAsync();
-                    MainChainId = await BlockchainManager.GetMainChainIdAsync();
-                    SideChainId = await BlockchainManager.GetSideChainIdAsync();
+                    MainChainId = BlockchainManager.GetMainChainId();
+                    SideChainId = BlockchainManager.GetSideChainId();
                     MainChain = $"Main {MainChainId.ToStringChainId()}";
                     SideChain = $"Side {SideChainId.ToStringChainId()}";
                     await FetchDataAsync();
@@ -43,9 +46,12 @@ namespace Client.Pages.Tokens
 
             TokenInfoWithBalanceList.Clear();
 
-            var sideChainNativeTokenInfo = await TokenManager.GetNativeTokenInfoOnSideChainAsync();
-            var sideChainNativeToken = new TokenInfoBase(sideChainNativeTokenInfo);
-            TokenInfoWithBalanceList.Add(new TokenInfoWithBalance(sideChainNativeToken)
+            MainChainStatus = BlockchainManager.FetchMainChainStatus();
+            SideChainStatus = BlockchainManager.FetchSideChainStatus();
+
+            var nativeTokenInfo = await TokenManager.GetNativeTokenInfoOnMainChainAsync();
+            var nativeToken = new TokenInfoBase(nativeTokenInfo);
+            TokenInfoWithBalanceList.Add(new TokenInfoWithBalance(nativeToken)
             {
                 IsNative = true
             });
@@ -77,23 +83,6 @@ namespace Client.Pages.Tokens
             IsLoaded = true;
             StateHasChanged();
 
-            //foreach (var tokenInfo in TokenInfoWithBalanceList)
-            //{
-            //    var mainChainToken = await TokenManager.GetTokenInfoOnMainChainAsync(tokenInfo.Symbol);
-            //    tokenInfo.MainChainSupply = mainChainToken.Supply;
-            //    StateHasChanged();
-            //}
-
-            //foreach (var tokenInfo in TokenInfoWithBalanceList)
-            //{
-            //    if (!tokenInfo.SideChainSupply.HasValue)
-            //    {
-            //        var sideChainToken = await TokenManager.GetTokenInfoOnSideChainAsync(tokenInfo.Symbol);
-            //        tokenInfo.SideChainSupply = sideChainToken.Supply;
-            //        StateHasChanged();
-            //    }
-            //}
-
             await FetchBalanceAsync();
 
             IsCompletelyLoaded = true;
@@ -104,7 +93,6 @@ namespace Client.Pages.Tokens
         private async Task FetchBalanceAsync()
         {
             IsCompletelyLoaded = false;
-            StateHasChanged();
 
             foreach (var tokenInfo in TokenInfoWithBalanceList)
             {
@@ -112,17 +100,43 @@ namespace Client.Pages.Tokens
                 tokenInfo.SideChainBalance = null;
             }
 
-            foreach (var tokenInfo in TokenInfoWithBalanceList)
-            {
-                var mainChainGetBalanceOutput = await TokenManager.GetBalanceOnMainChainAsync(tokenInfo.Symbol);
-                tokenInfo.MainChainBalance = mainChainGetBalanceOutput.Balance;
-            }
+            StateHasChanged();
 
-            foreach (var tokenInfo in TokenInfoWithBalanceList)
+            MainChainStatus = BlockchainManager.FetchMainChainStatus();
+            SideChainStatus = BlockchainManager.FetchSideChainStatus();
+
+            try
             {
-                var sideChainGetBalanceOutput = await TokenManager.GetBalanceOnSideChainAsync(tokenInfo.Symbol);
-                tokenInfo.SideChainBalance = sideChainGetBalanceOutput.Balance;
+                var tasks = new List<Task>();
+                foreach (var tokenInfo in TokenInfoWithBalanceList)
+                {
+                    tasks.Add(InvokeAsync(async () =>
+                    {
+                        var mainChainGetBalanceOutput = await TokenManager.GetBalanceOnMainChainAsync(tokenInfo.Symbol);
+                        tokenInfo.MainChainBalance = mainChainGetBalanceOutput.Balance;
+                        StateHasChanged();
+                    }));
+
+                    tasks.Add(InvokeAsync(async () =>
+                    {
+                        var sideChainGetBalanceOutput = await TokenManager.GetBalanceOnSideChainAsync(tokenInfo.Symbol);
+                        tokenInfo.SideChainBalance = sideChainGetBalanceOutput.Balance;
+                        StateHasChanged();
+                    }));
+                    //var mainChainGetBalanceOutput = await TokenManager.GetBalanceOnMainChainAsync(tokenInfo.Symbol);
+                    //tokenInfo.MainChainBalance = mainChainGetBalanceOutput.Balance;
+                    //var sideChainGetBalanceOutput = await TokenManager.GetBalanceOnSideChainAsync(tokenInfo.Symbol);
+                    //tokenInfo.SideChainBalance = sideChainGetBalanceOutput.Balance;
+                    //StateHasChanged();
+                }
+
+                await Task.WhenAll(tasks);
             }
+            catch
+            {
+
+            }
+           
 
             IsCompletelyLoaded = true;
             StateHasChanged();

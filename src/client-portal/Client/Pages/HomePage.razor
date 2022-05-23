@@ -109,13 +109,13 @@
                             </CardHeaderContent>
                         </MudCardHeader>
                         <MudCardContent Class="pt-0">
-                            @if (!IsDataLoaded)
+                            @if (!LockTotalCount.HasValue)
                             {
                                 <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="32px" Width="100%" />
                             }
                             else
                             {
-                                <MudText Typo="Typo.h6" Class="py-0 text-limit-1">@LockTotalCount</MudText>
+                                <MudText Typo="Typo.h6" Class="py-0 text-limit-1">@LockTotalCount.Value</MudText>
                             }
                         </MudCardContent>
                     </MudCard>
@@ -129,13 +129,13 @@
                             </CardHeaderContent>
                         </MudCardHeader>
                         <MudCardContent Class="pt-0">
-                            @if (!IsDataLoaded)
+                            @if (!LockedTokenCount.HasValue)
                             {
                                 <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="32px" Width="100%" />
                             }
                             else
                             {
-                                <MudText Typo="Typo.h6" Class="py-0 text-limit-1">@LockedTokenCount</MudText>
+                                <MudText Typo="Typo.h6" Class="py-0 text-limit-1">@LockedTokenCount.Value</MudText>
                             }
                         </MudCardContent>
                     </MudCard>
@@ -175,13 +175,13 @@
                             </CardHeaderContent>
                         </MudCardHeader>
                         <MudCardContent Class="pt-0">
-                            @if (!IsDataLoaded)
+                            @if (!VestingTotalCount.HasValue)
                             {
                                 <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="32px" Width="100%" />
                             }
                             else
                             {
-                                <MudText Typo="Typo.h6" Class="py-0 text-limit-1">@VestingTotalCount</MudText>
+                                <MudText Typo="Typo.h6" Class="py-0 text-limit-1">@VestingTotalCount.Value</MudText>
                             }
                         </MudCardContent>
                     </MudCard>
@@ -221,13 +221,13 @@
                             </CardHeaderContent>
                         </MudCardHeader>
                         <MudCardContent Class="pt-0">
-                            @if (!IsDataLoaded)
+                            @if (!LaunchpadUpcomingCount.HasValue)
                             {
                                 <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="32px" Width="100%" />
                             }
                             else
                             {
-                                <MudText Typo="Typo.h6" Class="py-0 text-limit-1">@LaunchpadUpcomingCount</MudText>
+                                <MudText Typo="Typo.h6" Class="py-0 text-limit-1">@LaunchpadUpcomingCount.Value</MudText>
                             }
                         </MudCardContent>
                     </MudCard>
@@ -241,13 +241,13 @@
                             </CardHeaderContent>
                         </MudCardHeader>
                         <MudCardContent Class="pt-0">
-                            @if (!IsDataLoaded)
+                            @if (!LaunchpadOngoingCount.HasValue)
                             {
                                 <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="32px" Width="100%" />
                             }
                             else
                             {
-                                <MudText Typo="Typo.h6" Class="py-0 text-limit-1">@LaunchpadOngoingCount</MudText>
+                                <MudText Typo="Typo.h6" Class="py-0 text-limit-1">@LaunchpadOngoingCount.Value</MudText>
                             }
                         </MudCardContent>
                     </MudCard>
@@ -261,13 +261,13 @@
                             </CardHeaderContent>
                         </MudCardHeader>
                         <MudCardContent Class="pt-0">
-                            @if (!IsDataLoaded)
+                            @if (!LaunchpadTotalCount.HasValue)
                             {
                                 <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="32px" Width="100%" />
                             }
                             else
                             {
-                                <MudText Typo="Typo.h6" Class="py-0 text-limit-1">@LaunchpadTotalCount</MudText>
+                                <MudText Typo="Typo.h6" Class="py-0 text-limit-1">@LaunchpadTotalCount.Value</MudText>
                             }
                         </MudCardContent>
                     </MudCard>

@@ -45,14 +45,28 @@ namespace Client.Pages.Locks
             IsLoaded = true;
             StateHasChanged();
 
-            foreach (var refund in Refunds)
+            try
             {
-                var tokenInfo = await TokenManager.GetTokenInfoOnSideChainAsync(refund.Refund.TokenSymbol);
-                refund.SetTokenInfo(tokenInfo);
-            }
+                var tasks = new List<Task>();
 
-            IsCompletelyLoaded = true;
-            StateHasChanged();
+                foreach (var refund in Refunds)
+                {
+                    tasks.Add(InvokeAsync(async () =>
+                    {
+                        var tokenInfo = await TokenManager.GetTokenInfoOnSideChainAsync(refund.Refund.TokenSymbol);
+                        refund.SetTokenInfo(tokenInfo);
+                    }));
+                }
+
+                await Task.WhenAll(tasks);
+
+                IsCompletelyLoaded = true;
+                StateHasChanged();
+            }
+            catch
+            {
+
+            }
         }
 
 

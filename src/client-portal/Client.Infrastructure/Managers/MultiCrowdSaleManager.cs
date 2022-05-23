@@ -14,11 +14,13 @@ namespace Client.Infrastructure.Managers
     {
         private readonly IBlockChainService _blockChainService;
         private readonly IWalletManager _walletManager;
+        private readonly IBlockchainManager _blockchainManager;
 
-        public MultiCrowdSaleManager(IManagerToolkit managerToolkit, IBlockChainService blockChainService, IWalletManager walletManager) : base(managerToolkit)
+        public MultiCrowdSaleManager(IManagerToolkit managerToolkit, IBlockChainService blockChainService, IWalletManager walletManager, IBlockchainManager blockchainManager) : base(managerToolkit)
         {
             _blockChainService = blockChainService;
             _walletManager = walletManager;
+            _blockchainManager = blockchainManager;
         }
 
         public string ContactAddress => ManagerToolkit.AelfSettings.MultiCrowdSaleContractAddress;
@@ -111,69 +113,76 @@ namespace Client.Infrastructure.Managers
         public async Task<Int64Value> GetCrowdSaleCountAsync()
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
+            var chainStatus = _blockchainManager.FetchSideChainStatus();
 
             var @params = new Empty();
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetCrowdSaleCount", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetCrowdSaleCount", @params, chainStatus);
             return Int64Value.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<Int64Value> GetUpcomingCrowdSaleCountAsync()
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
+            var chainStatus = _blockchainManager.FetchSideChainStatus();
 
             var @params = new Empty();
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetUpcomingCrowdSaleCount", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetUpcomingCrowdSaleCount", @params, chainStatus);
             return Int64Value.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<Int64Value> GetOngoingCrowdSaleCountAsync()
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
+            var chainStatus = _blockchainManager.FetchSideChainStatus();
 
             var @params = new Empty();
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetOngoingCrowdSaleCount", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetOngoingCrowdSaleCount", @params, chainStatus);
             return Int64Value.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<CrowdSaleOutput> GetCrowdSaleAsync(long crowdSaleId)
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
+            var chainStatus = _blockchainManager.FetchSideChainStatus();
 
             var @params = new GetCrowdSaleInput()
             {
                 CrowdSaleId = crowdSaleId
             };
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetCrowdSale", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetCrowdSale", @params, chainStatus);
             return CrowdSaleOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<CrowdSaleListOutput> GetCrowdSalesByInitiatorAsync(string initiator)
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
+            var chainStatus = _blockchainManager.FetchSideChainStatus();
 
             var @params = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(initiator).Value };
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetCrowdSalesByInitiator", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetCrowdSalesByInitiator", @params, chainStatus);
             return CrowdSaleListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<CrowdSaleByInvestorListOuput> GetCrowdSalesByInvestorAsync(string investor)
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
+            var chainStatus = _blockchainManager.FetchSideChainStatus();
 
             var @params = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(investor).Value };
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetCrowdSalesByInvestor", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetCrowdSalesByInvestor", @params, chainStatus);
             return CrowdSaleByInvestorListOuput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<CrowdSaleListOutput> GetCrowdSalesAsync(bool isUpcoming, bool isOngoing)
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
+            var chainStatus = _blockchainManager.FetchSideChainStatus();
 
             var @params = new GetCrowdSalesInput()
             {
@@ -181,20 +190,21 @@ namespace Client.Infrastructure.Managers
                 IsOngoing = isOngoing
             };
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetCrowdSales", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetCrowdSales", @params, chainStatus);
             return CrowdSaleListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<CrowdSaleInvestmentListOutput> GetCrowdSaleInvestments(long crowdSaleId)
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
+            var chainStatus = _blockchainManager.FetchSideChainStatus();
 
             var @params = new GetCrowdSaleInvestorsInput()
             {
                 CrowdSaleId = crowdSaleId
             };
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetCrowdSaleInvestments", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetCrowdSaleInvestments", @params, chainStatus);
             return CrowdSaleInvestmentListOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 

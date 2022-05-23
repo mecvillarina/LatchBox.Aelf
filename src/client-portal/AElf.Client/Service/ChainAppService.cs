@@ -54,7 +54,7 @@ namespace AElf.Client.Service
         /// </summary>
         /// <returns>ChainId</returns>
         public async Task<int> GetChainIdAsync()
-        {
+            {
             var url = GetRequestUrl(_baseUrl, "api/blockChain/chainStatus");
             var statusDto = await _httpService.GetResponseAsync<ChainStatusDto>(url);
             var base58ChainId = statusDto.ChainId;

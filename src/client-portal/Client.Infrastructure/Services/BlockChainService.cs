@@ -4,6 +4,8 @@ using AElf.Cryptography.ECDSA;
 using AElf.Types;
 using Client.Infrastructure.Services.Interfaces;
 using Google.Protobuf;
+using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Client.Infrastructure.Services
@@ -54,6 +56,8 @@ namespace Client.Infrastructure.Services
             var fromAddress = Address.FromPublicKey(keyPair.PublicKey);
 
             var contractAddress = await GetMainChainContractAddressAsync(contract);
+            Debug.WriteLine(contractAddress);
+
             var tx = await _aelfClientFactory.CreateMainChainNodeClient().GenerateTransactionAsync(fromAddress.ToBase58(), contractAddress, method, @params);
             var txWithSign = GetTransactionWithSignature(keyPair, tx);
             var rawTransaction = txWithSign.ToByteArray().ToHex();
@@ -70,6 +74,8 @@ namespace Client.Infrastructure.Services
             var fromAddress = Address.FromPublicKey(keyPair.PublicKey);
 
             var contractAddress = await GetSideChainContractAddressAsync(contract);
+            Debug.WriteLine(contractAddress);
+
             var tx = await _aelfClientFactory.CreateSideChainNodeClient().GenerateTransactionAsync(fromAddress.ToBase58(), contractAddress, method, @params);
             var txWithSign = GetTransactionWithSignature(keyPair, tx);
 
@@ -81,12 +87,13 @@ namespace Client.Infrastructure.Services
             return rawTransactionResult.TransactionId;
         }
 
-        public async Task<string> CallMainChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params)
+        public async Task<string> CallMainChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params, ChainStatusDto chainStatus)
         {
             var fromAddress = Address.FromPublicKey(keyPair.PublicKey);
 
             var contractAddress = await GetMainChainContractAddressAsync(contract);
-            var tx = await _aelfClientFactory.CreateMainChainNodeClient().GenerateTransactionAsync(fromAddress.ToBase58(), contractAddress, method, @params);
+            Debug.WriteLine(contractAddress);
+            var tx = await _aelfClientFactory.CreateMainChainNodeClient().GenerateTransactionAsync(fromAddress.ToBase58(), contractAddress, method, @params, chainStatus);
             var txWithSign = GetTransactionWithSignature(keyPair, tx);
 
             var rawTransactionResult = await _aelfClientFactory.CreateMainChainNodeClient().ExecuteTransactionAsync(new ExecuteTransactionDto
@@ -97,12 +104,14 @@ namespace Client.Infrastructure.Services
             return rawTransactionResult;
         }
 
-        public async Task<string> CallSideChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params)
+        public async Task<string> CallSideChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params, ChainStatusDto chainStatus)
         {
             var fromAddress = Address.FromPublicKey(keyPair.PublicKey);
 
             var contractAddress = await GetSideChainContractAddressAsync(contract);
-            var tx = await _aelfClientFactory.CreateSideChainNodeClient().GenerateTransactionAsync(fromAddress.ToBase58(), contractAddress, method, @params);
+            Debug.WriteLine(contractAddress);
+
+            var tx = await _aelfClientFactory.CreateSideChainNodeClient().GenerateTransactionAsync(fromAddress.ToBase58(), contractAddress, method, @params, chainStatus);
             var txWithSign = GetTransactionWithSignature(keyPair, tx);
 
             var rawTransactionResult = await _aelfClientFactory.CreateSideChainNodeClient().ExecuteTransactionAsync(new ExecuteTransactionDto
@@ -173,7 +182,7 @@ namespace Client.Infrastructure.Services
             return transaction;
         }
 
-        private async Task<string> GetSideChainContractAddressAsync(string contract)
+        public async Task<string> GetSideChainContractAddressAsync(string contract)
         {
             var contractAddress = contract;
             if (contract.StartsWith("AElf.ContractNames."))
@@ -184,7 +193,7 @@ namespace Client.Infrastructure.Services
             return contractAddress;
         }
 
-        private async Task<string> GetMainChainContractAddressAsync(string contract)
+        public async Task<string> GetMainChainContractAddressAsync(string contract)
         {
             var contractAddress = contract;
             if (contract.StartsWith("AElf.ContractNames."))

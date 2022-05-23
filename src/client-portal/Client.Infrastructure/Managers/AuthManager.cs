@@ -15,11 +15,13 @@ namespace Client.Infrastructure.Managers
         private readonly IAccountsService _accountsService;
         private readonly IAuthTokenService _authTokenService;
         private readonly IBlockChainService _blockChainService;
-        public AuthManager(IManagerToolkit managerToolkit, IAccountsService accountsService, IAuthTokenService authTokenService, IBlockChainService blockChainService) : base(managerToolkit)
+        private readonly IBlockchainManager _blockchainManager;
+        public AuthManager(IManagerToolkit managerToolkit, IAccountsService accountsService, IAuthTokenService authTokenService, IBlockChainService blockChainService, IBlockchainManager blockchainManager) : base(managerToolkit)
         {
             _accountsService = accountsService;
             _authTokenService = authTokenService;
             _blockChainService = blockChainService;
+            _blockchainManager = blockchainManager;
         }
 
         public async Task<bool> IsAuthenticated()
@@ -47,7 +49,7 @@ namespace Client.Infrastructure.Managers
                     _accountsService.SaveKeyStoreJsonContent(filename, content);
                     var keyPair = await _accountsService.GetAccountKeyPairFromFileAsync(filename, password);
 
-                    var chainId = await _blockChainService.GetSideChainIdAsync();
+                    var chainId = _blockchainManager.GetSideChainId();
                     var node = ManagerToolkit.AelfSettings.SideChainNode;
                     var claims = new Dictionary<string, string>()
                     {

@@ -8,7 +8,7 @@ namespace Client.Infrastructure.Managers.Interfaces
 {
     public interface ITokenManager : IManager
     {
-        string ContactAddress { get; }
+        string SideChainContactAddress { get; }
         Task<TokenInfo> GetNativeTokenInfoOnMainChainAsync();
         Task<TokenInfo> GetNativeTokenInfoOnSideChainAsync();
         Task<TokenInfo> GetTokenInfoOnMainChainAsync(string symbol);

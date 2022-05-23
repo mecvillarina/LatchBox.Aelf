@@ -16,9 +16,12 @@ namespace Client.Infrastructure.Services.Interfaces
 
         Task<(string, string)> SendMainChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params);
         Task<string> SendSideChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params);
-        Task<string> CallMainChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params);
-        Task<string> CallSideChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params);
+        Task<string> CallMainChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params, ChainStatusDto chainStatus);
+        Task<string> CallSideChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params, ChainStatusDto chainStatus);
         Task<TransactionResultDto> CheckMainChainTransactionResultAsync(string txId);
         Task<TransactionResultDto> CheckSideChainTransactionResultAsync(string txId);
+        Task<string> GetMainChainContractAddressAsync(string contract);
+        Task<string> GetSideChainContractAddressAsync(string contract);
+
     }
 }

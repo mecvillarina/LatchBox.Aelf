@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using AElf.Client.Dto;
+using System.Threading.Tasks;
 
 namespace Client.Infrastructure.Managers.Interfaces
 {
@@ -8,7 +9,15 @@ namespace Client.Infrastructure.Managers.Interfaces
         string MainChainExplorer { get; }
         string SideChainNode { get; }
         string SideChainExplorer { get; }
-        Task<int> GetMainChainIdAsync();
-        Task<int> GetSideChainIdAsync();
+        int GetMainChainId();
+        int GetSideChainId();
+        ChainStatusDto FetchMainChainStatus();
+        Task<ChainStatusDto> GetMainChainStatusAsync();
+        ChainStatusDto FetchSideChainStatus();
+        Task<ChainStatusDto> GetSideChainStatusAsync();
+        Task<string> GetMainChainTokenAddressAsync();
+        string FetchMainChainTokenAddress();
+        Task<string> GetSideChainTokenAddressAsync();
+        string FetchSideChainTokenAddress();
     }
 }

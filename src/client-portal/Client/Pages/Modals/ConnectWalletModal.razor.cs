@@ -32,12 +32,12 @@ namespace Client.Pages.Modals
                 await InvokeAsync(async () =>
                 {
                     MainChainNode = BlockchainManager.MainChainNode;
-                    MainChain = $"Main {(await BlockchainManager.GetMainChainIdAsync()).ToStringChainId()}";
+                    MainChain = $"Main {BlockchainManager.GetMainChainId().ToStringChainId()}";
 
                     StateHasChanged();
 
                     SideChainNode = BlockchainManager.SideChainNode;
-                    SideChain = $"Side {(await BlockchainManager.GetSideChainIdAsync()).ToStringChainId()}";
+                    SideChain = $"Side {BlockchainManager.GetSideChainId().ToStringChainId()}";
                     StateHasChanged();
                 });
             }

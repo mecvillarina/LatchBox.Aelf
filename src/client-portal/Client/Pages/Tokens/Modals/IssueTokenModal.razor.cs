@@ -22,9 +22,9 @@ namespace Client.Pages.Tokens.Modals
         {
             if (firstRender)
             {
-                await InvokeAsync(async () =>
+                await InvokeAsync(() =>
                 {
-                    MainChainId = await BlockchainManager.GetMainChainIdAsync();
+                    MainChainId = BlockchainManager.GetMainChainId();
                     StateHasChanged();
                 });
             }
