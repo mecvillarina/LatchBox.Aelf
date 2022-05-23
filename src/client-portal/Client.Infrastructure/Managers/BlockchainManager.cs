@@ -26,7 +26,7 @@ namespace Client.Infrastructure.Managers
         {
             var chainStatus = FetchMainChainStatus();
 
-            if (chainStatus == null) return 0;
+            if (chainStatus == null) return 9992731;
 
             return ChainHelper.ConvertBase58ToChainId(chainStatus.ChainId);
         }
@@ -35,7 +35,7 @@ namespace Client.Infrastructure.Managers
         {
             var chainStatus = FetchSideChainStatus();
 
-            if (chainStatus == null) return 0;
+            if (chainStatus == null) return 1866392;
 
             return ChainHelper.ConvertBase58ToChainId(chainStatus.ChainId);
         }

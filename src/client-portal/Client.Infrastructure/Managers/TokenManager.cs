@@ -89,6 +89,8 @@ namespace Client.Infrastructure.Managers
             var address = await _walletManager.GetWalletAddressAsync();
             var chainStatus = _blockchainManager.FetchMainChainStatus();
 
+            var val = ChainHelper.ConvertBase58ToChainId(chainStatus.ChainId);
+
             var @params = new GetBalanceInput
             {
                 Symbol = symbol,
@@ -104,6 +106,8 @@ namespace Client.Infrastructure.Managers
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
             var address = await _walletManager.GetWalletAddressAsync();
             var chainStatus = _blockchainManager.FetchSideChainStatus();
+
+            var val = ChainHelper.ConvertBase58ToChainId(chainStatus.ChainId);
 
             var @params = new GetBalanceInput
             {
