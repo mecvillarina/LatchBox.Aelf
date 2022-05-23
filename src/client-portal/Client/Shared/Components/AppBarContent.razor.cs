@@ -20,25 +20,22 @@ namespace Client.Shared.Components
         {
             if (firstRender)
             {
-                await InvokeAsync(async () =>
+                IsAuthenticated = await AuthManager.IsAuthenticated();
+
+                if (IsAuthenticated)
                 {
-                    IsAuthenticated = await AuthManager.IsAuthenticated();
+                    WalletAddress = await WalletManager.GetWalletAddressAsync();
+                }
 
-                    if (IsAuthenticated)
-                    {
-                        WalletAddress = await WalletManager.GetWalletAddressAsync();
-                    }
-
-                    IsLoaded = true;
-                    StateHasChanged();
-                });
+                IsLoaded = true;
+                StateHasChanged();
             }
         }
 
         private void InvokeConnectWalletModal()
         {
             var options = new DialogOptions() { MaxWidth = MaxWidth.ExtraSmall };
-            DialogService.Show<ConnectWalletModal>("Connect Wallet (JSON)", options);
+            DialogService.Show<ConnectWalletModal>("Connect Wallet KeyStore (json)", options);
         }
 
         private async Task InvokeClaimELFAsync()

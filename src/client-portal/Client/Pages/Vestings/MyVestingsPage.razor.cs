@@ -52,14 +52,29 @@ namespace Client.Pages.Vestings
             IsLoaded = true;
             StateHasChanged();
 
-            foreach (var vesting in Vestings)
+            try
             {
-                var tokenInfo = await TokenManager.GetTokenInfoOnSideChainAsync(vesting.Vesting.TokenSymbol);
-                vesting.SetTokenInfo(tokenInfo);
-            }
+                var tasks = new List<Task>();
 
-            IsCompletelyLoaded = true;
-            StateHasChanged();
+                foreach (var vesting in Vestings)
+                {
+                    tasks.Add(InvokeAsync(async () =>
+                    {
+                        var tokenInfo = await TokenManager.GetTokenInfoOnSideChainAsync(vesting.Vesting.TokenSymbol);
+                        vesting.SetTokenInfo(tokenInfo);
+
+                    }));
+                }
+
+                await Task.WhenAll(tasks);
+
+                IsCompletelyLoaded = true;
+                StateHasChanged();
+            }
+            catch
+            {
+
+            }
         }
 
         private async Task InvokeAddVestingModalAsync()

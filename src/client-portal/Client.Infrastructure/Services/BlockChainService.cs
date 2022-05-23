@@ -87,7 +87,7 @@ namespace Client.Infrastructure.Services
             return rawTransactionResult.TransactionId;
         }
 
-        public async Task<string> CallMainChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params, ChainStatusDto chainStatus = null)
+        public async Task<string> CallMainChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params, ChainStatusDto chainStatus)
         {
             var fromAddress = Address.FromPublicKey(keyPair.PublicKey);
 
@@ -104,7 +104,7 @@ namespace Client.Infrastructure.Services
             return rawTransactionResult;
         }
 
-        public async Task<string> CallSideChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params, ChainStatusDto chainStatus = null)
+        public async Task<string> CallSideChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params, ChainStatusDto chainStatus)
         {
             var fromAddress = Address.FromPublicKey(keyPair.PublicKey);
 

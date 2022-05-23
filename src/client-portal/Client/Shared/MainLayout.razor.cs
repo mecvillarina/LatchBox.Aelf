@@ -22,34 +22,31 @@ namespace Client.Shared
         {
             if (firstRender)
             {
-                await InvokeAsync(async () =>
+                IsAuthenticated = await AuthManager.IsAuthenticated();
+                await AppBreakpointService.InitAsync();
+
+                var mainChainStatus = BlockchainManager.FetchMainChainStatus();
+                if (mainChainStatus == null)
                 {
-                    IsAuthenticated = await AuthManager.IsAuthenticated();
-                    await AppBreakpointService.InitAsync();
+                    mainChainStatus = await BlockchainManager.GetMainChainStatusAsync();
+                    if (mainChainStatus == null) return;
+                    await BlockchainManager.GetMainChainTokenAddressAsync();
+                }
 
-                    var mainChainStatus = BlockchainManager.FetchMainChainStatus();
-                    if (mainChainStatus == null)
-                    {
-                        mainChainStatus = await BlockchainManager.GetMainChainStatusAsync();
-                        if (mainChainStatus == null) return;
-                        await BlockchainManager.GetMainChainTokenAddressAsync();
-                    }
+                var sideChainStatus = BlockchainManager.FetchSideChainStatus();
+                if (sideChainStatus == null)
+                {
+                    sideChainStatus = await BlockchainManager.GetSideChainStatusAsync();
+                    if (sideChainStatus == null) return;
+                    await BlockchainManager.GetSideChainTokenAddressAsync();
+                }
 
-                    var sideChainStatus = BlockchainManager.FetchSideChainStatus();
-                    if (sideChainStatus == null)
-                    {
-                        sideChainStatus = await BlockchainManager.GetSideChainStatusAsync();
-                        if (sideChainStatus == null) return;
-                        await BlockchainManager.GetSideChainTokenAddressAsync();
-                    }
-
-                    MainChain = $"Main {BlockchainManager.GetMainChainId().ToStringChainId()}";
-                    SideChain = $"Side {BlockchainManager.GetSideChainId().ToStringChainId()}";
-                    MainChainNode = BlockchainManager.MainChainNode;
-                    SideChainNode = BlockchainManager.SideChainNode;
-                    IsLoaded = true;
-                    StateHasChanged();
-                });
+                MainChain = $"Main {BlockchainManager.GetMainChainId().ToStringChainId()}";
+                SideChain = $"Side {BlockchainManager.GetSideChainId().ToStringChainId()}";
+                MainChainNode = BlockchainManager.MainChainNode;
+                SideChainNode = BlockchainManager.SideChainNode;
+                IsLoaded = true;
+                StateHasChanged();
             }
         }
 

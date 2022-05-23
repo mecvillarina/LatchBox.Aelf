@@ -40,7 +40,7 @@ namespace Client.Infrastructure.Managers
 
             IMessage @params = new Empty { };
 
-            var result = await _blockChainService.CallMainChainTransactionAsync(keyPair, MainChainContactAddress, "GetNativeTokenInfo", @params, chainStatus).ConfigureAwait(false);
+            var result = await _blockChainService.CallMainChainTransactionAsync(keyPair, MainChainContactAddress, "GetNativeTokenInfo", @params, chainStatus);
             return TokenInfo.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
@@ -51,7 +51,7 @@ namespace Client.Infrastructure.Managers
 
             IMessage @params = new Empty { };
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, SideChainContactAddress, "GetNativeTokenInfo", @params, chainStatus).ConfigureAwait(false);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, SideChainContactAddress, "GetNativeTokenInfo", @params, chainStatus);
             return TokenInfo.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
@@ -65,7 +65,7 @@ namespace Client.Infrastructure.Managers
                 Symbol = symbol
             };
 
-            var result = await _blockChainService.CallMainChainTransactionAsync(keyPair, MainChainContactAddress, "GetTokenInfo", @params, chainStatus).ConfigureAwait(false);
+            var result = await _blockChainService.CallMainChainTransactionAsync(keyPair, MainChainContactAddress, "GetTokenInfo", @params, chainStatus);
             return TokenInfo.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
@@ -79,7 +79,7 @@ namespace Client.Infrastructure.Managers
                 Symbol = symbol
             };
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, SideChainContactAddress, "GetTokenInfo", @params, chainStatus).ConfigureAwait(false);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, SideChainContactAddress, "GetTokenInfo", @params, chainStatus);
             return TokenInfo.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
@@ -95,7 +95,7 @@ namespace Client.Infrastructure.Managers
                 Owner = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(address).Value }
             };
 
-            var result = await _blockChainService.CallMainChainTransactionAsync(keyPair, MainChainContactAddress, "GetBalance", @params, chainStatus).ConfigureAwait(false);
+            var result = await _blockChainService.CallMainChainTransactionAsync(keyPair, MainChainContactAddress, "GetBalance", @params, chainStatus);
             return GetBalanceOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
@@ -111,7 +111,7 @@ namespace Client.Infrastructure.Managers
                 Owner = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(address).Value }
             };
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, SideChainContactAddress, "GetBalance", @params, chainStatus).ConfigureAwait(false);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, SideChainContactAddress, "GetBalance", @params, chainStatus);
             return GetBalanceOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
@@ -120,7 +120,7 @@ namespace Client.Infrastructure.Managers
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
             var address = await _walletManager.GetWalletAddressAsync();
 
-            var issueChainId = await _blockChainService.GetSideChainIdAsync();
+            var issueChainId = _blockchainManager.GetSideChainId();
 
             var @params = new CreateInput
             {
@@ -286,7 +286,7 @@ namespace Client.Infrastructure.Managers
             {
                 while (true)
                 {
-                    var chainStatus = await _blockChainService.GetMainChainStatusAsync();
+                    var chainStatus = _blockchainManager.FetchMainChainStatus();
                     if ((chainStatus.LastIrreversibleBlockHeight - validateTxResult.BlockNumber) > 80)
                         break;
 

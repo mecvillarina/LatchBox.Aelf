@@ -56,14 +56,28 @@ namespace Client.Pages.Locks
             IsLoaded = true;
             StateHasChanged();
 
-            foreach (var @lock in Locks)
+            try
             {
-                var tokenInfo = await TokenManager.GetTokenInfoOnSideChainAsync(@lock.Lock.TokenSymbol);
-                @lock.SetTokenInfo(tokenInfo);
-            }
+                var tasks = new List<Task>();
 
-            IsCompletelyLoaded = true;
-            StateHasChanged();
+                foreach (var @lock in Locks)
+                {
+                    tasks.Add(InvokeAsync(async () =>
+                    {
+                        var tokenInfo = await TokenManager.GetTokenInfoOnSideChainAsync(@lock.Lock.TokenSymbol);
+                        @lock.SetTokenInfo(tokenInfo);
+                    }));
+                }
+
+                await Task.WhenAll(tasks);
+
+                IsCompletelyLoaded = true;
+                StateHasChanged();
+            }
+            catch
+            {
+
+            }
         }
 
         private async Task InvokeAddLockModalAsync()

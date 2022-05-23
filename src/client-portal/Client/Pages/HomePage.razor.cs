@@ -26,18 +26,18 @@ namespace Client.Pages
 
         //Lock
         public string LockContractExplorerLink => $"{BlockchainManager.SideChainExplorer}/address/{LockTokenVaultManager.ContactAddress}";
-        public long LockTotalCount { get; set; }
-        public long LockedTokenCount { get; set; }
+        public long? LockTotalCount { get; set; }
+        public long? LockedTokenCount { get; set; }
 
         //Vesting
         public string VestingContractExplorerLink => $"{BlockchainManager.SideChainExplorer}/address/{VestingTokenVaultManager.ContactAddress}";
-        public long VestingTotalCount { get; set; }
+        public long? VestingTotalCount { get; set; }
 
         //Launchpad
         public string LaunchpadContractExplorerLink => $"{BlockchainManager.SideChainExplorer}/address/{MultiCrowdSaleManager.ContactAddress}";
-        public long LaunchpadUpcomingCount { get; set; }
-        public long LaunchpadOngoingCount { get; set; }
-        public long LaunchpadTotalCount { get; set; }
+        public long? LaunchpadUpcomingCount { get; set; }
+        public long? LaunchpadOngoingCount { get; set; }
+        public long? LaunchpadTotalCount { get; set; }
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
@@ -57,11 +57,8 @@ namespace Client.Pages
                         InvokeVestingPreviewerModal(LockId.Value);
                     }
 
-                    await InvokeAsync(async () =>
-                    {
-                        await InitAsync();
-                        await FetchDataAsync();
-                    });
+                    InitAsync();
+                    await FetchDataAsync();
                 });
 
             }
@@ -69,8 +66,6 @@ namespace Client.Pages
 
         private async Task InitAsync()
         {
-            IsLoaded = false;
-            StateHasChanged();
             MainChain = BlockchainManager.GetMainChainId().ToStringChainId();
             SideChain = BlockchainManager.GetSideChainId().ToStringChainId();
 
@@ -84,13 +79,51 @@ namespace Client.Pages
 
             try
             {
-                LockTotalCount = (await LockTokenVaultManager.GetLocksCountAsync()).Value;
-                LockedTokenCount = (await LockTokenVaultManager.GetAssetsCounterAsync()).Assets.Count;
-                VestingTotalCount = (await VestingTokenVaultManager.GetVestingsCountAsync()).Value;
-                
-                LaunchpadTotalCount = (await MultiCrowdSaleManager.GetCrowdSaleCountAsync()).Value;
-                LaunchpadUpcomingCount = (await MultiCrowdSaleManager.GetUpcomingCrowdSaleCountAsync()).Value;
-                LaunchpadOngoingCount = (await MultiCrowdSaleManager.GetOngoingCrowdSaleCountAsync()).Value;
+                var tasks = new List<Task>();
+
+                tasks.Add(InvokeAsync(async () =>
+                {
+                    var output = await LockTokenVaultManager.GetLocksCountAsync();
+                    LockTotalCount = output.Value;
+                    StateHasChanged();
+                }));
+
+                tasks.Add(InvokeAsync(async () =>
+                {
+                    var output = await LockTokenVaultManager.GetAssetsCounterAsync();
+                    LockedTokenCount = output.Assets.Count;
+                    StateHasChanged();
+                }));
+
+                tasks.Add(InvokeAsync(async () =>
+                {
+                    var output = await VestingTokenVaultManager.GetVestingsCountAsync();
+                    VestingTotalCount = output.Value;
+                    StateHasChanged();
+                }));
+
+                tasks.Add(InvokeAsync(async () =>
+                {
+                    var output = await MultiCrowdSaleManager.GetCrowdSaleCountAsync();
+                    LaunchpadTotalCount = output.Value;
+                    StateHasChanged();
+                }));
+
+                tasks.Add(InvokeAsync(async () =>
+                {
+                    var output = await MultiCrowdSaleManager.GetUpcomingCrowdSaleCountAsync();
+                    LaunchpadUpcomingCount = output.Value;
+                    StateHasChanged();
+                }));
+
+                tasks.Add(InvokeAsync(async () =>
+                {
+                    var output = await MultiCrowdSaleManager.GetOngoingCrowdSaleCountAsync();
+                    LaunchpadOngoingCount = output.Value;
+                    StateHasChanged();
+                }));
+
+                await Task.WhenAll(tasks);
             }
             catch(Exception ex)
             {

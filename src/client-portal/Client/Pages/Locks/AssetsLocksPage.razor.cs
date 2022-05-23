@@ -1,5 +1,4 @@
-﻿using Client.Infrastructure.Models;
-using Client.Models;
+﻿using Client.Models;
 using Client.Pages.Locks.Modals;
 using MudBlazor;
 
@@ -45,15 +44,29 @@ namespace Client.Pages.Locks
             IsLoaded = true;
             StateHasChanged();
 
-            foreach (var assetCounter in AssetCounters)
+            try
             {
-                var tokenInfo = await TokenManager.GetTokenInfoOnSideChainAsync(assetCounter.TokenSymbol);
-                assetCounter.SetTokenInfo(tokenInfo);
-            }
+                var tasks = new List<Task>();
 
-            AssetCounters = AssetCounters.OrderBy(x => x.TokenSymbol).ToList();
-            IsCompletelyLoaded = true;
-            StateHasChanged();
+                foreach (var assetCounter in AssetCounters)
+                {
+                    tasks.Add(InvokeAsync(async () =>
+                    {
+                        var tokenInfo = await TokenManager.GetTokenInfoOnSideChainAsync(assetCounter.TokenSymbol);
+                        assetCounter.SetTokenInfo(tokenInfo);
+                    }));
+                }
+
+                await Task.WhenAll(tasks);
+
+                AssetCounters = AssetCounters.OrderBy(x => x.TokenSymbol).ToList();
+                IsCompletelyLoaded = true;
+                StateHasChanged();
+            }
+            catch
+            {
+
+            }
         }
 
         private void InvokeAssetLockPreviewerModal(AssetCounterModel model)
