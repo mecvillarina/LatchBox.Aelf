@@ -37,10 +37,13 @@ namespace Client.Pages.Launchpads.Modals
             IsLoaded = false;
             IsInvestmentsLoaded = false;
             StateHasChanged();
+            
 
             var launchpad = await MultiCrowdSaleManager.GetCrowdSaleAsync(CrowdSaleId);
             Model = new LaunchpadModel(launchpad);
-            
+            ShareLink = $"{NavigationManager.BaseUri}view/launchpads/{CrowdSaleId}";
+
+            MudDialog.SetTitle(Model.Launchpad.Name);
             IsLoaded = true;
             StateHasChanged();
 
@@ -53,7 +56,7 @@ namespace Client.Pages.Launchpads.Modals
         private async Task OnCopyShareLinkAsync()
         {
             await ClipboardService.WriteTextAsync(ShareLink);
-            AppDialogService.ShowSuccess("Link copied to clipboard.");
+            AppDialogService.ShowSuccess("Launchpad Link copied to clipboard.");
         }
 
         private async Task InvokeInvestOnLaunchpadModalAsync()

@@ -1,4 +1,6 @@
-﻿using Client.Infrastructure.Extensions;
+﻿using AElf.Client.MultiToken;
+using Client.Infrastructure.Extensions;
+using Client.Pages.Launchpads.Modals;
 using Client.Pages.Locks.Modals;
 using Client.Pages.Vestings.Modals;
 using Client.Services;
@@ -15,10 +17,15 @@ namespace Client.Pages
         [Parameter]
         public long? VestingId { get; set; }
 
+        [Parameter]
+        public long? CrowdSaleId { get; set; }
+
         public string MainChain { get; set; }
         public string SideChain { get; set; }
         public bool IsLoaded { get; set; }
         public bool IsDataLoaded { get; set; }
+
+        public TokenInfo NativeTokenInfo { get; set; }
 
         //Node
         public string MainChainNode => BlockchainManager.MainChainNode;
@@ -47,6 +54,8 @@ namespace Client.Pages
                 {
                     if (!authenticated) return;
 
+                    await InitAsync();
+
                     if (LockId.HasValue && LockId.Value > 0)
                     {
                         InvokeLockPreviewerModal(LockId.Value);
@@ -57,7 +66,11 @@ namespace Client.Pages
                         InvokeVestingPreviewerModal(LockId.Value);
                     }
 
-                    InitAsync();
+                    if (CrowdSaleId.HasValue && CrowdSaleId.Value > 0)
+                    {
+                        InvokeLaunchpadPreviewerModal(CrowdSaleId.Value);
+                    }
+
                     await FetchDataAsync();
                 });
 
@@ -68,6 +81,11 @@ namespace Client.Pages
         {
             MainChain = BlockchainManager.GetMainChainId().ToStringChainId();
             SideChain = BlockchainManager.GetSideChainId().ToStringChainId();
+
+            if (CrowdSaleId.HasValue)
+            {
+                NativeTokenInfo = await TokenManager.GetNativeTokenInfoOnMainChainAsync();
+            }
 
             IsLoaded = true;
             StateHasChanged();
@@ -125,7 +143,7 @@ namespace Client.Pages
 
                 await Task.WhenAll(tasks);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
@@ -154,6 +172,19 @@ namespace Client.Pages
             };
 
             DialogService.Show<VestingPreviewerModal>($"Vesting #{vestingId}", parameters, options);
+        }
+
+
+        private void InvokeLaunchpadPreviewerModal(long crowdSaleId)
+        {
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
+            var parameters = new DialogParameters()
+            {
+                 { nameof(LaunchpadPreviewerModal.CrowdSaleId), crowdSaleId},
+                 { nameof(LaunchpadPreviewerModal.NativeTokenInfo), NativeTokenInfo},
+            };
+
+            DialogService.Show<LaunchpadPreviewerModal>($"Launchpad #{crowdSaleId}", parameters, options);
         }
     }
 }

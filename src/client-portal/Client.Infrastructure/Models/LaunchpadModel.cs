@@ -42,6 +42,7 @@ namespace Client.Infrastructure.Models
                 {
                     Status = "ONGOING";
                     CanBuy = true;
+                    StatusColor = Color.Primary;
                     Substatus = $"{Environment.NewLine} {Launchpad.SaleEndDate.ToDateTimeOffset().Subtract(System.DateTimeOffset.UtcNow).Humanize(3)}";
                 }
             }
