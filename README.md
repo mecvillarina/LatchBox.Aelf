@@ -10,8 +10,14 @@
     - **Side Chain** - https://tdvv-test-node.aelf.io (Side tDVV) 
 
 ## Features
-- **Token Creation** 
-- **Token Lock** provides locking of tokens in a Smart Contract for certain period of time. This is designed for those people who loves to hold their tokens for a long time and have no intention selling it for a cheap price. 
+- **Token Creation** - token creation on aelf is not a new feature, but LatchBox made it much easier. Anyone can create a token both on main chain and perform a cross chain token creation on side chain. 
+    
+    Anyone can: 
+    - **Create New Token**, when someone created a token, LatchBox will create it on main chain but the issued chain id value will be the side tDVV chain id.
+    - **Add Existing Token**, when someone knows the token symbol of the token, they can add it on the portal to see the token balance. If you're the token issuer and your token exists **Main AELF** chain and not on **Side tDVV** chain, LatchBox will send a transaction to token contract `CrossChainCreateToken` method on side tDVV chain.
+    - **Issue Token**, if you're the token issuer of a specific token, you can able to issue/mint new tokens.
+
+- **Token Lock** provides locking of tokens in a smart contract for certain period of time. This is designed for those people who loves to hold their tokens for a long time and have no intention selling it for a cheap price. 
     
     The `initiator` of the lock can:
     - **Add Lock**, the initiator can choose the token to be locked, define the unlock date, option to make it revocable anytime, and the token amount and address of each receiver of the lock.
@@ -37,14 +43,27 @@
     And anyone can view:
     - **Vesting Previewer**, it contains the vesting details including the period timeline and the receivers' details and it has a link that is shareable and publicly viewable.
 
-- **Launchpad**
+- **Launchpad** provides new cryptocurrency project on aelf to launch their token. 
+
+    Token issuer can:
+    - **Create New Launchpad**, the token issuer can create a launchpad to raise funds (ELF). They need to specify the token conversation, sale duration and soft/hard cap of the token sale. A smart contract will hold the total amount of new token based from ELF to token conversation.
+    - **Cancel Launchpad**, the token issuer can anytime cancel a launchpad, LatchBox will return the raised funds (ELF) to all investors and the token to the token issuer.
+    - **Complete Launchpad**, if the soft or hard cap has met and the sale was ended, the token issuer can complete the sale and will get the raised funds. The total token amount that will be distributed to investors will be locked using LatchBox's **Token Lock** feature, based on the lockup time specified on the token sale. The excess token on the sale will be refunded to the token issuer.
+    - **Refund Launchpad**, if the soft cap has not met and the sale was ended, the token issuer can issue a refund by click only a button. LatchBox will return the raised funds to all investors and the token to the token issuer of that sale0. 
+
+    Anyone can be an investor and can perform the following:
+    - **Invest**, anyone can invest their ELF. Each token sale has a limit purchase for each wallet address specified by the token issuer/launchpad creator. All the token sale details has all the information and should be helpful to anyone that wants to invest on a token sale. The smart contract will hold the raised funds made by the investors.
+    - **Claim Lock**, after the token sale, if the sale goal has met, and token issuer completed the token sale, the investor can check their investments on the **Invested Launchpad**. Each successful token sale will display a Lock Id that has details about when the token can be claim. Or simply they can go to **Locks/My Claims** section to check their claims.
+
+    and anyone can view:
+    - **Launchpad Viewer**, it contains the token sale details including the investments made by anyone, and it has a link that is shareable and publicly viewable.
 
 ## Dashboard Statistics
 LatchBox Platform has dashboard to track the following:
-- **Nodes** - 
-- **Locks** - 
-- **Vestings** - 
-- **Launchpads** - 
+- **Nodes** - Blockchain Node Information 
+- **Locks** - Lock Token Vault Contract, total locks, # of Locked Tokens  
+- **Vestings** - Vesting Token Vault Contract, total created vestings
+- **Launchpads** - Launchpad Contract, total # of upcoming ssale, total # of ongoing sales, total # of created token sales.  
 
 ## Smart Contracts (Testnet)
 - **Lock Token Vault Contract** - `2q7NLAr6eqF4CTsnNeXnBZ9k4XcmiUeM61CLWYaym6WsUmbg1k` [[See Code](src/chain/contract/LatchBox.Contracts.LockTokenVaultContract/)] [[See Explorer](https://explorer-test-side01.aelf.io/address/2q7NLAr6eqF4CTsnNeXnBZ9k4XcmiUeM61CLWYaym6WsUmbg1k)]
@@ -62,6 +81,7 @@ LatchBox Platform has dashboard to track the following:
     - IDE: Visual Studio 2022
     - C# as Programming Language
     - [Aelf Boilerplate](https://github.com/AElfProject/aelf-boilerplate)
+    - Deployment: aelf-command
 
 ## Setup Guide:
 - LatchBox Portal [Setup Guide](src/client-portal/README.md)
