@@ -97,6 +97,15 @@ namespace Client.Pages
 
             try
             {
+                LockTotalCount = null;
+                LockedTokenCount = null;
+                VestingTotalCount = null;
+                LaunchpadTotalCount = null;
+                LaunchpadUpcomingCount = null;
+                LaunchpadOngoingCount = null;
+
+                StateHasChanged();
+
                 var tasks = new List<Task>();
 
                 tasks.Add(InvokeAsync(async () =>
