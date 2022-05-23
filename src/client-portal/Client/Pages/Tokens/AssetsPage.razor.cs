@@ -49,7 +49,7 @@ namespace Client.Pages.Tokens
             MainChainStatus = BlockchainManager.FetchMainChainStatus();
             SideChainStatus = BlockchainManager.FetchSideChainStatus();
 
-            var sideChainNativeTokenInfo = await TokenManager.GetNativeTokenInfoOnSideChainAsync(SideChainStatus);
+            var sideChainNativeTokenInfo = await TokenManager.GetNativeTokenInfoOnSideChainAsync();
             var sideChainNativeToken = new TokenInfoBase(sideChainNativeTokenInfo);
             TokenInfoWithBalanceList.Add(new TokenInfoWithBalance(sideChainNativeToken)
             {
@@ -63,7 +63,7 @@ namespace Client.Pages.Tokens
                 var sideChainToken = await TokenManager.GetCacheTokenInfoAsync(SideChainId, symbol);
                 if (sideChainToken == null)
                 {
-                    var sideChainTokenInfo = await TokenManager.GetTokenInfoOnSideChainAsync(symbol, SideChainStatus);
+                    var sideChainTokenInfo = await TokenManager.GetTokenInfoOnSideChainAsync(symbol);
                     sideChainToken = new TokenInfoBase(sideChainTokenInfo);
                 }
 
@@ -123,9 +123,9 @@ namespace Client.Pages.Tokens
 
             foreach (var tokenInfo in TokenInfoWithBalanceList)
             {
-                var mainChainGetBalanceOutput = await TokenManager.GetBalanceOnMainChainAsync(MainChainStatus, tokenInfo.Symbol);
+                var mainChainGetBalanceOutput = await TokenManager.GetBalanceOnMainChainAsync(tokenInfo.Symbol);
                 tokenInfo.MainChainBalance = mainChainGetBalanceOutput.Balance;
-                var sideChainGetBalanceOutput = await TokenManager.GetBalanceOnSideChainAsync(SideChainStatus, tokenInfo.Symbol);
+                var sideChainGetBalanceOutput = await TokenManager.GetBalanceOnSideChainAsync(tokenInfo.Symbol);
                 tokenInfo.SideChainBalance = sideChainGetBalanceOutput.Balance;
                 StateHasChanged();
             }

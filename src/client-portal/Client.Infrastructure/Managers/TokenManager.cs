@@ -20,87 +20,98 @@ namespace Client.Infrastructure.Managers
         private readonly IBlockChainService _blockChainService;
         private readonly ILocalStorageService _localStorageService;
         private readonly IWalletManager _walletManager;
+        private readonly IBlockchainManager _blockchainManager;
 
-        public TokenManager(IManagerToolkit managerToolkit, IBlockChainService blockChainService, ILocalStorageService localStorageService, IWalletManager walletManager) : base(managerToolkit)
+        public TokenManager(IManagerToolkit managerToolkit, IBlockChainService blockChainService, ILocalStorageService localStorageService, IWalletManager walletManager, IBlockchainManager blockchainManager) : base(managerToolkit)
         {
             _blockChainService = blockChainService;
             _localStorageService = localStorageService;
             _walletManager = walletManager;
+            _blockchainManager = blockchainManager;
         }
 
-        public string ContactAddress => ManagerToolkit.AelfSettings.MultiTokenContractAddress;
+        public string MainChainContactAddress => _blockchainManager.FetchMainChainTokenAddress();
+        public string SideChainContactAddress => _blockchainManager.FetchSideChainTokenAddress();
 
-        public async Task<TokenInfo> GetNativeTokenInfoOnMainChainAsync(ChainStatusDto chainStatus = null)
+        public async Task<TokenInfo> GetNativeTokenInfoOnMainChainAsync()
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
+            var chainStatus = _blockchainManager.FetchMainChainStatus();
 
             IMessage @params = new Empty { };
 
-            var result = await _blockChainService.CallMainChainTransactionAsync(keyPair, ContactAddress, "GetNativeTokenInfo", @params, chainStatus);
+            var result = await _blockChainService.CallMainChainTransactionAsync(keyPair, MainChainContactAddress, "GetNativeTokenInfo", @params, chainStatus).ConfigureAwait(false);
             return TokenInfo.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
-        public async Task<TokenInfo> GetNativeTokenInfoOnSideChainAsync(ChainStatusDto chainStatus = null)
+        public async Task<TokenInfo> GetNativeTokenInfoOnSideChainAsync()
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
+            var chainStatus = _blockchainManager.FetchSideChainStatus();
 
             IMessage @params = new Empty { };
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetNativeTokenInfo", @params, chainStatus);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, SideChainContactAddress, "GetNativeTokenInfo", @params, chainStatus).ConfigureAwait(false);
             return TokenInfo.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
         public async Task<TokenInfo> GetTokenInfoOnMainChainAsync(string symbol)
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
+            var chainStatus = _blockchainManager.FetchMainChainStatus();
 
             var @params = new GetTokenInfoInput()
             {
                 Symbol = symbol
             };
 
-            var result = await _blockChainService.CallMainChainTransactionAsync(keyPair, ContactAddress, "GetTokenInfo", @params);
+            var result = await _blockChainService.CallMainChainTransactionAsync(keyPair, MainChainContactAddress, "GetTokenInfo", @params, chainStatus).ConfigureAwait(false);
             return TokenInfo.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
-        public async Task<TokenInfo> GetTokenInfoOnSideChainAsync(string symbol, ChainStatusDto chainStatus = null)
+        public async Task<TokenInfo> GetTokenInfoOnSideChainAsync(string symbol)
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
+            var chainStatus = _blockchainManager.FetchSideChainStatus();
 
             var @params = new GetTokenInfoInput()
             {
                 Symbol = symbol
             };
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetTokenInfo", @params, chainStatus);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, SideChainContactAddress, "GetTokenInfo", @params, chainStatus).ConfigureAwait(false);
             return TokenInfo.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
-        public async Task<GetBalanceOutput> GetBalanceOnMainChainAsync(ChainStatusDto chainStatus, string symbol)
+        public async Task<GetBalanceOutput> GetBalanceOnMainChainAsync(string symbol)
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
             var address = await _walletManager.GetWalletAddressAsync();
+            var chainStatus = _blockchainManager.FetchMainChainStatus();
+
             var @params = new GetBalanceInput
             {
                 Symbol = symbol,
                 Owner = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(address).Value }
             };
 
-            var result = await _blockChainService.CallMainChainTransactionAsync(keyPair, ContactAddress, "GetBalance", @params, chainStatus);
+            var result = await _blockChainService.CallMainChainTransactionAsync(keyPair, MainChainContactAddress, "GetBalance", @params, chainStatus).ConfigureAwait(false);
             return GetBalanceOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
-        public async Task<GetBalanceOutput> GetBalanceOnSideChainAsync(ChainStatusDto chainStatus, string symbol)
+        public async Task<GetBalanceOutput> GetBalanceOnSideChainAsync(string symbol)
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
             var address = await _walletManager.GetWalletAddressAsync();
+            var chainStatus = _blockchainManager.FetchSideChainStatus();
+
             var @params = new GetBalanceInput
             {
                 Symbol = symbol,
                 Owner = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(address).Value }
             };
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetBalance", @params, chainStatus);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, SideChainContactAddress, "GetBalance", @params, chainStatus).ConfigureAwait(false);
             return GetBalanceOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
@@ -122,7 +133,7 @@ namespace Client.Infrastructure.Managers
                 IssueChainId = issueChainId
             };
 
-            var tx = await _blockChainService.SendMainChainTransactionAsync(keyPair, ContactAddress, "Create", @params);
+            var tx = await _blockChainService.SendMainChainTransactionAsync(keyPair, MainChainContactAddress, "Create", @params);
             return await _blockChainService.CheckMainChainTransactionResultAsync(tx.Item1);
         }
 
@@ -138,7 +149,7 @@ namespace Client.Infrastructure.Managers
                 To = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(to).Value },
             };
 
-            var txId = await _blockChainService.SendMainChainTransactionAsync(keyPair, ContactAddress, "Issue", @params);
+            var txId = await _blockChainService.SendMainChainTransactionAsync(keyPair, MainChainContactAddress, "Issue", @params);
             return await _blockChainService.CheckMainChainTransactionResultAsync(txId.Item1);
         }
 
@@ -154,7 +165,7 @@ namespace Client.Infrastructure.Managers
                 To = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(to).Value },
             };
 
-            var txId = await _blockChainService.SendSideChainTransactionAsync(keyPair, ContactAddress, "Issue", @params);
+            var txId = await _blockChainService.SendSideChainTransactionAsync(keyPair, SideChainContactAddress, "Issue", @params);
             return await _blockChainService.CheckSideChainTransactionResultAsync(txId);
         }
 
@@ -169,7 +180,7 @@ namespace Client.Infrastructure.Managers
                 Amount = amount,
             };
 
-            var txId = await _blockChainService.SendSideChainTransactionAsync(keyPair, ContactAddress, "Approve", @params);
+            var txId = await _blockChainService.SendSideChainTransactionAsync(keyPair, SideChainContactAddress, "Approve", @params);
             return await _blockChainService.CheckSideChainTransactionResultAsync(txId);
         }
 
@@ -184,13 +195,14 @@ namespace Client.Infrastructure.Managers
                 Amount = amount,
             };
 
-            var txId = await _blockChainService.SendSideChainTransactionAsync(keyPair, ContactAddress, "UnApproveInput", @params);
+            var txId = await _blockChainService.SendSideChainTransactionAsync(keyPair, SideChainContactAddress, "UnApproveInput", @params);
             return await _blockChainService.CheckSideChainTransactionResultAsync(txId);
         }
 
         public async Task<GetAllowanceOutput> GetAllowanceAsync(string symbol, string owner, string spender)
         {
             var keyPair = await _walletManager.GetWalletKeyPairAsync();
+            var chainStatus = _blockchainManager.FetchSideChainStatus();
 
             var @params = new GetAllowanceInput
             {
@@ -199,7 +211,7 @@ namespace Client.Infrastructure.Managers
                 Spender = new AElf.Client.Proto.Address { Value = AElf.Types.Address.FromBase58(spender).Value },
             };
 
-            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, ContactAddress, "GetAllowance", @params);
+            var result = await _blockChainService.CallSideChainTransactionAsync(keyPair, SideChainContactAddress, "GetAllowance", @params, chainStatus).ConfigureAwait(false);
             return GetAllowanceOutput.Parser.ParseFrom(ByteArrayHelper.HexStringToByteArray(result));
         }
 
@@ -267,7 +279,7 @@ namespace Client.Infrastructure.Managers
                 TotalSupply = tokenInfo.TotalSupply
             };
 
-            var validateTx = await _blockChainService.SendMainChainTransactionAsync(keyPair, ContactAddress, "ValidateTokenInfoExists", validateParams);
+            var validateTx = await _blockChainService.SendMainChainTransactionAsync(keyPair, SideChainContactAddress, "ValidateTokenInfoExists", validateParams);
             var validateTxResult = await _blockChainService.CheckMainChainTransactionResultAsync(validateTx.Item1);
 
             if (validateTxResult.Status == TransactionResultStatus.Mined.ToString().ToUpper())
@@ -302,7 +314,7 @@ namespace Client.Infrastructure.Managers
                     });
                 }
 
-                var createTokenTxId = await _blockChainService.SendSideChainTransactionAsync(keyPair, ContactAddress, "CrossChainCreateToken", createTokenParams);
+                var createTokenTxId = await _blockChainService.SendSideChainTransactionAsync(keyPair, SideChainContactAddress, "CrossChainCreateToken", createTokenParams);
                 var createTokenTxResult = await _blockChainService.CheckSideChainTransactionResultAsync(createTokenTxId);
                 return createTokenTxResult;
             }

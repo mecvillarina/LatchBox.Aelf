@@ -15,5 +15,9 @@ namespace Client.Infrastructure.Managers.Interfaces
         Task<ChainStatusDto> GetMainChainStatusAsync();
         ChainStatusDto FetchSideChainStatus();
         Task<ChainStatusDto> GetSideChainStatusAsync();
+        Task<string> GetMainChainTokenAddressAsync();
+        string FetchMainChainTokenAddress();
+        Task<string> GetSideChainTokenAddressAsync();
+        string FetchSideChainTokenAddress();
     }
 }

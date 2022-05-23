@@ -27,11 +27,21 @@ namespace Client.Shared
                     IsAuthenticated = await AuthManager.IsAuthenticated();
                     await AppBreakpointService.InitAsync();
 
-                    var mainChainStatus = await BlockchainManager.GetMainChainStatusAsync();
-                    if (mainChainStatus == null) return;
-                    
-                    var sideChainStatus = await BlockchainManager.GetSideChainStatusAsync();
-                    if (sideChainStatus == null) return;
+                    var mainChainStatus = BlockchainManager.FetchMainChainStatus();
+                    if (mainChainStatus == null)
+                    {
+                        mainChainStatus = await BlockchainManager.GetMainChainStatusAsync();
+                        if (mainChainStatus == null) return;
+                        await BlockchainManager.GetMainChainTokenAddressAsync();
+                    }
+
+                    var sideChainStatus = BlockchainManager.FetchSideChainStatus();
+                    if (sideChainStatus == null)
+                    {
+                        sideChainStatus = await BlockchainManager.GetSideChainStatusAsync();
+                        if (sideChainStatus == null) return;
+                        await BlockchainManager.GetSideChainTokenAddressAsync();
+                    }
 
                     MainChain = $"Main {BlockchainManager.GetMainChainId().ToStringChainId()}";
                     SideChain = $"Side {BlockchainManager.GetSideChainId().ToStringChainId()}";

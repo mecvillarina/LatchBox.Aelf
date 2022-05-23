@@ -87,12 +87,12 @@ namespace Client.Pages
                 LockTotalCount = (await LockTokenVaultManager.GetLocksCountAsync()).Value;
                 LockedTokenCount = (await LockTokenVaultManager.GetAssetsCounterAsync()).Assets.Count;
                 VestingTotalCount = (await VestingTokenVaultManager.GetVestingsCountAsync()).Value;
-
+                
                 LaunchpadTotalCount = (await MultiCrowdSaleManager.GetCrowdSaleCountAsync()).Value;
                 LaunchpadUpcomingCount = (await MultiCrowdSaleManager.GetUpcomingCrowdSaleCountAsync()).Value;
                 LaunchpadOngoingCount = (await MultiCrowdSaleManager.GetOngoingCrowdSaleCountAsync()).Value;
             }
-            catch
+            catch(Exception ex)
             {
 
             }

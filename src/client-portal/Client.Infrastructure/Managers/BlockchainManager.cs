@@ -47,7 +47,7 @@ namespace Client.Infrastructure.Managers
 
         public async Task<ChainStatusDto> GetMainChainStatusAsync()
         {
-            var chainStatus = await _blockChainService.GetMainChainStatusAsync();
+            var chainStatus = await _blockChainService.GetMainChainStatusAsync().ConfigureAwait(false);
 
             if (chainStatus != null)
             {
@@ -55,7 +55,7 @@ namespace Client.Infrastructure.Managers
             }
             else
             {
-                chainStatus = FetchSideChainStatus();
+                chainStatus = FetchMainChainStatus();
             }
 
             return chainStatus;
@@ -68,7 +68,7 @@ namespace Client.Infrastructure.Managers
 
         public async Task<ChainStatusDto> GetSideChainStatusAsync()
         {
-            var chainStatus = await _blockChainService.GetSideChainStatusAsync();
+            var chainStatus = await _blockChainService.GetSideChainStatusAsync().ConfigureAwait(false);
 
             if (chainStatus != null)
             {
@@ -80,6 +80,54 @@ namespace Client.Infrastructure.Managers
             }
 
             return chainStatus;
+        }
+
+        public async Task<string> GetMainChainTokenAddressAsync()
+        {
+            var contractAddress = await _blockChainService.GetMainChainContractAddressAsync(ManagerToolkit.AelfSettings.MultiTokenContractAddress).ConfigureAwait(false);
+
+            if (ManagerToolkit.AelfSettings.MultiTokenContractAddress != contractAddress)
+            {
+                _cache.Set("MainChainTokenAddress", contractAddress);
+            }
+
+            return contractAddress;
+        }
+
+        public string FetchMainChainTokenAddress()
+        {
+            var contractAddress = _cache.Get<string>("MainChainTokenAddress");
+
+            if (string.IsNullOrEmpty(contractAddress))
+            {
+                contractAddress = ManagerToolkit.AelfSettings.MultiTokenContractAddress;
+            }
+
+            return contractAddress;
+        }
+
+        public async Task<string> GetSideChainTokenAddressAsync()
+        {
+            var contractAddress = await _blockChainService.GetSideChainContractAddressAsync(ManagerToolkit.AelfSettings.MultiTokenContractAddress).ConfigureAwait(false);
+
+            if (ManagerToolkit.AelfSettings.MultiTokenContractAddress != contractAddress)
+            {
+                _cache.Set("SideChainTokenAddress", contractAddress);
+            }
+
+            return contractAddress;
+        }
+
+        public string FetchSideChainTokenAddress()
+        {
+            var contractAddress = _cache.Get<string>("SideChainTokenAddress");
+
+            if (string.IsNullOrEmpty(contractAddress))
+            {
+                contractAddress = ManagerToolkit.AelfSettings.MultiTokenContractAddress;
+            }
+
+            return contractAddress;
         }
     }
 }

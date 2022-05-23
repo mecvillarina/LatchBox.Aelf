@@ -20,5 +20,8 @@ namespace Client.Infrastructure.Services.Interfaces
         Task<string> CallSideChainTransactionAsync(ECKeyPair keyPair, string contract, string method, IMessage @params, ChainStatusDto chainStatus = null);
         Task<TransactionResultDto> CheckMainChainTransactionResultAsync(string txId);
         Task<TransactionResultDto> CheckSideChainTransactionResultAsync(string txId);
+        Task<string> GetMainChainContractAddressAsync(string contract);
+        Task<string> GetSideChainContractAddressAsync(string contract);
+
     }
 }

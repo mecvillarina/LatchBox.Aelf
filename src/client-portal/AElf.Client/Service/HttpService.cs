@@ -113,7 +113,7 @@ namespace AElf.Client.Service
             var client = GetHttpClient(version);
             try
             {
-                var response = await client.GetAsync(url);
+                var response = await client.GetAsync(url).ConfigureAwait(false);
                 if (response.StatusCode == expectedStatusCode)
                     return response;
                 throw new AElfClientException(response.ToString());
@@ -171,7 +171,7 @@ namespace AElf.Client.Service
                 var response = await client.PostAsync(url, content);
                 if (response.StatusCode == expectedStatusCode)
                     return response;
-                var message = await response.Content.ReadAsStringAsync();
+                var message = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 throw new HttpRequestException(message);
             }
             catch (Exception ex)
@@ -206,7 +206,7 @@ namespace AElf.Client.Service
 
             try
             {
-                var response = await client.DeleteAsync(url);
+                var response = await client.DeleteAsync(url).ConfigureAwait(false);
                 if (response.StatusCode == expectedStatusCode)
                     return response;
                 throw new AElfClientException(response.ToString());
