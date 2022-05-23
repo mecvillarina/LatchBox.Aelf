@@ -57,7 +57,7 @@ namespace Client.Infrastructure.Managers
             await _localStorageService.SetItemAsync(StorageConstants.Local.Wallet, wallet);
         }
 
-        public async Task<WalletAuthHandler> GetWalletAsync()
+        public async Task<WalletAuthHandler> GetWalletAsync(int currentSideChainId)
         {
             var isExists = await _localStorageService.ContainKeyAsync(StorageConstants.Local.Wallet);
 
@@ -71,9 +71,8 @@ namespace Client.Infrastructure.Managers
             var authTokenResult = _authTokenService.ValidateToken(wallet.TokenHandler.Token);
             if (authTokenResult.Status != AuthTokenStatus.Valid) return null;
 
-            var currentChainId = await _blockChainService.GetSideChainIdAsync();
             var chainIdClaimIdentifier = authTokenResult.Principal.Claims.FirstOrDefault(x => x.Type == "ChainId");
-            if (chainIdClaimIdentifier == null || chainIdClaimIdentifier.Value != currentChainId.ToString()) return null;
+            if (chainIdClaimIdentifier == null || chainIdClaimIdentifier.Value != currentSideChainId.ToString()) return null;
 
             var nodeClaimIdentifier = authTokenResult.Principal.Claims.FirstOrDefault(x => x.Type == "Node");
             if (nodeClaimIdentifier == null || nodeClaimIdentifier.Value != AelfSettings.SideChainNode) return null;

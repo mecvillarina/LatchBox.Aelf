@@ -12,17 +12,18 @@ namespace Client.Infrastructure.Managers
 {
     public class WalletManager : ManagerBase, IWalletManager
     {
-        private readonly IAccountsService _accountsService;
         private readonly IAuthTokenService _authTokenService;
-        public WalletManager(IManagerToolkit managerToolkit, IAccountsService accountsService, IAuthTokenService authTokenService) : base(managerToolkit)
+        private readonly IBlockchainManager _blockchainManager;
+        public WalletManager(IManagerToolkit managerToolkit, IAuthTokenService authTokenService, IBlockchainManager blockchainManager) : base(managerToolkit)
         {
-            _accountsService = accountsService;
             _authTokenService = authTokenService;
+            _blockchainManager = blockchainManager;
         }
 
         private async Task<WalletAuthHandler> GetWalletAsync()
         {
-            var wallet = await ManagerToolkit.GetWalletAsync();
+            var sideChainId = _blockchainManager.GetSideChainId();
+            var wallet = await ManagerToolkit.GetWalletAsync(sideChainId);
 
             if (wallet == null) throw new ConnectWalletException("Connect your wallet first.");
 

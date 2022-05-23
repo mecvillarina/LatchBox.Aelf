@@ -11,7 +11,7 @@ namespace Client.Infrastructure.Managers.Interfaces
         string FilePathWallet { get; }
 
         Task SaveWalletAuthHandlerAsync(AuthTokenHandler tokenHandler, string address);
-        Task<WalletAuthHandler> GetWalletAsync();
+        Task<WalletAuthHandler> GetWalletAsync(int currentSideChainId);
         Task ClearAccountLocalStorageAsync();
     }
 }

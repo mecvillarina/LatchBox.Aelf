@@ -14,19 +14,18 @@ namespace Client.Infrastructure.Managers
     {
         private readonly IAccountsService _accountsService;
         private readonly IAuthTokenService _authTokenService;
-        private readonly IBlockChainService _blockChainService;
         private readonly IBlockchainManager _blockchainManager;
-        public AuthManager(IManagerToolkit managerToolkit, IAccountsService accountsService, IAuthTokenService authTokenService, IBlockChainService blockChainService, IBlockchainManager blockchainManager) : base(managerToolkit)
+        public AuthManager(IManagerToolkit managerToolkit, IAccountsService accountsService, IAuthTokenService authTokenService, IBlockchainManager blockchainManager) : base(managerToolkit)
         {
             _accountsService = accountsService;
             _authTokenService = authTokenService;
-            _blockChainService = blockChainService;
             _blockchainManager = blockchainManager;
         }
 
         public async Task<bool> IsAuthenticated()
         {
-            var wallet = await ManagerToolkit.GetWalletAsync();
+            var sideChainId = _blockchainManager.GetSideChainId();
+            var wallet = await ManagerToolkit.GetWalletAsync(sideChainId);
             return wallet != null;
         }
 
@@ -75,7 +74,8 @@ namespace Client.Infrastructure.Managers
 
         public async Task ClearKeyStoreAsync()
         {
-            var wallet = await ManagerToolkit.GetWalletAsync();
+            var sideChainId = _blockchainManager.GetSideChainId();
+            var wallet = await ManagerToolkit.GetWalletAsync(sideChainId);
 
             if (wallet != null)
             {
