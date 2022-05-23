@@ -23,9 +23,9 @@ builder.Services.AddServerSideBlazor()
           options.StreamBufferCapacity = 10;
       });
 
-#if RELEASE
-builder.Services.AddSignalR().AddAzureSignalR();
-#endif
+//#if RELEASE
+//builder.Services.AddSignalR().AddAzureSignalR();
+//#endif
 
 builder.Services.AddMemoryCache();
 
