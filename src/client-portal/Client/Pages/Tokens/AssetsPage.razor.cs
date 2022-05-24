@@ -63,8 +63,15 @@ namespace Client.Pages.Tokens
                 var sideChainToken = await TokenManager.GetCacheTokenInfoAsync(SideChainId, symbol);
                 if (sideChainToken == null)
                 {
-                    var sideChainTokenInfo = await TokenManager.GetTokenInfoOnSideChainAsync(symbol);
-                    sideChainToken = new TokenInfoBase(sideChainTokenInfo);
+                    try
+                    {
+                        var sideChainTokenInfo = await TokenManager.GetTokenInfoOnSideChainAsync(symbol);
+                        sideChainToken = new TokenInfoBase(sideChainTokenInfo);
+                    }
+                    catch
+                    {
+                        sideChainToken = new();
+                    }
                 }
 
                 if (!string.IsNullOrEmpty(sideChainToken.Symbol))
