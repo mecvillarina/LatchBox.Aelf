@@ -65,7 +65,7 @@ namespace Client.Infrastructure.Managers
 
             var wallet = await _localStorageService.GetItemAsync<WalletAuthHandler>(StorageConstants.Local.Wallet);
 
-            if (!wallet.TokenHandler.IsValid()) return null;
+            if (wallet.TokenHandler == null || !wallet.TokenHandler.IsValid()) return null;
 
             //validate
             var authTokenResult = _authTokenService.ValidateToken(wallet.TokenHandler.Token);
