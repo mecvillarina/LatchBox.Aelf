@@ -52,7 +52,7 @@ namespace Client.Pages.Tokens.Modals
                     {
                         var tokenInfo = await TokenManager.GetTokenInfoOnMainChainAsync(Model.Symbol.ToUpper());
                         var walletAddress = await WalletManager.GetWalletAddressAsync();
-                        var token = tokenInfo.Issuer.ToStringAddress();
+
                         if (!string.IsNullOrEmpty(tokenInfo.Symbol) && walletAddress == tokenInfo.Issuer.ToStringAddress())
                         {
                             var authenticated = await AppDialogService.ShowConfirmWalletTransactionAsync();

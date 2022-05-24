@@ -10,6 +10,7 @@ using Client.Infrastructure.Services.Interfaces;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -291,7 +292,8 @@ namespace Client.Infrastructure.Managers
                 while (true)
                 {
                     var chainStatus = await _blockchainManager.GetMainChainStatusAsync();
-                    if ((chainStatus.BestChainHeight - validateTxResult.BlockNumber) > 80)
+                    Debug.WriteLine($"CreateSideChainTokenAsync:{chainStatus.LastIrreversibleBlockHeight} - {validateTxResult.BlockNumber}");
+                    if ((chainStatus.LastIrreversibleBlockHeight - validateTxResult.BlockNumber) > 80)
                         break;
 
                     await Task.Delay(15000);
