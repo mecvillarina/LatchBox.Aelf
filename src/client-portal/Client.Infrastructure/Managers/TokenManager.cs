@@ -283,15 +283,15 @@ namespace Client.Infrastructure.Managers
                 TotalSupply = tokenInfo.TotalSupply
             };
 
-            var validateTx = await _blockChainService.SendMainChainTransactionAsync(keyPair, SideChainContactAddress, "ValidateTokenInfoExists", validateParams);
+            var validateTx = await _blockChainService.SendMainChainTransactionAsync(keyPair, MainChainContactAddress, "ValidateTokenInfoExists", validateParams);
             var validateTxResult = await _blockChainService.CheckMainChainTransactionResultAsync(validateTx.Item1);
 
             if (validateTxResult.Status == TransactionResultStatus.Mined.ToString().ToUpper())
             {
                 while (true)
                 {
-                    var chainStatus = _blockchainManager.FetchMainChainStatus();
-                    if ((chainStatus.LastIrreversibleBlockHeight - validateTxResult.BlockNumber) > 80)
+                    var chainStatus = await _blockchainManager.GetMainChainStatusAsync();
+                    if ((chainStatus.BestChainHeight - validateTxResult.BlockNumber) > 80)
                         break;
 
                     await Task.Delay(15000);
