@@ -14,9 +14,10 @@ namespace Client.Services
         public AppHostedService(IServiceProvider services, IHostApplicationLifetime lifetime, IBlockChainService blockchainService, IMemoryCache cache)
         {
             _services = services;
-            lifetime.ApplicationStarted.Register(() => _ready = true);
             _blockChainService = blockchainService;
             _cache = cache;
+
+            lifetime.ApplicationStarted.Register(() => _ready = true);
         }
 
         public override Task StopAsync(CancellationToken stoppingToken)
@@ -33,23 +34,29 @@ namespace Client.Services
                 await Task.Delay(1000);
             }
 
+            _timer?.Change(Timeout.Infinite, 0);
+
             //_timer = new Timer(FetchDataAsync, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
         }
 
         private void FetchDataAsync(object state)
         {
-            var mainChainStatus = _blockChainService.GetMainChainStatusAsync().Result;
-
-            if (mainChainStatus != null)
+            if (_ready)
             {
-                _cache.Set("MainChainStatus", mainChainStatus);
-            }
+                var mainChainStatus = _blockChainService.GetMainChainStatusAsync().Result;
 
-            var sideChainStatus = _blockChainService.GetSideChainStatusAsync().Result;
+                if (mainChainStatus != null)
+                {
+                    _cache.Set("MainChainStatus", mainChainStatus);
+                }
 
-            if (sideChainStatus != null)
-            {
-                _cache.Set("SideChainStatus", sideChainStatus);
+                var sideChainStatus = _blockChainService.GetSideChainStatusAsync().Result;
+
+                if (sideChainStatus != null)
+                {
+                    _cache.Set("SideChainStatus", sideChainStatus);
+                }
+
             }
         }
     }
