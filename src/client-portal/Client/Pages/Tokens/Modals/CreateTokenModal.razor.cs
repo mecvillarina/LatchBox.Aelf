@@ -56,7 +56,8 @@ namespace Client.Pages.Tokens.Modals
                         //    if (!string.IsNullOrEmpty(issueTokenResult.Error))
                         //        throw new GeneralException(issueTokenResult.Error);
                         //}
-
+                        await BlockchainManager.GetMainChainStatusAsync();
+                        await BlockchainManager.GetSideChainStatusAsync();
                         await TokenManager.AddToTokenSymbolsStorageAsync(Model.Symbol.ToUpper());
                         AppDialogService.ShowSuccess("Token creation success.");
                         MudDialog.Close();

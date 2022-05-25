@@ -64,6 +64,8 @@ namespace Client.Pages.Tokens.Modals
                                 if (!string.IsNullOrEmpty(createSideChainTokenResult.Error))
                                     throw new GeneralException(createSideChainTokenResult.Error);
 
+                                await BlockchainManager.GetMainChainStatusAsync();
+                                await BlockchainManager.GetSideChainStatusAsync();
                                 await TokenManager.AddToTokenSymbolsStorageAsync(Model.Symbol.ToUpper());
                                 MudDialog.Close();
                             }
