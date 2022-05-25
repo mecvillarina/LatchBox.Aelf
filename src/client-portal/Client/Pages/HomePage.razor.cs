@@ -81,6 +81,9 @@ namespace Client.Pages
 
         private async Task InitAsync()
         {
+            IsLoaded = false;
+            StateHasChanged();
+
             MainChain = BlockchainManager.GetMainChainId().ToChainName();
             MainChainBestHeight = BlockchainManager.FetchMainChainStatus().BestChainHeight.ToString();
             SideChain = BlockchainManager.GetSideChainId().ToChainName();
