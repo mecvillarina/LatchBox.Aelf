@@ -21,7 +21,9 @@ namespace Client.Pages
         public long? CrowdSaleId { get; set; }
 
         public string MainChain { get; set; }
+        public string MainChainBestHeight { get; set; }
         public string SideChain { get; set; }
+        public string SideChainBestHeight { get; set; }
         public bool IsLoaded { get; set; }
         public bool IsDataLoaded { get; set; }
 
@@ -79,8 +81,10 @@ namespace Client.Pages
 
         private async Task InitAsync()
         {
-            MainChain = BlockchainManager.GetMainChainId().ToStringChainId();
-            SideChain = BlockchainManager.GetSideChainId().ToStringChainId();
+            MainChain = BlockchainManager.GetMainChainId().ToChainName();
+            MainChainBestHeight = BlockchainManager.FetchMainChainStatus().BestChainHeight.ToString();
+            SideChain = BlockchainManager.GetSideChainId().ToChainName();
+            SideChainBestHeight = BlockchainManager.FetchSideChainStatus().BestChainHeight.ToString();
 
             if (CrowdSaleId.HasValue)
             {

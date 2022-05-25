@@ -41,8 +41,8 @@ namespace Client.Shared
                     await BlockchainManager.GetSideChainTokenAddressAsync();
                 }
 
-                MainChain = $"Main {BlockchainManager.GetMainChainId().ToStringChainId()}";
-                SideChain = $"Side {BlockchainManager.GetSideChainId().ToStringChainId()}";
+                MainChain = $"Main {BlockchainManager.GetMainChainId().ToChainName()}";
+                SideChain = $"Side {BlockchainManager.GetSideChainId().ToChainName()}";
                 MainChainNode = BlockchainManager.MainChainNode;
                 SideChainNode = BlockchainManager.SideChainNode;
                 IsLoaded = true;

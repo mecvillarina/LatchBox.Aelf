@@ -31,8 +31,8 @@ namespace Client.Pages.Tokens
                     WalletAddress = await WalletManager.GetWalletAddressAsync();
                     MainChainId = BlockchainManager.GetMainChainId();
                     SideChainId = BlockchainManager.GetSideChainId();
-                    MainChain = $"Main {MainChainId.ToStringChainId()}";
-                    SideChain = $"Side {SideChainId.ToStringChainId()}";
+                    MainChain = $"Main {MainChainId.ToChainName()}";
+                    SideChain = $"Side {SideChainId.ToChainName()}";
                     await FetchDataAsync();
                 });
             }

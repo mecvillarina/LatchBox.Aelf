@@ -26,8 +26,8 @@ namespace Client.Pages.Tokens.Modals
             {
                 await InvokeAsync(async () =>
                 {
-                    MainChainId = $"Main {BlockchainManager.GetMainChainId().ToStringChainId()}";
-                    SideChainId = $"Side {BlockchainManager.GetSideChainId().ToStringChainId()}";
+                    MainChainId = $"Main {BlockchainManager.GetMainChainId().ToChainName()}";
+                    SideChainId = $"Side {BlockchainManager.GetSideChainId().ToChainName()}";
                     StateHasChanged();
                 });
             }
