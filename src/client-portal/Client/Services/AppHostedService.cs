@@ -34,7 +34,7 @@ namespace Client.Services
                 await Task.Delay(1000);
             }
 
-            _timer = new Timer(FetchDataAsync, null, TimeSpan.Zero, TimeSpan.FromMinutes(2));
+            _timer = new Timer(FetchDataAsync, null, TimeSpan.Zero, TimeSpan.FromMinutes(3));
         }
 
         private void FetchDataAsync(object state)
