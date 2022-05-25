@@ -86,7 +86,7 @@ namespace Client.Pages
             SideChain = BlockchainManager.GetSideChainId().ToChainName();
             SideChainBestHeight = BlockchainManager.FetchSideChainStatus().BestChainHeight.ToString();
 
-            if (CrowdSaleId.HasValue)
+            if (CrowdSaleId.HasValue && NativeTokenInfo == null)
             {
                 NativeTokenInfo = await TokenManager.GetNativeTokenInfoOnMainChainAsync();
             }
@@ -101,6 +101,8 @@ namespace Client.Pages
 
             try
             {
+                await InitAsync();
+
                 LockTotalCount = null;
                 LockedTokenCount = null;
                 VestingTotalCount = null;
