@@ -84,9 +84,9 @@ namespace Client.Infrastructure.Managers
 
         public async Task<string> GetMainChainTokenAddressAsync()
         {
-            var contractAddress = await _blockChainService.GetMainChainContractAddressAsync(ManagerToolkit.AelfSettings.MultiTokenContractAddress).ConfigureAwait(false);
+            var contractAddress = await _blockChainService.GetMainChainContractAddressAsync(ManagerToolkit.AelfSettings.MainChainMultiTokenContractAddress).ConfigureAwait(false);
 
-            if (ManagerToolkit.AelfSettings.MultiTokenContractAddress != contractAddress)
+            if (ManagerToolkit.AelfSettings.MainChainMultiTokenContractAddress != contractAddress)
             {
                 _cache.Set("MainChainTokenAddress", contractAddress);
             }
@@ -100,7 +100,7 @@ namespace Client.Infrastructure.Managers
 
             if (string.IsNullOrEmpty(contractAddress))
             {
-                contractAddress = ManagerToolkit.AelfSettings.MultiTokenContractAddress;
+                contractAddress = ManagerToolkit.AelfSettings.MainChainMultiTokenContractAddress;
             }
 
             return contractAddress;
@@ -108,9 +108,9 @@ namespace Client.Infrastructure.Managers
 
         public async Task<string> GetSideChainTokenAddressAsync()
         {
-            var contractAddress = await _blockChainService.GetSideChainContractAddressAsync(ManagerToolkit.AelfSettings.MultiTokenContractAddress).ConfigureAwait(false);
+            var contractAddress = await _blockChainService.GetSideChainContractAddressAsync(ManagerToolkit.AelfSettings.SideChainMultiTokenContractAddress).ConfigureAwait(false);
 
-            if (ManagerToolkit.AelfSettings.MultiTokenContractAddress != contractAddress)
+            if (ManagerToolkit.AelfSettings.SideChainMultiTokenContractAddress != contractAddress)
             {
                 _cache.Set("SideChainTokenAddress", contractAddress);
             }
@@ -124,7 +124,7 @@ namespace Client.Infrastructure.Managers
 
             if (string.IsNullOrEmpty(contractAddress))
             {
-                contractAddress = ManagerToolkit.AelfSettings.MultiTokenContractAddress;
+                contractAddress = ManagerToolkit.AelfSettings.SideChainMultiTokenContractAddress;
             }
 
             return contractAddress;

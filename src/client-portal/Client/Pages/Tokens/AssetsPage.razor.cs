@@ -139,7 +139,7 @@ namespace Client.Pages.Tokens
 
                 await Task.WhenAll(tasks);
             }
-            catch
+            catch(Exception ex)
             {
 
             }

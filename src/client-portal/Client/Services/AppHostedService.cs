@@ -1,5 +1,7 @@
-﻿using Client.Infrastructure.Services.Interfaces;
+﻿using Client.Infrastructure.Models;
+using Client.Infrastructure.Services.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 
 namespace Client.Services
 {
@@ -9,13 +11,15 @@ namespace Client.Services
         private volatile bool _ready = false;
         private readonly IBlockChainService _blockChainService;
         private readonly IMemoryCache _cache;
+        private readonly AElfSettings _aelfSettings;
         private Timer _timer;
 
-        public AppHostedService(IServiceProvider services, IHostApplicationLifetime lifetime, IBlockChainService blockchainService, IMemoryCache cache)
+        public AppHostedService(IServiceProvider services, IHostApplicationLifetime lifetime, IBlockChainService blockchainService, IMemoryCache cache, IOptions<AElfSettings> _aelfSettingsOptions)
         {
             _services = services;
             _blockChainService = blockchainService;
             _cache = cache;
+            _aelfSettings = _aelfSettingsOptions.Value;
 
             lifetime.ApplicationStarted.Register(() => _ready = true);
         }
@@ -55,6 +59,19 @@ namespace Client.Services
                     _cache.Set("SideChainStatus", sideChainStatus);
                 }
 
+                var mainChainTokenContractAddress = _blockChainService.GetMainChainContractAddressAsync(_aelfSettings.MainChainMultiTokenContractAddress).Result;
+
+                if (mainChainTokenContractAddress != null)
+                {
+                    _cache.Set("MainChainTokenAddress", mainChainTokenContractAddress);
+                }
+
+                var sideChainTokenContractAddress = _blockChainService.GetSideChainContractAddressAsync(_aelfSettings.SideChainMultiTokenContractAddress).Result;
+
+                if (sideChainTokenContractAddress != null)
+                {
+                    _cache.Set("SideChainTokenAddress", sideChainTokenContractAddress);
+                }
             }
         }
     }

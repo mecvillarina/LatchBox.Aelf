@@ -3,7 +3,7 @@ pool:
 
 variables:
   dotnetSdkVersion: '6.0.x'
-  buildConfiguration: 'Release'
+  buildConfiguration: 'Debug'
   projectFile: 'src/client-portal/Client/*.csproj'
   nugetPath: 'src/client-portal/nuget.config'
   
