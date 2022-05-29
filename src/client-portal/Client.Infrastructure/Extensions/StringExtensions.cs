@@ -30,8 +30,7 @@ namespace Client.Infrastructure.Extensions
         {
             if (value == null) return "";
             if (length > value.Length) return "";
-            var newVal = string.Format("{0}....{1}", value.Substring(0, length), value.Substring(value.Length - length, length));
-            return newVal;
+            return string.Format("{0}....{1}", value.Substring(0, length), value.Substring(value.Length - length, length));
         }
     }
 }
