@@ -28,7 +28,7 @@ namespace Client.Shared.Dialogs
             }
         }
 
-        private async Task Submit()
+        private async Task OnDisconnect()
         {
             await AuthManager.DisconnectWalletAsync();
             NavigationManager.NavigateTo("/", true);
