@@ -70,14 +70,12 @@ namespace Client.Shared.Components
 
         private void InvokeDisconnectWalletDialog()
         {
-            var parameters = new DialogParameters
+            var options = new DialogOptions()
             {
-                {nameof(DisconnectWalletDialog.ContentText), "Are you sure you want to disconnect your wallet?"},
-                {nameof(DisconnectWalletDialog.ButtonText), "Disconnect"},
-                {nameof(DisconnectWalletDialog.Color), Color.Error},
+                CloseButton = true
             };
 
-            DialogService.Show<DisconnectWalletDialog>("Logout", parameters);
+            DialogService.Show<ViewWalletDialog>("Your Wallet Address", options);
         }
     }
 }

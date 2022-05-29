@@ -1,0 +1,30 @@
+﻿<MudDialog DisableSidePadding="true" ClassActions="px-2 py-4">
+    <DialogContent>
+        <MudContainer MaxWidth="MaxWidth.False">
+            <MudGrid Class="pt-0 pb-4" Spacing="2">
+                <MudItem xs="12">
+                    <div>
+                        <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Main Chain</b></MudText>
+                        <MudText Typo="Typo.body2" Class="text-limit-1">@MainChainWalletAddress</MudText>
+                        <MudChip Class="ma-0 mt-2 cursor-pointer" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" Href="@MainChainWalletAddressLink" Target="_blank">
+                            View on Explorer
+                        </MudChip>
+                    </div>
+                </MudItem>
+
+                <MudItem xs="12">
+                    <div>
+                        <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Side Chain</b></MudText>
+                        <MudText Typo="Typo.body2" Class="text-limit-1">@SideChainWalletAddress</MudText>
+                        <MudChip Class="ma-0 mt-2 cursor-pointer" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" Href="@SideChainWalletAddressLink" Target="_blank">
+                            View on Explorer
+                        </MudChip>
+                    </div>
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="Submit">Disconnect</MudButton>
+    </DialogActions>
+</MudDialog>
