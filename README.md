@@ -4,6 +4,9 @@
 
 ## LatchBox Platform
 - **App Portal** - https://aelf-testnet-side1.latchbox.io/
+- **Test Wallet (Keystore)**
+    - **Keystore JSON** - [Keystore JSON](wallet/QErL8jgoobEvBep6mD5mRWkYFbAN43JN7J1ShEyV9YjGnyM1e.json)
+    - **Password** - password
 - **Blockchain** - aelf blockchain
     - **Network** - TESTNET
     - **Main Chain** - https://aelf-test-node.aelf.io (Main AELF) 
