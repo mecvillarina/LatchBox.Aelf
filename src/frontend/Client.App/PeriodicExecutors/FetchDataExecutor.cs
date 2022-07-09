@@ -49,6 +49,7 @@ namespace Client.App.PeriodicExecutors
                 _isFetching = true;
 
                 //#if RELEASE
+                await _exceptionHandler.HandlerRequestTaskAsync(() => _chainManager.GetAllSupportedChainsAsync());
                 var data = await _chainManager.FetchSupportedChainsAsync();
                 if (!data.Any())
                 {
