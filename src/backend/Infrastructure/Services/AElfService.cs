@@ -1,8 +1,8 @@
 ﻿using Application.Common.Dtos;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces;
+using Infrastructure.DataContracts;
 using RestSharp;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Services
 {
@@ -40,7 +40,20 @@ namespace Infrastructure.Services
         public ChainStatusDto GetChainStatus(string apiUrl)
         {
             var request = new RestRequest("api/blockChain/chainStatus", Method.Get);
-            return Execute<ChainStatusDto>(apiUrl, request);
+            var data = Execute<ChainStatusDataContract>(apiUrl, request);
+
+            return new ChainStatusDto()
+            {
+                ChainId = data.ChainId,
+                LongestChainHeight = data.LongestChainHeight,
+                LongestChainHash = data.LongestChainHash,
+                GenesisBlockHash = data.GenesisBlockHash,
+                GenesisContractAddress = data.GenesisContractAddress,
+                LastIrreversibleBlockHash = data.LastIrreversibleBlockHash,
+                LastIrreversibleBlockHeight = data.LastIrreversibleBlockHeight,
+                BestChainHash = data.BestChainHash,
+                BestChainHeight = data.BestChainHeight
+            };
         }
 
     }
