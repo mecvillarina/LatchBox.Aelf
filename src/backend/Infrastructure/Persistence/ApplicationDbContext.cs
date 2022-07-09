@@ -1,5 +1,6 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Common;
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Reflection;
@@ -18,6 +19,8 @@ namespace Infrastructure.Persistence
             _domainEventService = domainEventService;
             _dateTime = dateTime;
         }
+
+        public DbSet<ChainInfo> ChainInfos { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
