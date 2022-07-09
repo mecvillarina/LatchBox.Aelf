@@ -5,9 +5,9 @@ using WebApi.Base;
 
 namespace WebApi.Apis.General
 {
-    public class GeneralController : HttpFunctionBase
+    public class ChainController : HttpFunctionBase
     {
-        public GeneralController(IConfiguration configuration, IMediator mediator, ICallContext context) : base(configuration, mediator, context)
+        public ChainController(IConfiguration configuration, IMediator mediator, ICallContext context) : base(configuration, mediator, context)
         {
         }
 

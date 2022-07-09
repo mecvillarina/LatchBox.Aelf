@@ -42,6 +42,7 @@
 	<ItemGroup>
 		<Folder Include="Common\Dtos\Request\" />
 		<Folder Include="Common\Dtos\Response\" />
+		<Folder Include="Features\Chain\Queries\" />
 	</ItemGroup>
 
 </Project>

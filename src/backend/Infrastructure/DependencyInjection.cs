@@ -28,6 +28,7 @@ namespace Infrastructure
 
             services.AddTransient<IAuthTokenService, AuthTokenService>();
 
+            services.AddTransient<IAElfService, AElfService>();
             services.AddTransient<IAzureStorageAccountService, AzureStorageAccountService>();
             services.AddTransient<IAzureStorageBlobService, AzureStorageBlobService>();
             services.AddTransient<IAzureStorageQueueService, AzureStorageQueueService>();
