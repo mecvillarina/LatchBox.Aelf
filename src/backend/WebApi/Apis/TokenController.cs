@@ -1,22 +1,19 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.Dtos;
+using Application.Common.Interfaces;
 using Application.Common.Models;
-using Application.Features.Chain.Commands;
+using Application.Features.Token.Commands.AddWalletToken;
+using Application.Features.Token.Commands.RemoveWalletToken;
+using Application.Features.Token.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using WebApi.Base;
-using Application.Features.Token.Queries;
-using Application.Common.Dtos;
 
 namespace WebApi.Apis
 {
@@ -30,6 +27,18 @@ namespace WebApi.Apis
         public Task<IActionResult> GetAllTokens([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "token/getAllTokens/{ChainIdBase58}")] GetAllTokensQuery queryArgs, HttpRequest req, ExecutionContext context, ILogger logger)
         {
             return ExecuteAsync<GetAllTokensQuery, Result<List<TokenDto>>>(context, logger, req, queryArgs);
+        }
+
+        [FunctionName("Token_AddWalletToken")]
+        public Task<IActionResult> AddWalletToken([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "token/wallet/add")] AddWalletTokenCommand commandArgs, HttpRequest req, ExecutionContext context, ILogger logger)
+        {
+            return ExecuteAsync<AddWalletTokenCommand, IResult>(context, logger, req, commandArgs);
+        }
+
+        [FunctionName("Token_RemoveWalletToken")]
+        public Task<IActionResult> RemoveWalletToken([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "token/wallet/remove")] RemoveWalletTokenCommand commandArgs, HttpRequest req, ExecutionContext context, ILogger logger)
+        {
+            return ExecuteAsync<RemoveWalletTokenCommand, IResult>(context, logger, req, commandArgs);
         }
     }
 }

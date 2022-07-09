@@ -21,5 +21,8 @@ namespace Domain.Entities
 
         public bool IsEnabled { get; set; }
         public DateTime? LastUpdate { get; set; }
+        public int OrderIdx { get; set; }
+
+        public string TokenContractAddress { get; set; }
     }
 }

@@ -18,6 +18,7 @@ namespace Infrastructure.Persistence.Configuration
             builder.Property(t => t.GenesisContractAddress).HasMaxLength(128);
             builder.Property(t => t.LastIrreversibleBlockHash).HasMaxLength(128);
             builder.Property(t => t.BestChainHash).HasMaxLength(128);
+            builder.Property(t => t.TokenContractAddress).HasMaxLength(128);
         }
     }
 }

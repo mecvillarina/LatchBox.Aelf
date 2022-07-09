@@ -8,6 +8,8 @@ namespace Application.Common.Interfaces
     public interface IApplicationDbContext
     {
         DbSet<ChainInfo> ChainInfos { get; set; }
+        DbSet<WalletToken> WalletTokens { get; set; }
+
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken());
         int SaveChanges();
     }

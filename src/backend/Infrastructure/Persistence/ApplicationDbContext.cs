@@ -21,6 +21,7 @@ namespace Infrastructure.Persistence
         }
 
         public DbSet<ChainInfo> ChainInfos { get; set; }
+        public DbSet<WalletToken> WalletTokens { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {

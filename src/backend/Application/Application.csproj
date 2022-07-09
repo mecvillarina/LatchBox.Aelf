@@ -8,6 +8,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="AElf.Cryptography" Version="1.2.0" />
+		<PackageReference Include="AElf.Types" Version="1.2.0" />
 		<PackageReference Include="AutoMapper" Version="10.1.1" />
 		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
 		<PackageReference Include="FluentValidation" Version="10.3.5" />
@@ -42,7 +44,6 @@
 	<ItemGroup>
 		<Folder Include="Common\Dtos\Request\" />
 		<Folder Include="Common\Dtos\Response\" />
-		<Folder Include="Features\Chain\Queries\" />
 	</ItemGroup>
 
 </Project>
