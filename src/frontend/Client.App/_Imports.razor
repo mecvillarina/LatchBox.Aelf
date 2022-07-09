@@ -23,6 +23,7 @@
 @using Application.Common.Extensions
 
 @using Client.App
+@using Client.App.PeriodicExecutors
 @using Client.App.Shared
 @using Client.App.Shared.Components
 @using Client.App.Shared.Dialogs
@@ -32,8 +33,7 @@
 @using Client.Infrastructure.Settings
 @using Client.Infrastructure.Extensions
 
-@using Client.App.Infrastructure.Managers
-
+@using Client.App.Infrastructure.Managers.Interfaces
 
 @inject IAuthorizationService _authorizationService
 
@@ -41,10 +41,12 @@
 @inject HttpClient _httpClient
 @inject NavigationManager _navigationManager
 
+@inject IChainManager ChainManager
+
 @inject IDialogService _dialogService
 @inject ILocalStorageService _localStorage
 @inject IJSRuntime _jsRuntime
 @inject IAppDialogService _appDialogService
 @inject IExceptionHandler _exceptionHandler
 @inject AppBreakpointService AppBreakpointService
-@*@inject FetchDataExecutor FetchDataExecutor*@
+@inject FetchDataExecutor FetchDataExecutor

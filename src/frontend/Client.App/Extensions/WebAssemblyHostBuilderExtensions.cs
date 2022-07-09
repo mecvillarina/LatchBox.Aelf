@@ -2,6 +2,7 @@
 using Client.App.Infrastructure.Managers;
 using Client.App.Infrastructure.Routes;
 using Client.App.Infrastructure.WebServices;
+using Client.App.PeriodicExecutors;
 using Client.App.Services;
 using Client.Infrastructure.Managers;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -52,7 +53,7 @@ namespace Client.App.Extensions
                     .AddWebServices()
                     .AddScoped(sp => sp
                             .GetRequiredService<IHttpClientFactory>()
-                            .CreateClient(ClientName).EnableIntercept(sp))
+                            .CreateClient(ClientName))
                     .AddHttpClient(ClientName, client =>
                     {
                         client.DefaultRequestHeaders.Clear();
@@ -61,7 +62,7 @@ namespace Client.App.Extensions
                     });
             builder.Services.AddHttpClientInterceptor();
             builder.Services.AddScoped<AppBreakpointService>();
-            //builder.Services.AddScoped<FetchDataExecutor>();
+            builder.Services.AddScoped<FetchDataExecutor>();
 #if Release
             builder.Logging.SetMinimumLevel(LogLevel.Critical | LogLevel.Error);
 #endif
