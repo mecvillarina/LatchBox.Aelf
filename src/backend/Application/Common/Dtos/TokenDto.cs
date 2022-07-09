@@ -13,5 +13,7 @@ namespace Application.Common.Dtos
         public string Name { get; set; }
         public string TotalSupply { get; set; }
         public string Supply { get; set; }
+        public long Decimals { get; set; }
+
     }
 }

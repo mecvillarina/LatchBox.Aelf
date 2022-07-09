@@ -67,7 +67,8 @@ namespace Infrastructure.Services
                     TxId = token.TxId,
                     Name = token.Name,
                     TotalSupply = token.TotalSupply,
-                    Supply = token.Supply
+                    Supply = token.Supply,
+                    Decimals = token.Decimals
                 });
             }
 

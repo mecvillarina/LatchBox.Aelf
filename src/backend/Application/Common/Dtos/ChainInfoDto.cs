@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Application.Common.Mappings;
+using Domain.Entities;
+using System;
 
-namespace Domain.Entities
+namespace Application.Common.Dtos
 {
-    public class ChainInfo
+    public class ChainInfoDto : IMapFrom<ChainInfo>
     {
-        public int Id { get; set; }
         public string ChainIdBase58 { get; set; }
         public int ChainId { get; set; }
         public string RpcApi { get; set; }
@@ -19,8 +20,6 @@ namespace Domain.Entities
         public string BestChainHash { get; set; }
         public long BestChainHeight { get; set; }
 
-        public bool IsEnabled { get; set; }
         public DateTime? LastUpdate { get; set; }
-        public int OrderIdx { get; set; }
     }
 }
