@@ -21,5 +21,7 @@ namespace Application.Common.Dtos
         public long BestChainHeight { get; set; }
 
         public DateTime? LastUpdate { get; set; }
+
+        public string TokenContractAddress { get; set; }
     }
 }

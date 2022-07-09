@@ -1,0 +1,17 @@
+pool:
+  vmImage: 'ubuntu-latest'
+  demands: 
+  - npm
+  
+steps:
+  - checkout: self
+    submodules: true
+  - task: AzureStaticWebApp@0
+    inputs:
+      app_location: '/src/frontend/Client.App'
+      app_build_command: 'dotnet build'
+      output_location: 'wwwroot'
+      api_location: ''
+      api_build_command: ''
+      routes_location: '/src/frontend/Client.App/wwwroot'
+      azure_static_web_apps_api_token: $(deployment_token)
