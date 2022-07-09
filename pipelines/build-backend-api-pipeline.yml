@@ -1,0 +1,38 @@
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  dotnetSdkVersion: '6.0.x'
+  buildConfiguration: 'Release'
+
+steps:
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core SDK $(dotnetSdkVersion)'
+    inputs:
+      version: '$(dotnetSdkVersion)'
+  
+  - task: DotNetCoreCLI@2
+    displayName: 'Restore project dependencies'
+    inputs:
+      command: 'restore'
+      projects: 'src/backend/WebApi/*.csproj'
+
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Build the project - $(buildConfiguration)'
+    inputs:
+      command: 'build'
+      arguments: '--no-restore --configuration $(buildConfiguration)'
+      projects: 'src/backend/WebApi/*.csproj'
+      
+  - task: DotNetCoreCLI@2
+    displayName: 'Publish the project - $(buildConfiguration)'
+    inputs:
+      command: 'publish'
+      projects: 'src/backend/WebApi/*.csproj'
+      publishWebProjects: false
+      arguments: '--no-build --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
+      zipAfterPublish: true
+
+  - publish: '$(Build.ArtifactStagingDirectory)'
+    artifact: drop

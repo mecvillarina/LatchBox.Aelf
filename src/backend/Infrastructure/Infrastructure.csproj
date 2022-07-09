@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<AssemblyName>Infrastructure</AssemblyName>
+		<RootNamespace>Infrastructure</RootNamespace>
+		<LangVersion>9.0</LangVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Azure.Storage.Blobs" Version="12.9.1" />
+		<PackageReference Include="Azure.Storage.Queues" Version="12.8.0" />
+		<PackageReference Include="CsvHelper" Version="15.0.0" />
+		<PackageReference Include="Ardalis.GuardClauses" Version="1.5.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.3" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.3" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.3">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="EFCore.BulkExtensions" Version="6.2.0" />
+		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.16.0" />
+		<PackageReference Include="Nethereum.Hex" Version="4.2.0" />
+		<PackageReference Include="RestSharp" Version="106.15.0" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.16.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Application\Application.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Persistence\Configuration\" />
+	</ItemGroup>
+
+</Project>
