@@ -9,7 +9,13 @@ namespace Client.App.Pages
         {
             if (firstRender)
             {
+                var chains = ChainManager.FetchSupportedChainsAsync();
             }
+        }
+
+        private async Task FetchChainData()
+        {
+
         }
 
     }
