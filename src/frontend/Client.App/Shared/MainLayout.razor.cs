@@ -1,4 +1,4 @@
-﻿using Client.App.Pages;
+﻿using Client.App.Pages.Base;
 using MudBlazor;
 using System;
 using System.Linq;
