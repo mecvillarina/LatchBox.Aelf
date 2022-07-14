@@ -10,7 +10,7 @@ namespace Application.Common.Dtos
         public int ChainId { get; set; }
         public string RpcApi { get; set; }
         public string Explorer { get; set; }
-
+        public string ChainType { get; set; }
         public long LongestChainHeight { get; set; }
         public string LongestChainHash { get; set; }
         public string GenesisBlockHash { get; set; }

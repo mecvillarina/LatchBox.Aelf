@@ -3,5 +3,40 @@
 <PageHeader Title="Assets" />
 
 <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
-    
+    @if (!IsLoaded)
+    {
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="56px" Width="100%" />
+        <MudSkeleton Class="mt-2" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="280px" Width="100%" />
+    }
+    else
+    {
+        <MudPaper Square="true" Elevation="10">
+            <MudTable Items="@TokenBalances" Class="mx-0 grey darken-4" FixedHeader="true" Breakpoint="Breakpoint.Sm">
+                <HeaderContent>
+                    <MudTh>Name</MudTh>
+                    <MudTh>Total Supply</MudTh>
+                    <MudTh>Balance</MudTh>
+                </HeaderContent>
+
+                <RowTemplate>
+                    <MudTd DataLabel="Name">
+                        <MudText Typo="Typo.body1" Color="Color.Primary">
+                            <b>@context.Token.Name (@context.Token.Symbol)</b>
+                        </MudText>
+                        <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+                            <MudText Typo="Typo.caption">
+                                <span>[@context.Token.Decimals] [@context.Token.IssueChainId]</span>
+                            </MudText>
+                        </MudHidden>
+                    </MudTd>
+                    <MudTd DataLabel="Total Supply">
+                        @context.Token.TotalSupply
+                    </MudTd>
+                    <MudTd DataLabel="Balance">
+                        @context.Balance
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudPaper>
+    }
 </MudContainer>
