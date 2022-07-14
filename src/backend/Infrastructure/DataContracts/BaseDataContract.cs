@@ -2,7 +2,7 @@
 
 namespace Infrastructure.DataContracts
 {
-    public class TokenListDataContract
+    public class BaseDataContract<T>
     {
         [JsonPropertyName("msg")]
         public string Msg { get; set; }
@@ -11,6 +11,6 @@ namespace Infrastructure.DataContracts
         public long Code { get; set; }
 
         [JsonPropertyName("data")]
-        public TokenListDataDataContract Data { get; set; }
+        public T Data { get; set; }
     }
 }

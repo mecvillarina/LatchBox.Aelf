@@ -9,6 +9,7 @@ namespace Domain.Entities
         public int ChainId { get; set; }
         public string RpcApi { get; set; }
         public string Explorer { get; set; }
+        public string ChainType { get; set; } // Main | Side
 
         public long LongestChainHeight { get; set; }
         public string LongestChainHash { get; set; }
