@@ -1,0 +1,27 @@
+﻿@namespace Client.App.Shared.Dialogs
+
+<MudContainer MaxWidth="MaxWidth.False">
+    <div class="d-flex">
+        <MudText Class="mr-2 align-self-center" Color="@TitleTextColor" Typo="TitleTextTypo" GutterBottom="false">@Title</MudText>
+    </div>
+</MudContainer>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] 
+    public string Title { get; set; }
+
+    [Parameter]
+    public Typo TitleTextTypo { get; set; } = Typo.h4;
+
+    [Parameter] 
+    public Color TitleTextColor { get; set; } = Color.Secondary;
+
+    void Submit()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    void Cancel() => MudDialog.Cancel();
+}

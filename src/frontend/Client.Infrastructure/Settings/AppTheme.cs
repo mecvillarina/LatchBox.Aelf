@@ -121,14 +121,26 @@ namespace Client.Infrastructure.Settings
                 Typography = DefaultTypography,
                 LayoutProperties = DefaultLayoutProperties
             };
+            //theme.PaletteDark.Black = "#3D4853";
+            //theme.PaletteDark.Primary = "#90CB9D";
+            //theme.PaletteDark.Secondary = "#C4A311";
+            //theme.PaletteDark.Background = "#3D4853";
+            //theme.PaletteDark.Surface = "#3D4853";
+            //theme.PaletteDark.DrawerBackground = "#3D4853";
+            //theme.PaletteDark.AppbarBackground = "#3D4853";
+            //theme.PaletteDark.Error = "#E97A7A";
 
-            theme.PaletteDark.Black = "#3D4853";
-            theme.PaletteDark.Primary = "#90CB9D";
-            theme.PaletteDark.Secondary = "#C4A311";
-            theme.PaletteDark.Background = "#3D4853";
-            theme.PaletteDark.Surface = "#3D4853";
-            theme.PaletteDark.DrawerBackground = "#3D4853";
-            theme.PaletteDark.AppbarBackground = "#3D4853";
+            theme.PaletteDark.Black = "#1d1d1d";
+            theme.PaletteDark.White = "#ece0c6";
+            theme.PaletteDark.Primary = "#f4583d";
+            theme.PaletteDark.TextPrimary = "#ece0c6";
+            theme.PaletteDark.Secondary = "#f6d38d";
+            theme.PaletteDark.TextSecondary = "#1d1d1d";
+            theme.PaletteDark.Background = "#1d1d1d";
+            theme.PaletteDark.Surface = "#1d1d1d";
+            theme.PaletteDark.DrawerBackground = "#1d1d1d";
+            theme.PaletteDark.AppbarBackground = "#1d1d1d";
+            theme.PaletteDark.AppbarText = "#ece0c6";
             theme.PaletteDark.Error = "#E97A7A";
             return theme;
         }
