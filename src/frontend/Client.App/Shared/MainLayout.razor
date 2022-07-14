@@ -31,25 +31,27 @@
         @*<MudAppBar Elevation="1" Dense="false">
             <AppBarContent />
         </MudAppBar>*@
-        <MudAppBar Fixed="false" Elevation="1" DisableGutters="true" Class="muudstrap-navbar">
+        <MudAppBar Fixed="false" Elevation="0" DisableGutters="true" Class="muudstrap-navbar">
             <div class="d-none d-md-flex align-center px-6">
-                <MudPaper Height="36px" Width="36px" Elevation="0" Class="pa-1 rounded-lg d-flex justify-center align-center mud-theme-primary">
+               @* <MudPaper Height="36px" Width="36px" Elevation="0" Class="pa-1 rounded-lg d-flex justify-center align-center mud-theme-primary">
                     <MudText Typo="Typo.h6">L</MudText>
-                </MudPaper>
-                <MudText Typo="Typo.h6" Class="ml-4 mr-12 pt-1 pb-2">aelf.LatchBox</MudText>
+                </MudPaper>*@
+                <MudText Typo="Typo.h6" Color="Color.Primary" Class="ml-4 mr-12 py-1">aelf.LatchBox</MudText>
                 <MudButton Color="Color.Inherit" Link="/">Home</MudButton>
-                <MudButton Class="ml-2" Color="Color.Inherit" Link="/assets">Tokens</MudButton>
-                <MudMenu Class="ml-2" Color="Color.Inherit" Label="Locks" EndIcon="@Icons.Material.Filled.ArrowDropDown" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+                <MudButton Class="ml-2" Color="Color.Inherit" Link="/assets">Assets</MudButton>
+                <MudButton Class="ml-2" Color="Color.Inherit" Link="/locks">Locks</MudButton>
+                @*<MudMenu Class="ml-2" Color="Color.Inherit" Label="Locks" EndIcon="@Icons.Material.Filled.ArrowDropDown" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
                     <MudMenuItem Link="/locks/assets">Locked Tokens</MudMenuItem>
                     <MudMenuItem Link="/locks">My Locks</MudMenuItem>
                     <MudMenuItem Link="/locks/claims">Claims</MudMenuItem>
                     <MudMenuItem Link="/locks/refunds">Refunds</MudMenuItem>
-                </MudMenu>
-                <MudMenu Class="ml-2" Color="Color.Inherit" Label="Vestings" EndIcon="@Icons.Material.Filled.ArrowDropDown" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+                </MudMenu>*@
+                <MudButton Class="ml-2" Color="Color.Inherit" Link="/vestings">Vestings</MudButton>
+                @*<MudMenu Class="ml-2" Color="Color.Inherit" Label="Vestings" EndIcon="@Icons.Material.Filled.ArrowDropDown" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
                     <MudMenuItem Link="/vestings">My Vestings</MudMenuItem>
                     <MudMenuItem Link="/vestings/claims">Claims</MudMenuItem>
                     <MudMenuItem Link="/vestings/refunds">Refunds</MudMenuItem>
-                </MudMenu>
+                </MudMenu>*@
             </div>
             <div class="d-flex d-md-none relative mud-width-full mud-height-full">
                 <MudExpansionPanels Square="true" Elevation="0" Class="absolute mud-width-full mud-height-full" Style="top:0px;left:0; background-color:Inherit;">
@@ -60,16 +62,18 @@
                                     <MudPaper Height="36px" Width="36px" Elevation="25" Class="pa-1 rounded-lg d-flex justify-center align-center mud-theme-primary">
                                         <MudText Typo="Typo.h6">L</MudText>
                                     </MudPaper>
-                                    <MudText Typo="Typo.h6" Class="ml-4 mr-12 pt-1 pb-2">aelf.LatchBox</MudText>
+                                    <MudText Typo="Typo.h6" Color="Color.Primary" Class="ml-4 mr-12 py-1">aelf.LatchBox</MudText>
                                 </div>
-                                <MudIcon Icon="@Icons.Material.Filled.Menu" />
+                                <MudIcon Color="Color.Secondary" Icon="@Icons.Material.Filled.Menu" />
                             </div>
                         </TitleContent>
                         <ChildContent>
                             <div class="py-6 mx-n6 muudstrap-navbar-expand">
                                 <MudNavMenu>
-                                    <MudNavLink Href="/">Home</MudNavLink>
-                                    <MudNavLink Href="/assets">Tokens</MudNavLink>
+                                    <MudNavLink Match="NavLinkMatch.All" Href="/">Home</MudNavLink>
+                                    <MudNavLink Href="/assets">Assets</MudNavLink>
+                                    <MudNavLink Href="/locks">Locks</MudNavLink>
+                                    <MudNavLink Href="/vestings">Vestings</MudNavLink>
                                 </MudNavMenu>
                             </div>
                         </ChildContent>

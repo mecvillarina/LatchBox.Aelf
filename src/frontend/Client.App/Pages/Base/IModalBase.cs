@@ -1,7 +1,7 @@
 ﻿using MudBlazor;
 using System;
 
-namespace Client.App.Pages
+namespace Client.App.Pages.Base
 {
     public interface IModalBase
     {
