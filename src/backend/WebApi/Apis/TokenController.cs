@@ -29,6 +29,12 @@ namespace WebApi.Apis
             return ExecuteAsync<GetAllTokensQuery, Result<List<TokenDto>>>(context, logger, req, queryArgs);
         }
 
+        [FunctionName("Token_GetTokenBalances")]
+        public Task<IActionResult> GetTokenBalances([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "token/getTokenBalances/{ChainIdBase58}")] GetTokenBalancesQuery queryArgs, HttpRequest req, ExecutionContext context, ILogger logger)
+        {
+            return ExecuteAsync<GetTokenBalancesQuery, Result<List<TokenBalanceInfoDto>>>(context, logger, req, queryArgs);
+        }
+
         [FunctionName("Token_AddWalletToken")]
         public Task<IActionResult> AddWalletToken([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "token/wallet/add")] AddWalletTokenCommand commandArgs, HttpRequest req, ExecutionContext context, ILogger logger)
         {

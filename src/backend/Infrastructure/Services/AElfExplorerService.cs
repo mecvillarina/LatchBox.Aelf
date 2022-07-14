@@ -5,6 +5,7 @@ using Infrastructure.DataContracts;
 using RestSharp;
 using RestSharp.Serializers.Json;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Infrastructure.Services
 {
@@ -43,14 +44,14 @@ namespace Infrastructure.Services
         public List<TokenDto> GetTokenList(string explorerUrl)
         {
             var request = new RestRequest("api/viewer/getAllTokens?total=0&pageSize=0&pageNum=1", Method.Get);
-            var response = Execute<TokenListDataContract>(explorerUrl, request);
+            var response = Execute<BaseDataContract<TokenListDataDataContract>>(explorerUrl, request);
 
             if (response.Msg != "success") return new List<TokenDto>();
 
             var total = response.Data.Total;
 
             request = new RestRequest($"api/viewer/getAllTokens?total={total}&pageSize={total}&pageNum=1", Method.Get);
-            response = Execute<TokenListDataContract>(explorerUrl, request);
+            response = Execute<BaseDataContract<TokenListDataDataContract>>(explorerUrl, request);
 
             if (response.Msg != "success") return new List<TokenDto>();
 
@@ -73,6 +74,33 @@ namespace Infrastructure.Services
             }
 
             return tokens;
+        }
+
+        public List<TokenBalanceInfoDto> GetTokenBalanceList(string explorerUrl, string address)
+        {
+            var request = new RestRequest($"api/viewer/balances?address={address}", Method.Get);
+            var response = Execute<BaseDataContract<List<TokenBalanceListDataContract>>>(explorerUrl, request);
+
+            if (response.Msg != "success") return new List<TokenBalanceInfoDto>();
+
+            var tokens = GetTokenList(explorerUrl);
+
+            var balances = new List<TokenBalanceInfoDto>();
+            foreach (var tokenBalance in response.Data)
+            {
+                var token = tokens.FirstOrDefault(x => x.Symbol == tokenBalance.Symbol);
+
+                if(token != null)
+                {
+                    balances.Add(new TokenBalanceInfoDto()
+                    {
+                        Token = token,
+                        Balance = tokenBalance.Balance
+                    });
+                }
+            }
+
+            return balances;
         }
     }
 }
