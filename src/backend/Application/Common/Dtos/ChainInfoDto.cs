@@ -23,5 +23,8 @@ namespace Application.Common.Dtos
         public DateTime? LastUpdate { get; set; }
 
         public string TokenContractAddress { get; set; }
+        public bool IsTokenCreationFeatureSupported { get; set; }
+        public bool IsLockingFeatureSupported { get; set; }
+        public bool IsVestingFeatureSupported { get; set; }
     }
 }

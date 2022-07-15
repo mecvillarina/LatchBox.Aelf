@@ -1,6 +1,17 @@
 ﻿@page "/assets"
 
-<PageHeader Title="Assets" />
+<MudContainer MaxWidth="MaxWidth.False">
+    <div class="d-flex justify-space-between mud-width-full">
+        <div class="d-flex">
+            <MudText Class="mr-4 align-self-center" Color="Color.Secondary" Typo="Typo.h4" GutterBottom="false">Assets</MudText>
+            <MudIconButton Disabled="@(!IsLoaded)" Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium" />
+        </div>
+
+        <div class="d-flex ml-auto">
+            <MudButton Disabled="@(!IsLoaded)" OnClick="OnCreateNewTokenAsync" Class="align-self-center" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium">Create Token</MudButton>
+        </div>
+    </div>
+</MudContainer>
 
 <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
     @if (!IsLoaded)
@@ -10,7 +21,7 @@
     }
     else
     {
-        <MudPaper Square="true" Elevation="10">
+        <MudPaper Square="true" Elevation="15">
             <MudTable Items="@TokenBalances" Class="mx-0 grey darken-4" FixedHeader="true" Breakpoint="Breakpoint.Sm">
                 <HeaderContent>
                     <MudTh>Name</MudTh>
