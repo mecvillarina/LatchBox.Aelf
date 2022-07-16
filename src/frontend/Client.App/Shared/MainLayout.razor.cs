@@ -46,36 +46,13 @@ namespace Client.App.Shared
 
         private async Task FetchChainDataAsync()
         {
-            var data = await ChainManager.FetchSupportedChainsAsync();
-            IsLoaded = false;
-            if (!data.Any())
-            {
-                var chainsResult = await _exceptionHandler.HandlerRequestTaskAsync(() => ChainManager.GetAllSupportedChainsAsync());
-
-                if (chainsResult.Succeeded)
-                {
-                    if (chainsResult.Data.Any())
-                    {
-                        await ChainManager.SetCurrentChainAsync(chainsResult.Data.First().ChainIdBase58);
-                        IsLoaded = true;
-                    }
-                }
-            }
-            else
-            {
-                var currentChain = await ChainManager.FetchCurrentChainAsync();
-                if (currentChain == null || !data.Any(x => x.ChainIdBase58 == currentChain))
-                {
-                    await ChainManager.SetCurrentChainAsync(data.First().ChainIdBase58);
-                }
-                IsLoaded = true;
-            }
+            IsLoaded = await ChainService.FetchChainDataAsync();
 
             if (IsLoaded)
             {
-                var supportedChains = await ChainManager.FetchSupportedChainsAsync();
+                var supportedChains = await ChainService.FetchSupportedChainsAsync();
                 SupportedChains = supportedChains.Select(x => new SupportedChainModel() { ChainType = x.ChainType, ChainIdBase58 = x.ChainIdBase58 }).ToList();
-                CurrentChainIdBase58 = await ChainManager.FetchCurrentChainAsync();
+                CurrentChainIdBase58 = await ChainService.FetchCurrentChainAsync();
             }
 
             StateHasChanged();
@@ -85,13 +62,13 @@ namespace Client.App.Shared
         {
             Console.WriteLine(chainIdBase58);
 
-            var currentChainIdBase58 = await ChainManager.FetchCurrentChainAsync();
+            var currentChainIdBase58 = await ChainService.FetchCurrentChainAsync();
             if (chainIdBase58 == currentChainIdBase58) return;
 
-            var data = await ChainManager.FetchSupportedChainsAsync();
+            var data = await ChainService.FetchSupportedChainsAsync();
             if (data.Any(x => x.ChainIdBase58 == chainIdBase58))
             {
-                await ChainManager.SetCurrentChainAsync(chainIdBase58);
+                await ChainService.SetCurrentChainAsync(chainIdBase58);
                 _navigationManager.NavigateTo(_navigationManager.Uri, true);
             }
         }

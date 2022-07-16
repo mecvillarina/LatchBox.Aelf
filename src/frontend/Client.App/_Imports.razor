@@ -37,17 +37,17 @@
 
 @inject IAuthorizationService _authorizationService
 
+@inject IDialogService DialogService
+@inject ILocalStorageService LocalStorage
+@inject IJSRuntime JsRuntime
+@inject AppDialogService AppDialogService
+@inject ExceptionHandler _exceptionHandler
+@inject AppBreakpointService AppBreakpointService
+@inject FetchDataExecutor FetchDataExecutor
+@inject ChainService ChainService
+
 @inject ClientPreferenceManager _clientPreferenceManager
 @inject HttpClient _httpClient
 @inject NavigationManager _navigationManager
 
-@inject IChainManager ChainManager
 @inject ITokenManager TokenManager
-
-@inject IDialogService _dialogService
-@inject ILocalStorageService _localStorage
-@inject IJSRuntime _jsRuntime
-@inject IAppDialogService _appDialogService
-@inject IExceptionHandler _exceptionHandler
-@inject AppBreakpointService AppBreakpointService
-@inject FetchDataExecutor FetchDataExecutor
