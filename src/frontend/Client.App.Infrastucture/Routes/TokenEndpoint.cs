@@ -2,7 +2,7 @@
 {
     public static class TokenEndpoint
     {
-        public const string GetAllTokens = "api/token/getAllTokens/{0}";
-        public const string GetTokenBalances = "api/token/getTokenBalances/{0}?address={1}";
+        public const string GetAllTokens = "api/token/{0}/getAllTokens";
+        public const string GetTokenBalances = "api/token/{0}/getTokenBalances?address={1}";
     }
 }

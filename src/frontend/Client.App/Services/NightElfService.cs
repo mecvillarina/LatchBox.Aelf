@@ -1,4 +1,7 @@
-﻿using Microsoft.JSInterop;
+﻿using AElf.Types;
+using Application.Common.Dtos;
+using Client.App.SmartContractDto;
+using Microsoft.JSInterop;
 using System;
 using System.Dynamic;
 using System.Threading.Tasks;
@@ -9,9 +12,6 @@ namespace Client.App.Services
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask;
         private bool jsLoaded;
-
-        //public static event Func<Task>? ConnectEvent;
-        //public static event Func<Task>? DisconnectEvent;
 
         public NightElfService(IJSRuntime jsRuntime)
         {
@@ -45,10 +45,38 @@ namespace Client.App.Services
             await module.InvokeVoidAsync("Initialize", nodeUrl, appName);
         }
 
-        public async ValueTask<string> ExecuteSmartContractAsync(string address, string functionName, ExpandoObject payload)
+        public async ValueTask<TransactionResultDto> SendTxAsync(string address, string functionName, object payload)
         {
             var module = await moduleTask.Value;
-            return await module.InvokeAsync<string>("ExecuteSmartContract", address, functionName, payload);
+            var txId = await module.InvokeAsync<string>("SendTx", address, functionName, payload);
+
+            if (txId == null) return null;
+
+            var txResult = await GetTxStatus(txId);
+            var i = 0;
+            while (i < 10)
+            {
+                if(txResult.Status == null && txResult.ErrorMessage != null)
+                {
+                    break;
+                }
+
+                if (txResult.Status == TransactionResultStatus.Mined.ToString().ToUpper())
+                {
+                    break;
+                }
+
+                if (txResult.Status == TransactionResultStatus.Failed.ToString().ToUpper() || txResult.Status == TransactionResultStatus.NodeValidationFailed.ToString().ToUpper())
+                {
+                    break;
+                }
+
+                await Task.Delay(1000);
+                txResult = await GetTxStatus(txId);
+                i++;
+            }
+
+            return txResult;
         }
 
         public async ValueTask<T> ReadSmartContractAsync<T>(string address, string functionName, ExpandoObject payload)
@@ -95,11 +123,11 @@ namespace Client.App.Services
         //    return result;
         //}
 
-        //public async ValueTask<TransactionStatusResult> GetTxStatus(string txId)
-        //{
-        //    var module = await moduleTask.Value;
-        //    return await module.InvokeAsync<TransactionStatusResult>("GetTxStatus", txId);
-        //}
+        public async ValueTask<TransactionResultDto> GetTxStatus(string txId)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<TransactionResultDto>("GetTxStatus", txId);
+        }
 
         public async ValueTask DisposeAsync()
         {

@@ -22,32 +22,41 @@
     else
     {
         <MudPaper Square="true" Elevation="15">
-            <MudTable Items="@TokenBalances" Class="mx-0 grey darken-4" FixedHeader="true" Breakpoint="Breakpoint.Sm">
-                <HeaderContent>
-                    <MudTh>Name</MudTh>
-                    <MudTh>Total Supply</MudTh>
-                    <MudTh>Balance</MudTh>
-                </HeaderContent>
+            @if (TokenBalances.Any())
+            {
+                <MudTable Items="@TokenBalances" Class="mx-0 grey darken-4" FixedHeader="true" Breakpoint="Breakpoint.Sm">
+                    <HeaderContent>
+                        <MudTh>Name</MudTh>
+                        <MudTh>Total Supply</MudTh>
+                        <MudTh>Balance</MudTh>
+                    </HeaderContent>
 
-                <RowTemplate>
-                    <MudTd DataLabel="Name">
-                        <MudText Typo="Typo.body1" Color="Color.Primary">
-                            <b>@context.Token.Name (@context.Token.Symbol)</b>
-                        </MudText>
-                        <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
-                            <MudText Typo="Typo.caption">
-                                <span>[@context.Token.Decimals] [@context.Token.IssueChainId]</span>
+                    <RowTemplate>
+                        <MudTd DataLabel="Name">
+                            <MudText Typo="Typo.body1" Color="Color.Primary">
+                                <b>@context.Token.Name (@context.Token.Symbol)</b>
                             </MudText>
-                        </MudHidden>
-                    </MudTd>
-                    <MudTd DataLabel="Total Supply">
-                        @context.Token.TotalSupply
-                    </MudTd>
-                    <MudTd DataLabel="Balance">
-                        @context.Balance
-                    </MudTd>
-                </RowTemplate>
-            </MudTable>
+                            <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+                                <MudText Typo="Typo.caption">
+                                    <span>[@context.Token.Decimals] [@context.Token.IssueChainId]</span>
+                                </MudText>
+                            </MudHidden>
+                        </MudTd>
+                        <MudTd DataLabel="Total Supply">
+                            @context.Token.TotalSupply
+                        </MudTd>
+                        <MudTd DataLabel="Balance">
+                            @context.Balance
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            }
+            else
+            {
+                <MudText Typo="Typo.h6" Class="pa-4" GutterBottom="false">
+                    No tokens found.
+                </MudText>
+            }
         </MudPaper>
     }
 </MudContainer>

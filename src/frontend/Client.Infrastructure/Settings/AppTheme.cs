@@ -135,9 +135,10 @@ namespace Client.Infrastructure.Settings
             theme.PaletteDark.Primary = "#f4583d";
             theme.PaletteDark.TextPrimary = "#ece0c6";
             theme.PaletteDark.Secondary = "#f6d38d";
-            theme.PaletteDark.TextSecondary = "#1d1d1d";
+            //theme.PaletteDark.TextSecondary = "#ece0c6";
             theme.PaletteDark.Background = "#1d1d1d";
-            theme.PaletteDark.Surface = "#1d1d1d";
+            theme.PaletteDark.Surface = "#282828";
+            theme.PaletteDark.DarkContrastText= "#ece0c6";
             theme.PaletteDark.DrawerBackground = "#1d1d1d";
             theme.PaletteDark.AppbarBackground = "#1d1d1d";
             theme.PaletteDark.AppbarText = "#ece0c6";

@@ -7,5 +7,6 @@ namespace Application.Common.Interfaces
     {
         List<TokenDto> GetTokenList(string explorerUrl);
         List<TokenBalanceInfoDto> GetTokenBalanceList(string explorerUrl, string address);
+        TransactionResultDto GetTx(string explorerUrl, string txId);
     }
 }

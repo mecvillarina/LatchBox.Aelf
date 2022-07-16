@@ -58,7 +58,7 @@ namespace Infrastructure.Services
             var tokens = new List<TokenDto>();
             foreach (var token in response.Data.Tokens)
             {
-                tokens.Add(new TokenDto()
+                var tokenDto = new TokenDto()
                 {
                     Id = token.Id,
                     ContractAddress = token.ContractAddress,
@@ -69,8 +69,10 @@ namespace Infrastructure.Services
                     Name = token.Name,
                     TotalSupply = token.TotalSupply,
                     Supply = token.Supply,
-                    Decimals = token.Decimals
-                });
+                    Decimals = token.Decimals,
+                };
+
+                tokens.Add(tokenDto);
             }
 
             return tokens;
@@ -90,7 +92,7 @@ namespace Infrastructure.Services
             {
                 var token = tokens.FirstOrDefault(x => x.Symbol == tokenBalance.Symbol);
 
-                if(token != null)
+                if (token != null)
                 {
                     balances.Add(new TokenBalanceInfoDto()
                     {
@@ -100,7 +102,17 @@ namespace Infrastructure.Services
                 }
             }
 
+            
+
             return balances;
+        }
+
+        public TransactionResultDto GetTx(string explorerUrl, string txId)
+        {
+            var request = new RestRequest($"chain/api/blockChain/transactionResult?transactionId={txId}", Method.Get);
+            var tx = Execute<TransactionResultDto>(explorerUrl, request);
+            return tx;
+
         }
     }
 }

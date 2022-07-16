@@ -43,7 +43,8 @@ namespace Client.App.Extensions
                         configuration.SnackbarConfiguration.HideTransitionDuration = 100;
                         configuration.SnackbarConfiguration.ShowTransitionDuration = 100;
                         configuration.SnackbarConfiguration.VisibleStateDuration = 5000;
-                        configuration.SnackbarConfiguration.ShowCloseIcon = false;
+                        configuration.SnackbarConfiguration.ShowCloseIcon = true;
+                        configuration.SnackbarConfiguration.SnackbarVariant = Variant.Text;
                     })
                     .AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies())
                     .AddScoped<ClientPreferenceManager>()
