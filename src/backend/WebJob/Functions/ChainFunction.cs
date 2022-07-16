@@ -17,21 +17,21 @@ namespace WebJob.Functions
         }
 
         [FunctionName("Chain_AELF_UpdateChainInfo")]
-        public async Task AELFUpdateChainInfo([TimerTrigger("*/30 * * * * *")] TimerInfo myTimer, ILogger log, ExecutionContext context)
+        public async Task AELFUpdateChainInfo([TimerTrigger("0 * * * * *")] TimerInfo myTimer, ILogger log, ExecutionContext context)
         {
             var commandArg = new UpdateChainInfoCommand() { ChainIdBase58 = "AELF" };
             await ExecuteAsync<UpdateChainInfoCommand, IResult>(context, commandArg);
         }
 
         [FunctionName("Chain_tDVV_UpdateChainInfo")]
-        public async Task tDVVUpdateChainInfo([TimerTrigger("*/30 * * * * *")] TimerInfo myTimer, ILogger log, ExecutionContext context)
+        public async Task tDVVUpdateChainInfo([TimerTrigger("20 * * * * *")] TimerInfo myTimer, ILogger log, ExecutionContext context)
         {
             var commandArg = new UpdateChainInfoCommand() { ChainIdBase58 = "tDVV" };
             await ExecuteAsync<UpdateChainInfoCommand, IResult>(context, commandArg);
         }
 
         [FunctionName("Chain_tDVW_UpdateChainInfo")]
-        public async Task tdVWUpdateChainInfo([TimerTrigger("*/30 * * * * *")] TimerInfo myTimer, ILogger log, ExecutionContext context)
+        public async Task tdVWUpdateChainInfo([TimerTrigger("40 * * * * *")] TimerInfo myTimer, ILogger log, ExecutionContext context)
         {
             var commandArg = new UpdateChainInfoCommand() { ChainIdBase58 = "tDVW" };
             await ExecuteAsync<UpdateChainInfoCommand, IResult>(context, commandArg);

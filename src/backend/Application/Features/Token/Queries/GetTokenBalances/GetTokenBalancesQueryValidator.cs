@@ -1,11 +1,5 @@
 ﻿using AElf;
-using Application.Features.Token.Commands.AddWalletToken;
 using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Features.Token.Queries.GetTokenBalances
 {
