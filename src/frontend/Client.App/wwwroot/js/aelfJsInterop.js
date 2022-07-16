@@ -66,29 +66,28 @@ export async function Initialize(nodeUrl, appName) {
 
     // connectChain -> Login -> initContract -> call contract methods
     console.log(message);
-
     aelf = new window.NightElf.AElf({
         httpProvider: [
             nodeUrl,
         ],
         appName: appName,
-        // If you don't set pure=true, you will get old data structure which is not match aelf-sdk.js return.
-        // v1.1.3  
         pure: true
     });
+
+    console.log(aelf.getVersion());
 }
 
 export async function GetBalance() {
-    const wallet1 = {
+    const walletPayload = {
         address: walletAddress
     };
 
-    var contractResult = await aelf.chain.contractAt(tokenContractAddress, wallet1);
+    var contractResult = await aelf.chain.contractAt(tokenContractAddress, walletPayload);
 
     if (contractResult) {
         const payload1 = {
             symbol: 'ELF',
-            owner: wallet1.address
+            owner: walletPayload.address
         };
 
         var callResult = await contractResult.GetBalance.call(payload1);
@@ -102,11 +101,11 @@ export async function GetBalance() {
 }
 
 export async function ReadSmartContract(address, method, payload) {
-    const wallet1 = {
+    const walletPayload = {
         address: walletAddress
     };
 
-    var contractResult = await aelf.chain.contractAt(address, wallet1);
+    var contractResult = await aelf.chain.contractAt(address, walletPayload);
 
     if (contractResult) {
         var callResult = await contractResult[method].call(payload);
@@ -121,11 +120,11 @@ export async function ReadSmartContract(address, method, payload) {
 
 
 export async function ExecuteSmartContract(address, method, payload) {
-    const wallet1 = {
+    const walletPayload = {
         address: walletAddress
     };
 
-    var contractResult = await aelf.chain.contractAt(address, wallet1);
+    var contractResult = await aelf.chain.contractAt(address, walletPayload);
 
     if (contractResult) {
         var callResult = await contractResult[method](payload);
@@ -144,26 +143,18 @@ export async function GetTxStatus(txId) {
 };
 
 export async function HasNightElf() {
-    if (window.NightElf) {
-        return true;
-    }
-    else {
-        return false;
-    }
-};
+    return !!window.NightElf;
+}
 
 export async function IsConnected() {
-    if (window.NightElf && walletAddress) {
-        return true;
-    }
-    else {
-        return false;
-    }
-};
+    //console.log(window.NightElf)
+    //console.log(walletAddress)
+    return !!(window.NightElf && walletAddress)
+}
 
 export async function GetAddress() {
     return walletAddress;
-};
+}
 
 export async function Login() {
     if (aelf) {
@@ -174,36 +165,39 @@ export async function Login() {
             },
         });
 
-        walletAddress = JSON.parse(result.detail).address;
+        if (result.detail)
+        {
+            walletAddress = JSON.parse(result.detail).address;
+            //const wallet1 = {
+            //    address: walletAddress
+            //};
+            //// get chain status
+            //const chainStatus = await aelf.chain.getChainStatus();
+            //// get genesis contract address
+            //const GenesisContractAddress = chainStatus.GenesisContractAddress;
+            //// get genesis contract instance
+            //const zeroContract = await aelf.chain.contractAt(GenesisContractAddress, wallet1);
+            //// Get contract address by the read only method `GetContractAddressByName` of genesis contract
+            //tokenContractAddress = await zeroContract.GetContractAddressByName.call(AElf.utils.sha256(tokenContractName));
+            return true;
+        }
 
-        const wallet1 = {
-            address: walletAddress
-        };
-
-        // get chain status
-        const chainStatus = await aelf.chain.getChainStatus();
-        // get genesis contract address
-        const GenesisContractAddress = chainStatus.GenesisContractAddress;
-        // get genesis contract instance
-        const zeroContract = await aelf.chain.contractAt(GenesisContractAddress, wallet1);
-        // Get contract address by the read only method `GetContractAddressByName` of genesis contract
-        tokenContractAddress = await zeroContract.GetContractAddressByName.call(AElf.utils.sha256(tokenContractName));
-
-        return walletAddress;
+        return false;
     }
 
     return null;
-};
+}
 
 export async function Logout() {
-    walletAddress = null;
-    if (aelf) {
-        let result = await aelf.logout({
+    if (aelf && walletAddress) {
+        var result = await aelf.logout({
             chainId: "AELF",
             address: walletAddress,
         });
+
+        walletAddress = null;
     }
-};
+}
 
 export async function Test() {
     // get chain status

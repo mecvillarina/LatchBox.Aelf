@@ -39,7 +39,7 @@ namespace Client.App.Extensions
                     .AddBlazoredLocalStorage()
                     .AddMudServices(configuration =>
                     {
-                        configuration.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopRight;
+                        configuration.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopCenter;
                         configuration.SnackbarConfiguration.HideTransitionDuration = 100;
                         configuration.SnackbarConfiguration.ShowTransitionDuration = 100;
                         configuration.SnackbarConfiguration.VisibleStateDuration = 5000;
@@ -62,6 +62,7 @@ namespace Client.App.Extensions
                     });
             builder.Services.AddHttpClientInterceptor();
             builder.Services.AddScoped<FetchDataExecutor>();
+            builder.Services.AddScoped<NightElfExecutor>();
 
 
 #if Release

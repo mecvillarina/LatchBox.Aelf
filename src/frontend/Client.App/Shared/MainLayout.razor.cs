@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace Client.App.Shared
 {
@@ -16,19 +17,27 @@ namespace Client.App.Shared
         public bool IsNavMenuPanelExpanded { get; set; }
 
         public string CurrentChainIdBase58 { get; set; }
+        public string CurrentChainExplorerUrl { get; set; }
+        public string CurrentChainNodeUrl => $"{CurrentChainExplorerUrl}/chain";
+
         public string CurrentChainDisplay => $"Chain ({CurrentChainIdBase58})";
 
         public List<SupportedChainModel> SupportedChains { get; set; } = new();
 
+        public NightElfModel NightElf { get; set; }
+
         protected override void OnInitialized()
         {
+            NightElf = new NightElfModel();
             CurrentTheme = _clientPreferenceManager.GetCurrentTheme();
             FetchDataExecutor.StartExecuting();
+            NightElfExecutor.StartExecuting();
         }
 
         protected async override Task OnInitializedAsync()
         {
             await AppBreakpointService.InitAsync();
+            NightElfExecutor.Disconnected += HandleNightElfExecutorDisconnected;
         }
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
@@ -51,14 +60,32 @@ namespace Client.App.Shared
             if (IsLoaded)
             {
                 var supportedChains = await ChainService.FetchSupportedChainsAsync();
-                SupportedChains = supportedChains.Select(x => new SupportedChainModel() { ChainType = x.ChainType, ChainIdBase58 = x.ChainIdBase58 }).ToList();
+                SupportedChains = supportedChains.Select(x => new SupportedChainModel() { ExplorerUrl = x.Explorer, ChainType = x.ChainType, ChainIdBase58 = x.ChainIdBase58 }).ToList();
                 CurrentChainIdBase58 = await ChainService.FetchCurrentChainAsync();
+                CurrentChainExplorerUrl = SupportedChains.First(x => x.ChainIdBase58 == CurrentChainIdBase58).ExplorerUrl;
+                await InitNightElfAsync();
             }
 
             StateHasChanged();
         }
 
-        private async Task SetChainAsync(string chainIdBase58)
+        private async Task InitNightElfAsync()
+        {
+            NightElf.HasExtension = await NightElfService.HasNightElfAsync();
+
+            if (NightElf.HasExtension)
+            {
+                await NightElfService.InitializeNightElfAsync("aelf.LatchBox", CurrentChainNodeUrl);
+                NightElf.IsConnected = await NightElfService.IsConnectedAsync();
+
+                if (NightElf.IsConnected)
+                {
+                    NightElf.WalletAddress = await NightElfService.GetAddressAsync();
+                }
+            }
+        }
+
+        private async Task OnSetChainAsync(string chainIdBase58)
         {
             Console.WriteLine(chainIdBase58);
 
@@ -69,13 +96,50 @@ namespace Client.App.Shared
             if (data.Any(x => x.ChainIdBase58 == chainIdBase58))
             {
                 await ChainService.SetCurrentChainAsync(chainIdBase58);
-                _navigationManager.NavigateTo(_navigationManager.Uri, true);
+                NavigationManager.NavigateTo(NavigationManager.Uri, true);
             }
+        }
+
+        private async Task OnConnectWalletAsync()
+        {
+            NightElf.HasExtension = await NightElfService.HasNightElfAsync();
+
+            if (!NightElf.HasExtension)
+            {
+                AppDialogService.ShowError("Please download and install NightELF browser extension.");
+            }
+            else
+            {
+                await NightElfService.InitializeNightElfAsync("aelf.LatchBox", CurrentChainNodeUrl);
+                var loginResult = await NightElfService.LoginAsync();
+                if (loginResult)
+                {
+                    NightElf.WalletAddress = await NightElfService.GetAddressAsync();
+                    NightElf.IsConnected = await NightElfService.IsConnectedAsync();
+                    StateHasChanged();
+                }
+            }
+        }
+
+        private void HandleNightElfExecutorDisconnected(object source, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(NightElf.WalletAddress)) return;
+            AppDialogService.ShowError("Wallet has been disconnected");
+            NightElf.IsConnected = false;
+        }
+
+        private async Task OnDisconnectWalletAsync()
+        {
+            await NightElfService.LogoutAsync();
+            NightElf.Clear();
+            NightElfExecutor.InvokeDisconnect();
+            StateHasChanged();
         }
 
         public async ValueTask DisposeAsync()
         {
             await AppBreakpointService.DisposeAsync();
+            NightElfExecutor.Disconnected -= HandleNightElfExecutorDisconnected;
         }
     }
 }

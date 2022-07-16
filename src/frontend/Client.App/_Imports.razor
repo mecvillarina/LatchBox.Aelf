@@ -43,11 +43,14 @@
 @inject AppDialogService AppDialogService
 @inject ExceptionHandler _exceptionHandler
 @inject AppBreakpointService AppBreakpointService
-@inject FetchDataExecutor FetchDataExecutor
 @inject ChainService ChainService
+@inject NightElfService NightElfService
+
+@inject FetchDataExecutor FetchDataExecutor
+@inject NightElfExecutor NightElfExecutor
 
 @inject ClientPreferenceManager _clientPreferenceManager
 @inject HttpClient _httpClient
-@inject NavigationManager _navigationManager
+@inject NavigationManager NavigationManager
 
 @inject ITokenManager TokenManager

@@ -66,14 +66,15 @@ namespace Client.App.Services
             return result;
 
         }
-        public async ValueTask<string?> LoginAsync()
+
+        public async ValueTask<bool> LoginAsync()
         {
             var module = await moduleTask.Value;
-            var result = await module.InvokeAsync<string?>("Login");
-
+            var result = await module.InvokeAsync<bool>("Login");
             Console.WriteLine($"Login: {result}");
-            return string.IsNullOrEmpty(result) ? null : result;
+            return result;
         }
+
         public async ValueTask<string?> GetAddressAsync()
         {
             var module = await moduleTask.Value;
@@ -81,6 +82,7 @@ namespace Client.App.Services
             Console.WriteLine($"GetAddress: {result}");
             return string.IsNullOrEmpty(result) ? null : result;
         }
+
         public async ValueTask LogoutAsync()
         {
             var module = await moduleTask.Value;
