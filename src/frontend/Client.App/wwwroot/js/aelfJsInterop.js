@@ -198,15 +198,3 @@ export async function Logout() {
         walletAddress = null;
     }
 }
-
-export async function Test() {
-    // get chain status
-    const chainStatus = await aelf.chain.getChainStatus();
-    console.log(chainStatus);
-    // get genesis contract address
-    // const GenesisContractAddress = chainStatus.GenesisContractAddress;
-    // get genesis contract instance
-    //const zeroContract = await aelf.chain.contractAt(GenesisContractAddress, newWallet);
-    // Get contract address by the read only method `GetContractAddressByName` of genesis contract
-    //tokenContractAddress = await zeroContract.GetContractAddressByName.call(AElf.utils.sha256(tokenContractName));
-};

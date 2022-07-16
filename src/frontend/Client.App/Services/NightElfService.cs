@@ -20,7 +20,6 @@ namespace Client.App.Services
 
         public ValueTask<IJSObjectReference> LoadScripts(IJSRuntime jsRuntime)
         {
-            //await jsRuntime.InvokeAsync<IJSObjectReference>("import", "https://unpkg.com/aelf-sdk@3.2.40/dist/aelf.umd.js");
             return jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/aelfJsInterop.js");
         }
 
