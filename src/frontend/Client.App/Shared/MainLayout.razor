@@ -33,13 +33,36 @@
     </MudAppBar>*@
         <MudAppBar Fixed="false" Elevation="0" DisableGutters="true" Class="muudstrap-navbar">
             <div class="d-none d-md-flex justify-space-between align-center px-6 mud-width-full">
-                <div class="d-flex align-center">
-                    <MudText Typo="Typo.h6" Color="Color.Primary" Class="ml-4 mr-12 py-1">aelf.LatchBox</MudText>
+                <div class="d-flex align-center gap-2">
+                    <MudText Typo="Typo.h6" Color="Color.Primary" Class="ml-4 mr-10 py-1">aelf.LatchBox</MudText>
                     <MudButton Color="Color.Inherit" Link="/">Home</MudButton>
-                    <MudButton Class="ml-2" Color="Color.Inherit" Link="/assets">Assets</MudButton>
-                    <MudButton Class="ml-2" Color="Color.Inherit" Link="/locks">Locks</MudButton>
-                    <MudButton Class="ml-2" Color="Color.Inherit" Link="/vestings">Vestings</MudButton>
+                    <MudButton Color="Color.Inherit" Link="/assets">Assets</MudButton>
+                    <MudButton Color="Color.Inherit" Link="/locks">Locks</MudButton>
+                    <MudButton Color="Color.Inherit" Link="/vestings">Vestings</MudButton>
                 </div>
+
+                @if (IsLoaded)
+                {
+                    <div class="d-flex gap-2">
+                        <MudMenu Label="@CurrentChainDisplay" Size="Size.Small" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" Variant="Variant.Outlined">
+                            <ChildContent>
+                                @foreach (var chain in SupportedChains)
+                                {
+                                    <MudMenuItem OnClick="@(async e => await OnSetChainAsync(@chain.ChainIdBase58))"><span>@chain.ChainType chain @chain.ChainIdBase58</span></MudMenuItem>
+                                }
+                            </ChildContent>
+                        </MudMenu>
+
+                        @if (!NightElf.IsConnected)
+                        {
+                            <MudButton Class="align-self-center" OnClick="OnConnectWalletAsync" Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary">Connect Wallet</MudButton>
+                        }
+                        else
+                        {
+                            <MudButton Class="align-self-center" OnClick="OnDisconnectWalletAsync" Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary">@NightElf.WalletAddress.ToMask(6)</MudButton>
+                        }
+                    </div>
+                }
                 @* <MudPaper Height="36px" Width="36px" Elevation="0" Class="pa-1 rounded-lg d-flex justify-center align-center mud-theme-primary">
             <MudText Typo="Typo.h6">L</MudText>
             </MudPaper>*@
@@ -55,17 +78,6 @@
             <MudMenuItem Link="/vestings/claims">Claims</MudMenuItem>
             <MudMenuItem Link="/vestings/refunds">Refunds</MudMenuItem>
             </MudMenu>*@
-                @if (IsLoaded)
-                {
-                    <MudMenu Label="@CurrentChainDisplay" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" Variant="Variant.Outlined">
-                        <ChildContent>
-                            @foreach (var chain in SupportedChains)
-                            {
-                                <MudMenuItem OnClick="@(async e => await SetChainAsync(@chain.ChainIdBase58))"><span>@chain.ChainType chain @chain.ChainIdBase58</span></MudMenuItem>
-                            }
-                        </ChildContent>
-                    </MudMenu>
-                }
             </div>
             <div class="d-flex d-md-none relative mud-width-full mud-height-full">
                 <MudExpansionPanels Square="true" Elevation="0" Class="absolute mud-width-full mud-height-full" Style="top:0px;left:0; background-color:Inherit;">
@@ -73,10 +85,10 @@
                         <TitleContent>
                             <div class="d-flex justify-space-between mud-width-full align-center px-6">
                                 <div class="d-flex align-center">
-                                   @* <MudPaper Height="36px" Width="36px" Elevation="25" Class="pa-1 rounded-lg d-flex justify-center align-center mud-theme-primary">
-                                        <MudText Typo="Typo.h6">L</MudText>
-                                    </MudPaper>
-                                    <MudText Typo="Typo.h6" Color="Color.Primary" Class="ml-4 mr-12 py-1">aelf.LatchBox</MudText>*@
+                                    @* <MudPaper Height="36px" Width="36px" Elevation="25" Class="pa-1 rounded-lg d-flex justify-center align-center mud-theme-primary">
+                                <MudText Typo="Typo.h6">L</MudText>
+                                </MudPaper>
+                                <MudText Typo="Typo.h6" Color="Color.Primary" Class="ml-4 mr-12 py-1">aelf.LatchBox</MudText>*@
 
                                     <MudText Typo="Typo.h6" Color="Color.Primary" Class="mr-12 py-1">aelf.LatchBox</MudText>
                                 </div>
@@ -95,9 +107,12 @@
                                         <MudNavGroup Title="@CurrentChainDisplay">
                                             @foreach (var chain in SupportedChains)
                                             {
-                                                <MudNavLink OnClick="@(async e => await SetChainAsync(@chain.ChainIdBase58))"><span>@chain.ChainType chain @chain.ChainIdBase58</span></MudNavLink>
+                                                <MudNavLink OnClick="@(async e => await OnSetChainAsync(@chain.ChainIdBase58))"><span>@chain.ChainType chain @chain.ChainIdBase58</span></MudNavLink>
                                             }
                                         </MudNavGroup>
+
+                                        <MudNavLink>Connect Wallet</MudNavLink>
+
                                     }
                                 </MudNavMenu>
                             </div>

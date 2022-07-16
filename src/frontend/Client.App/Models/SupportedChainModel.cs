@@ -4,5 +4,6 @@
     {
         public string ChainType { get; set; }
         public string ChainIdBase58 { get; set; }
+        public string ExplorerUrl { get; set; }
     }
 }

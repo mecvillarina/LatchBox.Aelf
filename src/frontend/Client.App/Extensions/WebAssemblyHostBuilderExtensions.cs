@@ -1,4 +1,5 @@
-﻿using Blazored.LocalStorage;
+﻿using Application.Common.Interfaces;
+using Blazored.LocalStorage;
 using Client.App.Infrastructure.Managers;
 using Client.App.Infrastructure.Routes;
 using Client.App.Infrastructure.WebServices;
@@ -38,7 +39,7 @@ namespace Client.App.Extensions
                     .AddBlazoredLocalStorage()
                     .AddMudServices(configuration =>
                     {
-                        configuration.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopRight;
+                        configuration.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopCenter;
                         configuration.SnackbarConfiguration.HideTransitionDuration = 100;
                         configuration.SnackbarConfiguration.ShowTransitionDuration = 100;
                         configuration.SnackbarConfiguration.VisibleStateDuration = 5000;
@@ -46,11 +47,10 @@ namespace Client.App.Extensions
                     })
                     .AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies())
                     .AddScoped<ClientPreferenceManager>()
-                    .AddScoped<IAppDialogService, AppDialogService>()
                     .AddTransient<AppHttpClient>()
-                    .AddTransient<IExceptionHandler, ExceptionHandler>()
                     .AddManagers()
                     .AddWebServices()
+                    .AddServices()
                     .AddScoped(sp => sp
                             .GetRequiredService<IHttpClientFactory>()
                             .CreateClient(ClientName))
@@ -61,13 +61,26 @@ namespace Client.App.Extensions
                         client.BaseAddress = new Uri(Server.ApiBaseAddress);
                     });
             builder.Services.AddHttpClientInterceptor();
-            builder.Services.AddScoped<AppBreakpointService>();
             builder.Services.AddScoped<FetchDataExecutor>();
+            builder.Services.AddScoped<NightElfExecutor>();
+
+
 #if Release
             builder.Logging.SetMinimumLevel(LogLevel.Critical | LogLevel.Error);
 #endif
 
             return builder;
+        }
+
+        public static IServiceCollection AddServices(this IServiceCollection services)
+        {
+            services.AddScoped<AppBreakpointService>();
+            services.AddScoped<AppDialogService>();
+            services.AddScoped<ExceptionHandler>();
+            services.AddScoped<ChainService>();
+            services.AddScoped<NightElfService>();
+
+            return services;
         }
 
         public static IServiceCollection AddManagers(this IServiceCollection services)

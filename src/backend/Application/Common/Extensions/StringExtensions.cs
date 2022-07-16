@@ -1,4 +1,6 @@
-﻿using System;
+﻿using AElf.Types;
+using AElf;
+using System;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -7,47 +9,32 @@ namespace Application.Common.Extensions
 {
     public static class StringExtensions
     {
-        public static string ToEmptyIfNull(this string s)
+        public static string ToAmountDisplay(this decimal amount, int decimals)
         {
-            return s ?? string.Empty;
+            return amount.ToString($"0.{new string('#', decimals)}");
         }
 
-        public static string ToNormalize(this string s)
+        public static string ToAmountDisplay(this long amount, int decimals)
         {
-            s ??= string.Empty;
-            s = s.Replace(" ", string.Empty).ToUpper();
-            return s;
+            return amount.ToAmount(decimals).ToAmountDisplay(decimals);
         }
 
-        public static string ToSingleSpacing(this string str)
+        public static string ToStringAddress(this Address address)
         {
-            var options = RegexOptions.None;
-            var regex = new Regex("[ ]{2,}", options);
-            str ??= string.Empty;
-            str = regex.Replace(str, " ");
-
-            return str;
+            var newAdd = new AElf.Types.Address() { Value = address.Value };
+            return newAdd.ToBase58();
         }
 
-        public static string ToHexString(this string str)
+        public static string ToChainName(this int chainId)
         {
-            str ??= string.Empty;
-            var ca = str.Reverse().ToArray();
-            var ba = Encoding.Default.GetBytes(ca);
-
-            return BitConverter.ToString(ba).Replace("-", "");
+            return ChainHelper.ConvertChainIdToBase58(chainId);
         }
 
-        public static string FromHexStringToString(this string hexStr)
+        public static string ToMask(this string value, int length)
         {
-            hexStr = hexStr.Replace("-", "");
-            byte[] raw = new byte[hexStr.Length / 2];
-            for (int i = 0; i < raw.Length; i++)
-            {
-                raw[i] = Convert.ToByte(hexStr.Substring(i * 2, 2), 16);
-            }
-
-            return Encoding.Default.GetString(raw);
+            if (value == null) return "";
+            if (length > value.Length) return "";
+            return string.Format("{0}....{1}", value.Substring(0, length), value.Substring(value.Length - length, length));
         }
     }
 }
