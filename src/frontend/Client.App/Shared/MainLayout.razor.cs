@@ -1,5 +1,7 @@
 ﻿using Client.App.Models;
 using Client.App.Pages.Base;
+using Client.App.Shared.Dialogs;
+using Microsoft.Extensions.Options;
 using MudBlazor;
 using System;
 using System.Collections.Generic;
@@ -124,16 +126,19 @@ namespace Client.App.Shared
         private void HandleNightElfExecutorDisconnected(object source, EventArgs e)
         {
             if (string.IsNullOrEmpty(NightElf.WalletAddress)) return;
-            AppDialogService.ShowError("Wallet has been disconnected");
-            NightElf.IsConnected = false;
+            AppDialogService.ShowError("Logged out.");
+            NightElf.Clear();
+            StateHasChanged();
         }
 
-        private async Task OnDisconnectWalletAsync()
+        private void OnViewWallet()
         {
-            await NightElfService.LogoutAsync();
-            NightElf.Clear();
-            NightElfExecutor.InvokeDisconnect();
-            StateHasChanged();
+            var options = new DialogOptions()
+            {
+                CloseButton = true
+            };
+
+            DialogService.Show<ViewWalletDialog>("Your Wallet", options);
         }
 
         public async ValueTask DisposeAsync()
