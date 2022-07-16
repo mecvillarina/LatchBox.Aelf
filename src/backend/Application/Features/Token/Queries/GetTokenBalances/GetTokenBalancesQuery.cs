@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Application.Features.Token.Queries
+namespace Application.Features.Token.Queries.GetTokenBalances
 {
     public class GetTokenBalancesQuery : IRequest<Result<List<TokenBalanceInfoDto>>>
     {
