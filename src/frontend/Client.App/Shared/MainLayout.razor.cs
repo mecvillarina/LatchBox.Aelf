@@ -62,7 +62,7 @@ namespace Client.App.Shared
             if (IsLoaded)
             {
                 var supportedChains = await ChainService.FetchSupportedChainsAsync();
-                SupportedChains = supportedChains.Select(x => new SupportedChainModel() { ExplorerUrl = x.Explorer, ChainType = x.ChainType, ChainIdBase58 = x.ChainIdBase58 }).ToList();
+                SupportedChains = supportedChains.Select(x => new SupportedChainModel(x)).ToList();
                 CurrentChainIdBase58 = await ChainService.FetchCurrentChainAsync();
                 CurrentChainExplorerUrl = SupportedChains.First(x => x.ChainIdBase58 == CurrentChainIdBase58).ExplorerUrl;
                 await InitNightElfAsync();

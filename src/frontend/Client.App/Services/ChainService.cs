@@ -21,9 +21,20 @@ namespace Client.App.Services
         public Task<List<ChainInfoDto>> FetchSupportedChainsAsync() => _chainManager.FetchSupportedChainsAsync();
         public Task<string> FetchCurrentChainAsync() => _chainManager.FetchCurrentChainAsync();
         public Task SetCurrentChainAsync(string chainInfo) => _chainManager.SetCurrentChainAsync(chainInfo);
+      
         public async Task<IResult<List<ChainInfoDto>>> GetAllSupportedChainsAsync()
         {
             return await _exceptionHandler.HandlerRequestTaskAsync(() => _chainManager.GetAllSupportedChainsAsync());
+        }
+
+        public async Task<ChainInfoDto> FetchCurrentChainInfoAsync()
+        {
+            var chainIdBase58 = await FetchCurrentChainAsync();
+
+            if (chainIdBase58 == null) return null;
+
+            var supportedChains = await FetchSupportedChainsAsync();
+            return supportedChains.FirstOrDefault(x => x.ChainIdBase58 == chainIdBase58);
         }
 
         public async Task<bool> FetchChainDataAsync()

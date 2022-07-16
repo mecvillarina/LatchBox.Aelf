@@ -58,7 +58,7 @@ namespace Infrastructure.Services
             var tokens = new List<TokenDto>();
             foreach (var token in response.Data.Tokens)
             {
-                tokens.Add(new TokenDto()
+                var tokenDto = new TokenDto()
                 {
                     Id = token.Id,
                     ContractAddress = token.ContractAddress,
@@ -69,8 +69,21 @@ namespace Infrastructure.Services
                     Name = token.Name,
                     TotalSupply = token.TotalSupply,
                     Supply = token.Supply,
-                    Decimals = token.Decimals
-                });
+                    Decimals = token.Decimals,
+                };
+
+                //if (token.TxId != "inner")
+                //{
+                //    request = new RestRequest($"chain/api/blockChain/transactionResult?transactionId={token.TxId}", Method.Get);
+                //    var tx = Execute<TransactionResultDto>(explorerUrl, request);
+
+                //    if (tx != null && tx.Transaction != null && tx.ErrorMessage == null)
+                //    {
+                //        tokenDto.Issuer = tx.Transaction.From;
+                //    }
+                //}
+
+                tokens.Add(tokenDto);
             }
 
             return tokens;
@@ -96,6 +109,18 @@ namespace Infrastructure.Services
                     {
                         Token = token,
                         Balance = tokenBalance.Balance
+                    });
+                }
+            }
+
+            foreach(var token in tokens)
+            {
+                if(token.Issuer == address && !balances.Any(x => x.Token.Symbol == token.Symbol))
+                {
+                    balances.Add(new TokenBalanceInfoDto()
+                    {
+                        Token = token,
+                        Balance = "0.00"
                     });
                 }
             }
