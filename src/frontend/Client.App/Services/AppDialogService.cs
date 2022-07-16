@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Client.App.Services
 {
-    public class AppDialogService : IAppDialogService
+    public class AppDialogService
     {
         private readonly ISnackbar _snackbar;
 

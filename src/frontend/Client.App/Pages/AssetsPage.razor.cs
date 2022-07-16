@@ -7,29 +7,54 @@ using System.Threading.Tasks;
 
 namespace Client.App.Pages
 {
-    public partial class AssetsPage : IPageBase
+    public partial class AssetsPage : IPageBase, IDisposable
     {
         public List<TokenBalanceInfoDto> TokenBalances { get; set; } = new();
         public bool IsLoaded { get; set; }
+
+        protected async override Task OnInitializedAsync()
+        {
+            NightElfExecutor.Disconnected += HandleNightElfExecutorDisconnected;
+            if (!NightElfExecutor.IsConnected)
+            {
+                AppDialogService.ShowError("Connect wallet first.");
+                NavigationManager.NavigateTo("/");
+                return;
+            }
+        }
+
+        private void HandleNightElfExecutorDisconnected(object source, EventArgs e)
+        {
+            NavigationManager.NavigateTo("/");
+        }
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
             {
-                await FetchData();
+                await FetchDataAsync();
             }
         }
 
-        private async Task FetchData()
+        private async Task FetchDataAsync()
         {
             IsLoaded = false;
             StateHasChanged();
 
-            var result = await TokenManager.GetTokenBalancesAsync("tdVV", "61bTPDbBwfB2abbB8oquerLyD3tmRyqjUk4YVN9QQvLJkN2mN");
-
-            if (result.Succeeded)
+            try
             {
-                TokenBalances = result.Data;
+                var currentChainBase58 = await ChainService.FetchCurrentChainAsync();
+                var walletAddress = await NightElfService.GetAddressAsync();
+                var result = await TokenManager.GetTokenBalancesAsync(currentChainBase58, walletAddress);
+
+                if (result.Succeeded)
+                {
+                    TokenBalances = result.Data;
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
 
             IsLoaded = true;
@@ -38,8 +63,8 @@ namespace Client.App.Pages
 
         private async Task<(bool, List<string>)> ValidateSupportedChainAsync()
         {
-            var chains = await ChainManager.FetchSupportedChainsAsync();
-            var currentChain = await ChainManager.FetchCurrentChainAsync();
+            var chains = await ChainService.FetchSupportedChainsAsync();
+            var currentChain = await ChainService.FetchCurrentChainAsync();
             var isSupported = chains.Any(x => x.ChainIdBase58 == currentChain && x.IsTokenCreationFeatureSupported);
             var supportedChains = chains.Where(x => x.IsTokenCreationFeatureSupported).Select(x => x.ChainIdBase58).ToList();
             return (isSupported, supportedChains);
@@ -55,12 +80,17 @@ namespace Client.App.Pages
 
                 if (result.Item2.Any())
                 {
-                    message = $"Token Creation feature is not supported on this chain. Currently, it is only supported on the following chains: <br><ul>{string.Join("",result.Item2.Select(x => $"<li>• {x}</li>").ToList())}</ul>";
+                    message = $"Token Creation feature is not supported on this chain. Currently, it is only supported on the following chains: <br><ul>{string.Join("", result.Item2.Select(x => $"<li>• {x}</li>").ToList())}</ul>";
                 }
 
-                _appDialogService.ShowError(message);
+                AppDialogService.ShowError(message);
                 return;
             }
+        }
+
+        public void Dispose()
+        {
+            NightElfExecutor.Disconnected -= HandleNightElfExecutorDisconnected;
         }
     }
 }

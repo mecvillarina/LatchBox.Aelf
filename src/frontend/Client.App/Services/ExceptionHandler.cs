@@ -5,12 +5,8 @@ using System.Threading.Tasks;
 
 namespace Client.App.Services
 {
-    public class ExceptionHandler : IExceptionHandler
+    public class ExceptionHandler
     {
-        public ExceptionHandler()
-        {
-        }
-
         public async Task HandlerRequestTaskAsync(Func<Task> task)
         {
             try

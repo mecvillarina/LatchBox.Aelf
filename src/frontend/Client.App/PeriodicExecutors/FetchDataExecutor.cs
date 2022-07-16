@@ -9,17 +9,15 @@ namespace Client.App.PeriodicExecutors
 {
     public class FetchDataExecutor : IDisposable
     {
-        private readonly IChainManager _chainManager;
-        private readonly IExceptionHandler _exceptionHandler;
+        private readonly ChainService _chainService;
 
         private Timer _timer;
         private bool _running;
         bool _isFetching;
 
-        public FetchDataExecutor(IExceptionHandler exceptionHandler, IChainManager chainManager)
+        public FetchDataExecutor(ChainService chainService)
         {
-            _exceptionHandler = exceptionHandler;
-            _chainManager = chainManager;
+            _chainService = chainService;
         }
 
         public void StartExecuting()
@@ -49,28 +47,8 @@ namespace Client.App.PeriodicExecutors
                 _isFetching = true;
 
                 //#if RELEASE
-                await _exceptionHandler.HandlerRequestTaskAsync(() => _chainManager.GetAllSupportedChainsAsync());
-                var data = await _chainManager.FetchSupportedChainsAsync();
-                if (!data.Any())
-                {
-                    var chainsResult = await _exceptionHandler.HandlerRequestTaskAsync(() => _chainManager.GetAllSupportedChainsAsync());
-
-                    if (chainsResult.Succeeded)
-                    {
-                        if (chainsResult.Data.Any())
-                        {
-                            await _chainManager.SetCurrentChainAsync(chainsResult.Data.First().ChainIdBase58);
-                        }
-                    }
-                }
-                else
-                {
-                    var currentChain = await _chainManager.FetchCurrentChainAsync();
-                    if (currentChain == null || !data.Any(x => x.ChainIdBase58 == currentChain))
-                    {
-                        await _chainManager.SetCurrentChainAsync(data.First().ChainIdBase58);
-                    }
-                }
+                await _chainService.GetAllSupportedChainsAsync();
+                await _chainService.FetchChainDataAsync();
                 //#endif
 
                 Console.WriteLine($"Fetch Done...");
