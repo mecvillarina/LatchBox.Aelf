@@ -1,4 +1,5 @@
 ﻿using Application.Common.Dtos;
+using Client.App.Pages.Assets.Modals;
 using Client.App.Pages.Base;
 using System;
 using System.Collections.Generic;
@@ -15,11 +16,11 @@ namespace Client.App.Pages
         protected async override Task OnInitializedAsync()
         {
             NightElfExecutor.Disconnected += HandleNightElfExecutorDisconnected;
+
             if (!NightElfExecutor.IsConnected)
             {
                 AppDialogService.ShowError("Connect wallet first.");
                 NavigationManager.NavigateTo("/");
-                return;
             }
         }
 
@@ -85,6 +86,13 @@ namespace Client.App.Pages
 
                 AppDialogService.ShowError(message);
                 return;
+            }
+
+            var dialog = DialogService.Show<CreateTokenModal>($"Create New Token");
+            var dialogResult = await dialog.Result;
+
+            if (!dialogResult.Cancelled)
+            {
             }
         }
 

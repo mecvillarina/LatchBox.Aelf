@@ -1,16 +1,11 @@
 ﻿using AElf;
 using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Application.Features.Token.Commands.RemoveWalletToken
+namespace Application.Features.Token.Queries.GetTokenBalances
 {
-    public class RemoveWalletTokenCommandValidator : AbstractValidator<RemoveWalletTokenCommand>
+    public class GetTokenBalancesQueryValidator : AbstractValidator<GetTokenBalancesQuery>
     {
-        public RemoveWalletTokenCommandValidator()
+        public GetTokenBalancesQueryValidator()
         {
             CascadeMode = CascadeMode.Stop;
 
@@ -18,7 +13,7 @@ namespace Application.Features.Token.Commands.RemoveWalletToken
                 .NotNull().WithMessage("'Chain Id' must not be empty.")
                 .NotEmpty().WithMessage("'Chain Id' must not be empty.");
 
-            RuleFor(v => v.WalletAddress)
+            RuleFor(v => v.Address)
                 .NotNull().WithMessage("'Wallet Address' must not be empty.")
                 .NotEmpty().WithMessage("'Wallet Address' must not be empty.")
                 .Must(x =>
@@ -32,10 +27,6 @@ namespace Application.Features.Token.Commands.RemoveWalletToken
                         return false;
                     }
                 }).WithMessage("Invalid 'Wallet Address' format.");
-
-            RuleFor(v => v.TokenSymbol)
-                .NotNull().WithMessage("'Token Symbol' must not be empty.")
-                .NotEmpty().WithMessage("'Token Symbol' must not be empty.");
         }
     }
 }

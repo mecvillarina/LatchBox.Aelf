@@ -4,10 +4,11 @@ using Application.Common.Models;
 using MediatR;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Application.Features.Token.Queries
+namespace Application.Features.Token.Queries.GetTokenBalances
 {
     public class GetTokenBalancesQuery : IRequest<Result<List<TokenBalanceInfoDto>>>
     {
@@ -31,9 +32,24 @@ namespace Application.Features.Token.Queries
 
                 if (chainInfo == null || string.IsNullOrEmpty(chainInfo.Explorer)) return await Result<List<TokenBalanceInfoDto>>.FailAsync("Chain not supported.");
 
-                var data = _explorerService.GetTokenBalanceList(chainInfo.Explorer, request.Address);
+                var tokenBalances = _explorerService.GetTokenBalanceList(chainInfo.Explorer, request.Address);
 
-                return await Result<List<TokenBalanceInfoDto>>.SuccessAsync(data);
+                var tokens = _dbContext.TokenInfos.Where(x => x.ChainId == chainInfo.ChainId && x.Issuer == request.Address);
+
+                foreach (var token in tokens)
+                {
+                    if (!tokenBalances.Any(x => x.Token.Symbol == token.Symbol))
+                    {
+                        tokenBalances.Add(new TokenBalanceInfoDto()
+                        {
+                            Token = JsonSerializer.Deserialize<TokenDto>(token.RawExplorerData),
+                            Balance = "0",  //to be remove
+                            IsIssuer = true
+                        });
+                    }
+                }
+
+                return await Result<List<TokenBalanceInfoDto>>.SuccessAsync(tokenBalances);
             }
         }
     }

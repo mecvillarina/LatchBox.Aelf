@@ -77,71 +77,6 @@ export async function Initialize(nodeUrl, appName) {
     console.log(aelf.getVersion());
 }
 
-export async function GetBalance() {
-    const walletPayload = {
-        address: walletAddress
-    };
-
-    var contractResult = await aelf.chain.contractAt(tokenContractAddress, walletPayload);
-
-    if (contractResult) {
-        const payload1 = {
-            symbol: 'ELF',
-            owner: walletPayload.address
-        };
-
-        var callResult = await contractResult.GetBalance.call(payload1);
-
-        if (callResult) {
-            return callResult;
-        }
-    }
-
-    return null;
-}
-
-export async function ReadSmartContract(address, method, payload) {
-    const walletPayload = {
-        address: walletAddress
-    };
-
-    var contractResult = await aelf.chain.contractAt(address, walletPayload);
-
-    if (contractResult) {
-        var callResult = await contractResult[method].call(payload);
-
-        if (callResult) {
-            return callResult;
-        }
-    }
-
-    return null;
-}
-
-
-export async function ExecuteSmartContract(address, method, payload) {
-    const walletPayload = {
-        address: walletAddress
-    };
-
-    var contractResult = await aelf.chain.contractAt(address, walletPayload);
-
-    if (contractResult) {
-        var callResult = await contractResult[method](payload);
-
-        if (callResult) {
-            return callResult.TransactionId;
-        }
-    }
-
-    return null;
-}
-
-export async function GetTxStatus(txId) {
-    var result = await aelf.chain.getTxResult(txId);
-    return result;
-};
-
 export async function HasNightElf() {
     return !!window.NightElf;
 }
@@ -165,14 +100,13 @@ export async function Login() {
             },
         });
 
-        if (result.detail)
-        {
+        if (result.detail) {
             walletAddress = JSON.parse(result.detail).address;
             //const wallet1 = {
             //    address: walletAddress
             //};
             //// get chain status
-            //const chainStatus = await aelf.chain.getChainStatus();
+            await aelf.chain.getChainStatus();
             //// get genesis contract address
             //const GenesisContractAddress = chainStatus.GenesisContractAddress;
             //// get genesis contract instance
@@ -198,3 +132,82 @@ export async function Logout() {
         walletAddress = null;
     }
 }
+
+export async function SendTx(address, functionName, payload) {
+    console.log(address);
+    console.log(functionName);
+
+    if (aelf) {
+        console.log(payload);
+
+        const walletPayload = {
+            address: walletAddress
+        };
+
+        console.log(walletPayload);
+
+        await aelf.chain.getChainStatus();
+        var contractResult = await aelf.chain.contractAt(address, walletPayload);
+        console.log(contractResult);
+
+        if (contractResult) {
+            var callResult = await contractResult[functionName](payload);
+
+            console.log(callResult);
+            if (callResult) {
+                return callResult.TransactionId;
+            }
+        }
+    }
+
+    return null;
+}
+
+export async function GetTxStatus(txId) {
+    var result = await aelf.chain.getTxResult(txId);
+    console.log(result);
+    return result;
+};
+
+//export async function ReadSmartContract(address, method, payload) {
+//    const walletPayload = {
+//        address: walletAddress
+//    };
+
+//    var contractResult = await aelf.chain.contractAt(address, walletPayload);
+
+//    if (contractResult) {
+//        var callResult = await contractResult[method].call(payload);
+
+//        if (callResult) {
+//            return callResult;
+//        }
+//    }
+
+//    return null;
+//}
+
+
+//export async function GetBalance() {
+//    const walletPayload = {
+//        address: walletAddress
+//    };
+
+//    var contractResult = await aelf.chain.contractAt(tokenContractAddress, walletPayload);
+
+//    if (contractResult) {
+//        const payload1 = {
+//            symbol: 'ELF',
+//            owner: walletPayload.address
+//        };
+
+//        var callResult = await contractResult.GetBalance.call(payload1);
+
+//        if (callResult) {
+//            return callResult;
+//        }
+//    }
+
+//    return null;
+//}
+

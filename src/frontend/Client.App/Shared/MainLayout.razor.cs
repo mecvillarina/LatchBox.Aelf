@@ -1,5 +1,7 @@
 ﻿using Client.App.Models;
 using Client.App.Pages.Base;
+using Client.App.Shared.Dialogs;
+using Microsoft.Extensions.Options;
 using MudBlazor;
 using System;
 using System.Collections.Generic;
@@ -60,7 +62,7 @@ namespace Client.App.Shared
             if (IsLoaded)
             {
                 var supportedChains = await ChainService.FetchSupportedChainsAsync();
-                SupportedChains = supportedChains.Select(x => new SupportedChainModel() { ExplorerUrl = x.Explorer, ChainType = x.ChainType, ChainIdBase58 = x.ChainIdBase58 }).ToList();
+                SupportedChains = supportedChains.Select(x => new SupportedChainModel(x)).ToList();
                 CurrentChainIdBase58 = await ChainService.FetchCurrentChainAsync();
                 CurrentChainExplorerUrl = SupportedChains.First(x => x.ChainIdBase58 == CurrentChainIdBase58).ExplorerUrl;
                 await InitNightElfAsync();
@@ -106,7 +108,7 @@ namespace Client.App.Shared
 
             if (!NightElf.HasExtension)
             {
-                AppDialogService.ShowError("Please download and install NightELF browser extension.");
+                AppDialogService.Show("Please <a href=\"https://chrome.google.com/webstore/detail/aelf-explorer-extension/mlmlhipeonlflbcclinpbmcjdnpnmkpf\" target=\"_blank\"><u>download and install</u></a> NightELF browser extension.");
             }
             else
             {
@@ -124,16 +126,19 @@ namespace Client.App.Shared
         private void HandleNightElfExecutorDisconnected(object source, EventArgs e)
         {
             if (string.IsNullOrEmpty(NightElf.WalletAddress)) return;
-            AppDialogService.ShowError("Wallet has been disconnected");
-            NightElf.IsConnected = false;
+            AppDialogService.ShowError("Logged out.");
+            NightElf.Clear();
+            StateHasChanged();
         }
 
-        private async Task OnDisconnectWalletAsync()
+        private void OnViewWallet()
         {
-            await NightElfService.LogoutAsync();
-            NightElf.Clear();
-            NightElfExecutor.InvokeDisconnect();
-            StateHasChanged();
+            var options = new DialogOptions()
+            {
+                CloseButton = true
+            };
+
+            DialogService.Show<ViewWalletDialog>("Your Wallet", options);
         }
 
         public async ValueTask DisposeAsync()
