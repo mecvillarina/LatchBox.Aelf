@@ -12,6 +12,11 @@ namespace Client.App.Services
             _snackbar = snackBar;
         }
 
+        public void Show(string message)
+        {
+            _snackbar.Add(message, Severity.Normal, config => config.HideIcon = true);
+        }
+
         public void ShowSuccess(string message)
         {
             _snackbar.Add(message, Severity.Success);

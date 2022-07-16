@@ -106,7 +106,7 @@ namespace Client.App.Shared
 
             if (!NightElf.HasExtension)
             {
-                AppDialogService.ShowError("Please download and install NightELF browser extension.");
+                AppDialogService.Show("Please <a href=\"https://chrome.google.com/webstore/detail/aelf-explorer-extension/mlmlhipeonlflbcclinpbmcjdnpnmkpf\" target=\"_blank\"><u>download and install</u></a> NightELF browser extension.");
             }
             else
             {
