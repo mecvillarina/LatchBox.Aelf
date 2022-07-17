@@ -78,8 +78,9 @@ namespace Client.App.Extensions
             services.AddScoped<AppBreakpointService>();
             services.AddScoped<AppDialogService>();
             services.AddScoped<ExceptionHandler>();
-            services.AddScoped<ChainService>();
             services.AddScoped<NightElfService>();
+            services.AddScoped<ChainService>();
+            services.AddScoped<TokenService>();
 
             return services;
         }

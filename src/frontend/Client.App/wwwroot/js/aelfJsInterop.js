@@ -65,7 +65,7 @@ export async function Initialize(nodeUrl, appName) {
     var message = await nightElfCheck.check;
 
     // connectChain -> Login -> initContract -> call contract methods
-    console.log(message);
+    //console.log(message);
     aelf = new window.NightElf.AElf({
         httpProvider: [
             nodeUrl,
@@ -102,17 +102,8 @@ export async function Login() {
 
         if (result.detail) {
             walletAddress = JSON.parse(result.detail).address;
-            //const wallet1 = {
-            //    address: walletAddress
-            //};
-            //// get chain status
             await aelf.chain.getChainStatus();
-            //// get genesis contract address
-            //const GenesisContractAddress = chainStatus.GenesisContractAddress;
-            //// get genesis contract instance
-            //const zeroContract = await aelf.chain.contractAt(GenesisContractAddress, wallet1);
-            //// Get contract address by the read only method `GetContractAddressByName` of genesis contract
-            //tokenContractAddress = await zeroContract.GetContractAddressByName.call(AElf.utils.sha256(tokenContractName));
+
             return true;
         }
 
@@ -124,7 +115,7 @@ export async function Login() {
 
 export async function Logout() {
     if (aelf && walletAddress) {
-        var result = await aelf.logout({
+        await aelf.logout({
             chainId: "AELF",
             address: walletAddress,
         });
@@ -134,26 +125,26 @@ export async function Logout() {
 }
 
 export async function SendTx(address, functionName, payload) {
-    console.log(address);
-    console.log(functionName);
+    //console.log(address);
+    //console.log(functionName);
 
     if (aelf) {
-        console.log(payload);
+        //console.log(payload);
 
         const walletPayload = {
             address: walletAddress
         };
 
-        console.log(walletPayload);
+        //console.log(walletPayload);
 
         await aelf.chain.getChainStatus();
         var contractResult = await aelf.chain.contractAt(address, walletPayload);
-        console.log(contractResult);
+        //console.log(contractResult);
 
         if (contractResult) {
             var callResult = await contractResult[functionName](payload);
 
-            console.log(callResult);
+            //console.log(callResult);
             if (callResult) {
                 return callResult.TransactionId;
             }
@@ -163,11 +154,35 @@ export async function SendTx(address, functionName, payload) {
     return null;
 }
 
+export async function CallTx(address, method, payload) {
+    if (aelf) {
+        const walletPayload = {
+            address: walletAddress
+        };
+
+        await aelf.chain.getChainStatus();
+
+        var contractResult = await aelf.chain.contractAt(address, walletPayload);
+
+        if (contractResult) {
+            var callResult = await contractResult[method].call(payload);
+
+            if (callResult) {
+                console.log(callResult);
+                return callResult;
+            }
+        }
+    }
+
+    return null;
+}
+
+
 export async function GetTxStatus(txId) {
     var result = await aelf.chain.getTxResult(txId);
-    console.log(result);
+    //console.log(result);
     return result;
-};
+}
 
 //export async function ReadSmartContract(address, method, payload) {
 //    const walletPayload = {

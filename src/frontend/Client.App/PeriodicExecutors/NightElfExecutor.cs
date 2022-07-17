@@ -13,8 +13,9 @@ namespace Client.App.PeriodicExecutors
             _nightElfService = nightElfService;
         }
 
-        public bool IsConnected { get; set; }
+        public bool HasConnected { get; set; }
 
+        public event EventHandler Connected;
         public event EventHandler Disconnected;
 
         private Timer _timer;
@@ -25,7 +26,7 @@ namespace Client.App.PeriodicExecutors
             if (!_running)
             {
                 _timer = new Timer();
-                _timer.Interval = 1000;
+                _timer.Interval = 2000;
                 _timer.Elapsed += HandleTimer;
                 _timer.AutoReset = true;
                 _timer.Enabled = true;
@@ -39,11 +40,17 @@ namespace Client.App.PeriodicExecutors
             try
             {
                 var isConnected = await _nightElfService.IsConnectedAsync();
-                if (IsConnected && !isConnected)
+                if (HasConnected && !isConnected)
                 {
-                    Disconnected?.Invoke(this, e);
+                    Disconnected?.Invoke(this, EventArgs.Empty);
                 }
-                IsConnected = isConnected;
+                
+                if(!HasConnected && isConnected)
+                {
+                    Connected?.Invoke(this, EventArgs.Empty);
+                }
+
+                HasConnected = isConnected;
             }
             catch
             {

@@ -80,9 +80,11 @@ namespace Client.App.Shared
                 await NightElfService.InitializeNightElfAsync("aelf.LatchBox", CurrentChainNodeUrl);
                 NightElf.IsConnected = await NightElfService.IsConnectedAsync();
 
-                if (NightElf.IsConnected)
+                var loginResult = await NightElfService.LoginAsync();
+                if (loginResult)
                 {
                     NightElf.WalletAddress = await NightElfService.GetAddressAsync();
+                    NightElf.IsConnected = await NightElfService.IsConnectedAsync();
                 }
             }
         }

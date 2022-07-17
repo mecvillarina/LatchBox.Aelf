@@ -79,10 +79,10 @@ namespace Client.App.Services
             return txResult;
         }
 
-        public async ValueTask<T> ReadSmartContractAsync<T>(string address, string functionName, ExpandoObject payload)
+        public async ValueTask<T> CallTx<T>(string address, string functionName, object payload)
         {
             var module = await moduleTask.Value;
-            return await module.InvokeAsync<T>("ReadSmartContract", address, functionName, payload);
+            return await module.InvokeAsync<T>("CallTx", address, functionName, payload);
         }
 
         public async ValueTask<bool> IsConnectedAsync()
@@ -91,7 +91,6 @@ namespace Client.App.Services
             var result = await module.InvokeAsync<bool>("IsConnected");
             Console.WriteLine($"Connected: {result}");
             return result;
-
         }
 
         public async ValueTask<bool> LoginAsync()

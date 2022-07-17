@@ -34,6 +34,7 @@ namespace Client.Pages.Locks.Modals
                     Model.IsRevocable = true;
                     Model.Remarks = "";
                     var balanceOutput = await TokenManager.GetBalanceOnSideChainAsync(TokenInfo.Symbol);
+                   
                     TokenBalanceDisplay = $"{balanceOutput.Balance.ToAmountDisplay(TokenInfo.Decimals)} {TokenInfo.Symbol}";
                     IsLoaded = true;
                     StateHasChanged();

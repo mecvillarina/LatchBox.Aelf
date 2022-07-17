@@ -11,6 +11,6 @@
         public string Name { get; set; }
         public string TotalSupply { get; set; }
         public string Supply { get; set; }
-        public long Decimals { get; set; }
+        public int Decimals { get; set; }
     }
 }
