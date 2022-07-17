@@ -2,9 +2,11 @@
 using Application.Common.Extensions;
 using Client.App.Pages.Assets.Modals;
 using Client.App.Pages.Base;
+using Client.App.Parameters;
 using Client.App.SmartContractDto;
 using Client.Infrastructure.Exceptions;
 using Domain.Entities;
+using MudBlazor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -141,6 +143,39 @@ namespace Client.App.Pages
             }
 
             var dialog = DialogService.Show<CreateTokenModal>($"Create New Token");
+            await dialog.Result;
+        }
+
+        private async Task OnIssueTokenAsync(TokenBalanceInfoDto balanceInfo)
+        {
+            var result = await ValidateSupportedChainAsync();
+
+            if (!result.Item1)
+            {
+                var message = "Issue Token feature is not supported on this chain.";
+
+                if (result.Item2.Any())
+                {
+                    message = $"Issue Token feature is not supported on this chain. Currently, it is only supported on the following chains: <br><ul>{string.Join("", result.Item2.Select(x => $"<li>• {x}</li>").ToList())}</ul>";
+                }
+
+                AppDialogService.ShowError(message);
+                return;
+            }
+
+            var isConnected = await NightElfService.IsConnectedAsync();
+            if (!isConnected)
+            {
+                AppDialogService.ShowError("Connect your wallet first.");
+                return;
+            }
+
+            var parameters = new DialogParameters()
+            {
+                { nameof(IssueTokenModal.Model), new IssueTokenParameter() { Symbol = balanceInfo.Token.Symbol, TokenName = balanceInfo.Token.Name, Decimals = balanceInfo.Token.Decimals, IssuedChainId = balanceInfo.Token.IssueChainId.ToChainId() } }
+            };
+
+            var dialog = DialogService.Show<IssueTokenModal>($"Issue Token", parameters);
             await dialog.Result;
         }
 

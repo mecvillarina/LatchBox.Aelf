@@ -29,6 +29,7 @@
                         <MudTh>Name</MudTh>
                         <MudTh>Total Supply</MudTh>
                         <MudTh>Balance</MudTh>
+                        <MudTh></MudTh>
                     </HeaderContent>
 
                     <RowTemplate>
@@ -47,6 +48,11 @@
                         </MudTd>
                         <MudTd DataLabel="Balance">
                             @context.Balance @context.Token.Symbol
+                        </MudTd>
+                        <MudTd DataLabel="">
+                            <MudMenu Variant="Variant.Filled" Color="Color.Primary" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" DisableElevation="true" Icon="@Icons.Filled.MoreVert" IconColor="Color.Secondary" Direction="Direction.Left" OffsetX="true">
+                                <MudMenuItem OnClick="@(() => OnIssueTokenAsync(context))" Disabled="@(!context.CanIssueToken)">Issue Token</MudMenuItem>
+                            </MudMenu>
                         </MudTd>
                     </RowTemplate>
                 </MudTable>

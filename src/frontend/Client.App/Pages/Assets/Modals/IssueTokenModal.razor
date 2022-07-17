@@ -1,0 +1,57 @@
+﻿<MudContainer Class="pa-0 ma-0" MaxWidth="MaxWidth.False" style="max-height: 80vh; overflow-y: scroll">
+    <EditForm Model="@Model" OnValidSubmit="SubmitAsync">
+        <FluentValidationValidator @ref="_fluentValidationValidator" />
+        <MudDialog DisableSidePadding="true" ClassActions="px-2 py-4">
+            <DialogContent>
+                <MudContainer MaxWidth="MaxWidth.False">
+                    <MudGrid Class="pt-0 pb-4" Spacing="2">
+                        <MudItem xs="12">
+                            <MudTextField Label="Symbol" Variant="Variant.Outlined" Disabled="true"
+                                          Value="Model.Symbol" For="@(() => Model.Symbol)" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField Label="Token Name" Variant="Variant.Outlined" Disabled="true"
+                                          Value="Model.TokenName" For="@(() => Model.TokenName)" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField Label="Decimals" Variant="Variant.Outlined" Disabled="true"
+                                          Value="Model.Decimals" For="@(() => Model.Decimals)" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField Label="To" Variant="Variant.Outlined" Disabled="IsProcessing" AdornmentIcon="@Icons.Material.Filled.AccountBalanceWallet" Adornment="Adornment.End" OnAdornmentClick="(() => SetToValueAsync())"
+                                          @bind-Value="Model.To" For="@(() => Model.To)" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField Label="Amount" Variant="Variant.Outlined" Disabled="IsProcessing"
+                                          @bind-Value="Model.Amount" For="@(() => Model.Amount)" />
+                        </MudItem>
+                        
+                        <MudItem xs="12">
+                            <MudTextField Label="Memo" Variant="Variant.Outlined" Disabled="IsProcessing"
+                                          @bind-Value="Model.Memo" For="@(() => Model.Memo)" />
+                        </MudItem>
+
+                    </MudGrid>
+                </MudContainer>
+            </DialogContent>
+            <DialogActions>
+                <MudButton DisableElevation Variant="Variant.Text" Disabled="IsProcessing" OnClick="Cancel">CANCEL</MudButton>
+                <MudButton DisableElevation Variant="Variant.Filled" Disabled="IsProcessing" ButtonType="ButtonType.Submit" Color="Color.Primary">
+                    @if (IsProcessing)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                    }
+                    else
+                    {
+                        <span>ISSUE</span>
+                    }
+                </MudButton>
+            </DialogActions>
+        </MudDialog>
+    </EditForm>
+</MudContainer>
+

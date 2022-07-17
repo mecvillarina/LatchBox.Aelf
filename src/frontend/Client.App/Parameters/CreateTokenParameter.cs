@@ -9,9 +9,9 @@ namespace Client.App.Parameters
             IsBurnable = isBurnable;
             IssueChainId = issueChainId;
         }
-        public string Symbol { get; set; } = "FIRE";
-        public string TokenName { get; set; } = "FIRE";
-        public long TotalSupply { get; set; } = 21000000;
+        public string Symbol { get; set; } 
+        public string TokenName { get; set; }
+        public long TotalSupply { get; set; }
         public int Decimals { get; set; } = 8;
         public bool IsBurnable { get; set; }
         public int IssueChainId { get; set; }

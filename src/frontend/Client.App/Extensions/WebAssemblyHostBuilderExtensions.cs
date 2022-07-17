@@ -42,7 +42,7 @@ namespace Client.App.Extensions
                         configuration.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopCenter;
                         configuration.SnackbarConfiguration.HideTransitionDuration = 100;
                         configuration.SnackbarConfiguration.ShowTransitionDuration = 100;
-                        configuration.SnackbarConfiguration.VisibleStateDuration = 5000;
+                        configuration.SnackbarConfiguration.VisibleStateDuration = 10000;
                         configuration.SnackbarConfiguration.ShowCloseIcon = true;
                         configuration.SnackbarConfiguration.SnackbarVariant = Variant.Text;
                     })
