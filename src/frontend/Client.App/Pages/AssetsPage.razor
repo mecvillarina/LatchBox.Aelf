@@ -4,11 +4,11 @@
     <div class="d-flex justify-space-between mud-width-full">
         <div class="d-flex">
             <MudText Class="mr-4 align-self-center" Color="Color.Secondary" Typo="Typo.h4" GutterBottom="false">Assets</MudText>
-            <MudIconButton Disabled="@(!IsLoaded)" OnClick="FetchDataAsync" Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium" />
+            <MudIconButton Disabled="@(!IsLoaded || !IsConnected)" OnClick="FetchDataAsync" Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium" />
         </div>
 
         <div class="d-flex ml-auto">
-            <MudButton Disabled="@(!IsLoaded)" OnClick="OnCreateNewTokenAsync" Class="align-self-center" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium">Create Token</MudButton>
+            <MudButton Disabled="@(!IsLoaded || !IsConnected)" OnClick="OnCreateNewTokenAsync" Class="align-self-center" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium">Create Token</MudButton>
         </div>
     </div>
 </MudContainer>
@@ -34,7 +34,7 @@
                     <RowTemplate>
                         <MudTd DataLabel="Name">
                             <MudText Typo="Typo.body1" Color="Color.Primary">
-                                <b>@context.Token.Name (@context.Token.Symbol)</b>
+                                <b>@context.Token.Symbol (@context.Token.Name)</b>
                             </MudText>
                             <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
                                 <MudText Typo="Typo.caption">
@@ -43,18 +43,24 @@
                             </MudHidden>
                         </MudTd>
                         <MudTd DataLabel="Total Supply">
-                            @context.Token.TotalSupply
+                            @context.Token.TotalSupply @context.Token.Symbol
                         </MudTd>
                         <MudTd DataLabel="Balance">
-                            @context.Balance
+                            @context.Balance @context.Token.Symbol
                         </MudTd>
                     </RowTemplate>
                 </MudTable>
             }
+            else if (IsConnected)
+            {
+                <MudText Typo="Typo.h5" Class="px-4 py-6" GutterBottom="false">
+                    No tokens found.
+                </MudText>
+            }
             else
             {
-                <MudText Typo="Typo.h6" Class="pa-4" GutterBottom="false">
-                    No tokens found.
+                <MudText Typo="Typo.h5" Color="Color.Error" Class="px-4 py-6" GutterBottom="false">
+                    Connect your wallet first.
                 </MudText>
             }
         </MudPaper>

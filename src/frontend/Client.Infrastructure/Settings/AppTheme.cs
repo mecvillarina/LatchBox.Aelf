@@ -137,7 +137,7 @@ namespace Client.Infrastructure.Settings
             theme.PaletteDark.Secondary = "#f6d38d";
             //theme.PaletteDark.TextSecondary = "#ece0c6";
             theme.PaletteDark.Background = "#1d1d1d";
-            theme.PaletteDark.Surface = "#282828";
+            theme.PaletteDark.Surface = "#2c2c2c";
             theme.PaletteDark.DarkContrastText= "#ece0c6";
             theme.PaletteDark.DrawerBackground = "#1d1d1d";
             theme.PaletteDark.AppbarBackground = "#1d1d1d";

@@ -60,12 +60,14 @@ namespace Client.App.Pages.Assets.Modals
                     var payloadContract = new CreateTokenInput(Model) { Issuer = walletAddress, TotalSupply = Model.TotalSupply.ToChainAmount(Model.Decimals) };
                     var txResult = await NightElfService.SendTxAsync(chain.TokenContractAddress, "Create", payloadContract);
 
-                    if (txResult.ErrorMessage != null)
-                        throw new GeneralException(txResult.ErrorMessage.Message);
+                    if (txResult != null)
+                    {
+                        if (txResult.ErrorMessage != null)
+                            throw new GeneralException(txResult.ErrorMessage.Message);
 
-                    AppDialogService.ShowTxSend(chain.Explorer, txResult.TransactionId, "Token creation success");
-                    MudDialog.Close();
-
+                        AppDialogService.ShowTxSend(chain.Explorer, txResult.TransactionId, "Token creation success");
+                        MudDialog.Close();
+                    }
                 }
                 catch (Exception ex)
                 {

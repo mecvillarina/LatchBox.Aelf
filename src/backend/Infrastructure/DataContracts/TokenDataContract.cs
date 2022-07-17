@@ -32,7 +32,7 @@ namespace Infrastructure.DataContracts
         public string Supply { get; set; }
 
         [JsonPropertyName("decimals")]
-        public long Decimals { get; set; }
+        public int Decimals { get; set; }
 
         [JsonPropertyName("holders")]
         public long Holders { get; set; }

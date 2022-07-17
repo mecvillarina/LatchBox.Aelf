@@ -1,9 +1,14 @@
 ﻿using Application.Common.Dtos;
+using Application.Common.Extensions;
 using Client.App.Pages.Assets.Modals;
 using Client.App.Pages.Base;
+using Client.App.SmartContractDto;
+using Client.Infrastructure.Exceptions;
+using Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Client.App.Pages
@@ -12,21 +17,33 @@ namespace Client.App.Pages
     {
         public List<TokenBalanceInfoDto> TokenBalances { get; set; } = new();
         public bool IsLoaded { get; set; }
-
+        public bool IsConnected { get; set; }
+        public bool FlagProcess { get; set; }
+        public bool IsProcessing { get; set; }
         protected async override Task OnInitializedAsync()
         {
+            NightElfExecutor.Connected += HandleNightElfExecutorConnected;
             NightElfExecutor.Disconnected += HandleNightElfExecutorDisconnected;
+            IsConnected = await NightElfService.IsConnectedAsync();
+        }
 
-            if (!NightElfExecutor.IsConnected)
+        private async void HandleNightElfExecutorConnected(object source, EventArgs e)
+        {
+            IsConnected = true;
+            if (!TokenBalances.Any())
             {
-                AppDialogService.ShowError("Connect wallet first.");
-                NavigationManager.NavigateTo("/");
+                await FetchDataAsync();
             }
+            StateHasChanged();
         }
 
         private void HandleNightElfExecutorDisconnected(object source, EventArgs e)
         {
-            NavigationManager.NavigateTo("/");
+            IsConnected = false;
+            IsProcessing = false;
+            FlagProcess = false;
+            ClearData();
+            StateHasChanged();
         }
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
@@ -39,26 +56,54 @@ namespace Client.App.Pages
 
         private async Task FetchDataAsync()
         {
+            if (IsProcessing) return;
+
+            TokenBalances = new List<TokenBalanceInfoDto>();
             IsLoaded = false;
+            FlagProcess = true;
+            IsProcessing = true;
             StateHasChanged();
+            var currentChainBase58 = await ChainService.FetchCurrentChainAsync();
+            var walletAddress = await NightElfService.GetAddressAsync();
 
             try
             {
-                var currentChainBase58 = await ChainService.FetchCurrentChainAsync();
-                var walletAddress = await NightElfService.GetAddressAsync();
-                var result = await TokenManager.GetTokenBalancesAsync(currentChainBase58, walletAddress);
+                if (string.IsNullOrEmpty(walletAddress)) throw new GeneralException("No Wallet found.");
 
+                var result = await TokenManager.GetTokenBalancesAsync(currentChainBase58, walletAddress);
                 if (result.Succeeded)
                 {
                     TokenBalances = result.Data;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
 
             IsLoaded = true;
+            IsProcessing = false;
+            StateHasChanged();
+
+            FlagProcess = false;
+            foreach (var tokenBalance in TokenBalances)
+            {
+                if (FlagProcess)
+                    break;
+
+                try
+                {
+                    var balanceOutput = await TokenService.GetBalanceAsync(new GetBalanceInput()
+                    {
+                        Symbol = tokenBalance.Token.Symbol,
+                        Owner = walletAddress
+                    });
+
+                    tokenBalance.Balance = balanceOutput.Balance.ToAmountDisplay(tokenBalance.Token.Decimals);
+                }
+                catch { }
+            }
+
             StateHasChanged();
         }
 
@@ -88,16 +133,26 @@ namespace Client.App.Pages
                 return;
             }
 
-            var dialog = DialogService.Show<CreateTokenModal>($"Create New Token");
-            var dialogResult = await dialog.Result;
-
-            if (!dialogResult.Cancelled)
+            var isConnected = await NightElfService.IsConnectedAsync();
+            if (!isConnected)
             {
+                AppDialogService.ShowError("Connect your wallet first.");
+                return;
             }
+
+            var dialog = DialogService.Show<CreateTokenModal>($"Create New Token");
+            await dialog.Result;
+        }
+
+        private void ClearData()
+        {
+            TokenBalances = new();
+            StateHasChanged();
         }
 
         public void Dispose()
         {
+            NightElfExecutor.Connected -= HandleNightElfExecutorConnected;
             NightElfExecutor.Disconnected -= HandleNightElfExecutorDisconnected;
         }
     }
