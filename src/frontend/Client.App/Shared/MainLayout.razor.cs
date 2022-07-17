@@ -120,6 +120,7 @@ namespace Client.App.Shared
                 {
                     NightElf.WalletAddress = await NightElfService.GetAddressAsync();
                     NightElf.IsConnected = await NightElfService.IsConnectedAsync();
+                    AppDialogService.Clear();
                     StateHasChanged();
                 }
             }

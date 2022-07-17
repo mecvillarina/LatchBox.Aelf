@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AElf;
+using System;
 using System.Globalization;
 using System.Numerics;
 
@@ -24,6 +25,11 @@ namespace Application.Common.Extensions
         public static long ToChainAmount(this long value, int decimals)
         {
             return (long)(value * Math.Pow(10, decimals));
+        }
+
+        public static int ToChainId(this string chainIdBase58)
+        {
+            return ChainHelper.ConvertBase58ToChainId(chainIdBase58);
         }
 
         public static int CountDecimalPlaces(this double value)

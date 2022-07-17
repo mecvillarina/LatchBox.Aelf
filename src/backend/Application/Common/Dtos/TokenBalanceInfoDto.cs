@@ -5,5 +5,6 @@
         public TokenDto Token { get; set; }
         public string Balance { get; set; }
         public bool IsIssuer { get; set; }
+        public bool CanIssueToken { get; set; }
     }
 }

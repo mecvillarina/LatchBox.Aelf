@@ -40,12 +40,21 @@ namespace Application.Features.Token.Queries.GetTokenBalances
                 {
                     if (!tokenBalances.Any(x => x.Token.Symbol == token.Symbol))
                     {
+                        var tokenData = JsonSerializer.Deserialize<TokenDto>(token.RawExplorerData);
                         tokenBalances.Add(new TokenBalanceInfoDto()
                         {
-                            Token = JsonSerializer.Deserialize<TokenDto>(token.RawExplorerData),
+                            Token = tokenData,
                             Balance = "0",  //to be remove
-                            IsIssuer = true
+                            IsIssuer = true,
+                            CanIssueToken = tokenData.IssueChainId == request.ChainIdBase58
                         });
+                    }
+                    else
+                    {
+                        var tokenBalance = tokenBalances.First(x => x.Token.Symbol == token.Symbol);
+                        var tokenData = JsonSerializer.Deserialize<TokenDto>(token.RawExplorerData);
+                        tokenBalance.IsIssuer = token.Issuer == request.Address;
+                        tokenBalance.CanIssueToken = tokenBalance.IsIssuer && tokenData.IssueChainId == request.ChainIdBase58;
                     }
                 }
 

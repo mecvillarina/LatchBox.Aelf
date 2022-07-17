@@ -25,7 +25,7 @@ namespace Application.Common.Extensions
             return newAdd.ToBase58();
         }
 
-        public static string ToChainName(this int chainId)
+        public static string ToChainIdBase58(this int chainId)
         {
             return ChainHelper.ConvertChainIdToBase58(chainId);
         }
