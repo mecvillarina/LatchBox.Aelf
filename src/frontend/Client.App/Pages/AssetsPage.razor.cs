@@ -124,11 +124,11 @@ namespace Client.App.Pages
 
             if (!result.Item1)
             {
-                var message = "Token Creation feature is not supported on this chain.";
+                var message = "Token Creation feature is not supported in thischain.";
 
                 if (result.Item2.Any())
                 {
-                    message = $"Token Creation feature is not supported on this chain. Currently, it is only supported on the following chains: <br><ul>{string.Join("", result.Item2.Select(x => $"<li>• {x}</li>").ToList())}</ul>";
+                    message = $"Token Creation feature is not supported in thischain. Currently, it is only supported on the following chains: <br><ul>{string.Join("", result.Item2.Select(x => $"<li>• {x}</li>").ToList())}</ul>";
                 }
 
                 AppDialogService.ShowError(message);
@@ -148,21 +148,6 @@ namespace Client.App.Pages
 
         private async Task OnIssueTokenAsync(TokenBalanceInfoDto balanceInfo)
         {
-            var result = await ValidateSupportedChainAsync();
-
-            if (!result.Item1)
-            {
-                var message = "Issue Token feature is not supported on this chain.";
-
-                if (result.Item2.Any())
-                {
-                    message = $"Issue Token feature is not supported on this chain. Currently, it is only supported on the following chains: <br><ul>{string.Join("", result.Item2.Select(x => $"<li>• {x}</li>").ToList())}</ul>";
-                }
-
-                AppDialogService.ShowError(message);
-                return;
-            }
-
             var isConnected = await NightElfService.IsConnectedAsync();
             if (!isConnected)
             {

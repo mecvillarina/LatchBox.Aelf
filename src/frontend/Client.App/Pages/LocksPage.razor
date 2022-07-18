@@ -1,7 +1,53 @@
 ﻿@page "/locks"
 
-<PageHeader Title="Locks" />
+<MudContainer MaxWidth="MaxWidth.False">
+    <div class="d-flex justify-space-between mud-width-full">
+        <div class="d-flex">
+            <MudText Class="mr-4 align-self-center" Color="Color.Secondary" Typo="Typo.h4" GutterBottom="false">Locks</MudText>
+            <MudIconButton Disabled="@(!IsLoaded || !IsConnected)" OnClick="FetchDataAsync" Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium" />
+        </div>
+    </div>
+</MudContainer>
 
 <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
-    
+    @if (!IsLoaded)
+    {
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="56px" Width="100%" />
+        <MudSkeleton Class="mt-2" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="280px" Width="100%" />
+    }
+    else
+    {
+        <MudPaper Square="true" Elevation="15">
+            @if (!IsConnected)
+            {
+                <MudText Typo="Typo.h5" Color="Color.Error" Class="px-4 py-6" GutterBottom="false">
+                    Connect your wallet first.
+                </MudText>
+            }
+            else
+            {
+                @if (!IsSupported)
+                {
+                    <MudText Typo="Typo.h5" Color="Color.Error" Class="px-4 py-6" GutterBottom="false">
+                        @SupportMessage
+                    </MudText>
+                }
+                else
+                {
+                    @*@if (TokenBalances.Any())
+        {
+
+        }
+        else
+        {
+        <MudText Typo="Typo.h5" Class="px-4 py-6" GutterBottom="false">
+        There are no tokens locked on the vault.
+        </MudText>
+        }*@
+                }
+            }
+
+
+        </MudPaper>
+    }
 </MudContainer>
