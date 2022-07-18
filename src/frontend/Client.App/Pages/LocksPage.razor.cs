@@ -1,5 +1,6 @@
 ﻿using Application.Common.Models;
 using Client.App.Pages.Base;
+using Client.App.SmartContractDto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,7 +80,9 @@ namespace Client.App.Pages
             }
             else
             {
-
+                var balanceOutput = await LockTokenVaultService.GetLocksByInitiatorAsync();
+                var s = balanceOutput.Locks[0].CreationTime;
+                var ss = s.GetUniversalDateTime();
             }
 
             IsLoaded = true;

@@ -169,6 +169,8 @@ export async function CallTx(address, method, payload) {
 
             if (callResult) {
                 console.log(callResult);
+                console.log(callResult.locks[0].creationTime)
+                console.log(typeof(callResult.locks[0].creationTime))
                 return callResult;
             }
         }

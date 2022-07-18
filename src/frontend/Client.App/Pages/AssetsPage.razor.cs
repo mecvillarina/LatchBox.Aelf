@@ -172,6 +172,8 @@ namespace Client.App.Pages
 
         public void Dispose()
         {
+            IsProcessing = false;
+            FlagProcess = true;
             NightElfExecutor.Connected -= HandleNightElfExecutorConnected;
             NightElfExecutor.Disconnected -= HandleNightElfExecutorDisconnected;
         }
