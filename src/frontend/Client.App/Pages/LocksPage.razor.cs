@@ -1,6 +1,7 @@
 ﻿using Application.Common.Models;
 using Client.App.Pages.Base;
 using Client.App.SmartContractDto;
+using MudBlazor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +11,13 @@ namespace Client.App.Pages
 {
     public partial class LocksPage : IPageBase, IDisposable
     {
-        public bool IsLoaded { get; set; }
+        public bool IsMyLocksLoaded { get; set; }
         public bool IsConnected { get; set; }
         public bool IsProcessing { get; set; }
         public bool IsSupported { get; set; }
         public string SupportMessage { get; set; }
 
+        private MudTabs tabs { get; set; }
         protected async override Task OnInitializedAsync()
         {
             NightElfExecutor.Connected += HandleNightElfExecutorConnected;
@@ -61,22 +63,21 @@ namespace Client.App.Pages
         private async Task FetchDataAsync()
         {
             if (IsProcessing) return;
-            IsLoaded = false;
+            IsMyLocksLoaded = false;
             IsProcessing = true;
             SupportMessage = String.Empty;
 
             var result = await ValidateSupportedChainAsync();
+            
+            IsSupported = result.Item1;
 
-            if (!result.Item1)
+            if (!IsSupported)
             {
-                var message = "Token Lock feature is not supported on this chain.";
-
                 if (result.Item2.Any())
                 {
-                    message = $"Token Lock feature is not supported on this chain. Currently, it is only supported on the following chains: <br><ul>{string.Join("", result.Item2.Select(x => $"<li>• {x}</li>").ToList())}</ul>";
+                    var message = $"Currently, it is only supported on the following chains: <br><ul>{string.Join("", result.Item2.Select(x => $"<li>• {x}</li>").ToList())}</ul>";
+                    SupportMessage = message;
                 }
-
-                SupportMessage = message;
             }
             else
             {
@@ -85,7 +86,7 @@ namespace Client.App.Pages
                 var ss = s.GetUniversalDateTime();
             }
 
-            IsLoaded = true;
+            IsMyLocksLoaded = true;
             StateHasChanged();
         }
 

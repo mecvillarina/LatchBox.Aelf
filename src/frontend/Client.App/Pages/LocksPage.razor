@@ -4,50 +4,48 @@
     <div class="d-flex justify-space-between mud-width-full">
         <div class="d-flex">
             <MudText Class="mr-4 align-self-center" Color="Color.Secondary" Typo="Typo.h4" GutterBottom="false">Locks</MudText>
-            <MudIconButton Disabled="@(!IsLoaded || !IsConnected)" OnClick="FetchDataAsync" Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium" />
         </div>
     </div>
 </MudContainer>
 
 <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
-    @if (!IsLoaded)
+    @if (!IsConnected)
     {
-        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="56px" Width="100%" />
-        <MudSkeleton Class="mt-2" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="280px" Width="100%" />
+        <MudPaper Square="true" Elevation="15">
+            <MudText Typo="Typo.h5" Color="Color.Error" Class="px-4 py-6" GutterBottom="false" h>
+                Connect your wallet first.
+            </MudText>
+        </MudPaper>
     }
     else
     {
-        <MudPaper Square="true" Elevation="15">
-            @if (!IsConnected)
-            {
-                <MudText Typo="Typo.h5" Color="Color.Error" Class="px-4 py-6" GutterBottom="false">
-                    Connect your wallet first.
-                </MudText>
-            }
-            else
-            {
-                @if (!IsSupported)
-                {
-                    <MudText Typo="Typo.h5" Color="Color.Error" Class="px-4 py-6" GutterBottom="false">
-                        @SupportMessage
-                    </MudText>
-                }
-                else
-                {
-                    @*@if (TokenBalances.Any())
+        @if (!IsSupported)
         {
-
+            <MudPaper Square="true" Elevation="15">
+                <div class="px-4 py-6">
+                    <MudText Typo="Typo.h6" Color="Color.Error" Class="pa-0" GutterBottom="false">
+                        Token Lock feature is not supported on this chain.
+                    </MudText>
+                    <br />
+                    <MudText Typo="Typo.body1" Class="pa-0" GutterBottom="false">
+                        @((MarkupString)SupportMessage)
+                    </MudText>
+                </div>
+            </MudPaper>
         }
         else
         {
-        <MudText Typo="Typo.h5" Class="px-4 py-6" GutterBottom="false">
-        There are no tokens locked on the vault.
-        </MudText>
-        }*@
-                }
-            }
+            <MudPaper Square="true" Elevation="15">
+                <div Class="px-4 py-6">
+                    <div class="d-flex justify-space-between mud-width-full">
+                        <div class="d-flex">
+                            <MudText Class="mr-4 align-self-center" Color="Color.Secondary" Typo="Typo.h5" GutterBottom="false">My Locks</MudText>
+                            <MudIconButton Disabled="@(!IsMyLocksLoaded || !IsConnected)" Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium" />
+                        </div>
+                    </div>
+                </div>
+            </MudPaper>
 
-
-        </MudPaper>
+        }
     }
 </MudContainer>

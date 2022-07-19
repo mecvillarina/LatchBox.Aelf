@@ -18,7 +18,7 @@ namespace Client.App.Pages
     public partial class AssetsPage : IPageBase, IDisposable
     {
         public List<TokenBalanceInfoDto> TokenBalances { get; set; } = new();
-        public bool IsLoaded { get; set; }
+        public bool IsMyLocksLoaded { get; set; }
         public bool IsConnected { get; set; }
         public bool FlagProcess { get; set; }
         public bool IsProcessing { get; set; }
@@ -61,7 +61,7 @@ namespace Client.App.Pages
             if (IsProcessing) return;
 
             TokenBalances = new List<TokenBalanceInfoDto>();
-            IsLoaded = false;
+            IsMyLocksLoaded = false;
             FlagProcess = true;
             IsProcessing = true;
             StateHasChanged();
@@ -83,7 +83,7 @@ namespace Client.App.Pages
                 Console.WriteLine(ex.Message);
             }
 
-            IsLoaded = true;
+            IsMyLocksLoaded = true;
             IsProcessing = false;
             StateHasChanged();
 
