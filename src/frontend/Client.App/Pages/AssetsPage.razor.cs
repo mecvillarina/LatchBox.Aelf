@@ -18,7 +18,7 @@ namespace Client.App.Pages
     public partial class AssetsPage : IPageBase, IDisposable
     {
         public List<TokenBalanceInfoDto> TokenBalances { get; set; } = new();
-        public bool IsMyLocksLoaded { get; set; }
+        public bool IsAssetLoaded { get; set; }
         public bool IsConnected { get; set; }
         public bool FlagProcess { get; set; }
         public bool IsProcessing { get; set; }
@@ -61,7 +61,7 @@ namespace Client.App.Pages
             if (IsProcessing) return;
 
             TokenBalances = new List<TokenBalanceInfoDto>();
-            IsMyLocksLoaded = false;
+            IsAssetLoaded = false;
             FlagProcess = true;
             IsProcessing = true;
             StateHasChanged();
@@ -83,29 +83,38 @@ namespace Client.App.Pages
                 Console.WriteLine(ex.Message);
             }
 
-            IsMyLocksLoaded = true;
+            IsAssetLoaded = true;
             IsProcessing = false;
             StateHasChanged();
 
             FlagProcess = false;
-            foreach (var tokenBalance in TokenBalances)
+            var tasks = new List<Task>();
+
+            try
             {
-                if (FlagProcess)
-                    break;
-
-                try
+                foreach (var tokenBalance in TokenBalances)
                 {
-                    var balanceOutput = await TokenService.GetBalanceAsync(new TokenGetBalanceInput()
-                    {
-                        Symbol = tokenBalance.Token.Symbol,
-                        Owner = walletAddress
-                    });
+                    if (FlagProcess)
+                        break;
 
-                    tokenBalance.Balance = balanceOutput.Balance.ToAmountDisplay(tokenBalance.Token.Decimals);
+                    tasks.Add(InvokeAsync(async () =>
+                    {
+                        var balanceOutput = await TokenService.GetBalanceAsync(new TokenGetBalanceInput()
+                        {
+                            Symbol = tokenBalance.Token.Symbol,
+                            Owner = walletAddress
+                        });
+
+                        tokenBalance.Balance = balanceOutput.Balance.ToAmountDisplay(tokenBalance.Token.Decimals);
+                    }));
                 }
-                catch { }
+            }
+            catch
+            {
+
             }
 
+            await Task.WhenAll(tasks);
             StateHasChanged();
         }
 

@@ -25,7 +25,7 @@
 <MudSnackbarProvider  />
 
 
-@if (IsMyLocksLoaded)
+@if (IsAssetLoaded)
 {
     <MudLayout>
         <MudAppBar Fixed="false" Elevation="0" DisableGutters="true" Class="muudstrap-navbar">
@@ -38,7 +38,7 @@
                     <MudButton Color="Color.Inherit" Link="/vestings">Vestings</MudButton>
                 </div>
 
-                @if (IsMyLocksLoaded)
+                @if (IsAssetLoaded)
                 {
                     <div class="d-flex gap-2">
                         <MudMenu Label="@CurrentChainDisplay" Size="Size.Small" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" Variant="Variant.Outlined">
@@ -87,7 +87,7 @@
                                     <MudNavLink Href="/assets">Assets</MudNavLink>
                                     <MudNavLink Href="/locks">Locks</MudNavLink>
                                     <MudNavLink Href="/vestings">Vestings</MudNavLink>
-                                    @if (IsMyLocksLoaded)
+                                    @if (IsAssetLoaded)
                                     {
                                         <MudNavGroup Title="@CurrentChainDisplay">
                                             @foreach (var chain in SupportedChains)

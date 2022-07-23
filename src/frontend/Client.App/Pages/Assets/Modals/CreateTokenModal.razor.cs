@@ -58,7 +58,7 @@ namespace Client.App.Pages.Assets.Modals
                     var walletAddress = await NightElfService.GetAddressAsync();
 
                     var payloadContract = new TokenCreateTokenInput(Model) { Issuer = walletAddress, TotalSupply = Model.TotalSupply.ToChainAmount(Model.Decimals) };
-                    var txResult = await NightElfService.SendTxAsync(chain.TokenContractAddress, "Create", payloadContract);
+                    var txResult = await TokenService.CreateTokenAsync(payloadContract);
 
                     if (txResult != null)
                     {
@@ -73,39 +73,6 @@ namespace Client.App.Pages.Assets.Modals
                 {
                     AppDialogService.ShowError(ex.Message);
                 }
-
-                //try
-                //{
-                //    var totalSupply = Model.TotalSupply.ToChainAmount(Model.Decimals);
-                //    //var initialSupply = Model.InitialSupply.ToChainAmount(Model.Decimals);
-                //    var authenticated = await AppDialogService.ShowConfirmWalletTransactionAsync();
-
-                //    if (authenticated)
-                //    {
-                //        //var walletAddress = await WalletManager.GetWalletAddressAsync();
-                //        var createTokenResult = await TokenManager.CreateAsync(Model.Symbol.ToUpper(), Model.TokenName, totalSupply, Model.Decimals, Model.IsBurnable);
-
-                //        if (!string.IsNullOrEmpty(createTokenResult.Error))
-                //            throw new GeneralException(createTokenResult.Error);
-
-                //        //if (initialSupply > 0)
-                //        //{
-                //        //    var issueTokenResult = await TokenManager.IssueOnMainChainAsync(Model.Symbol, initialSupply, "Initial Supply", walletAddress);
-
-                //        //    if (!string.IsNullOrEmpty(issueTokenResult.Error))
-                //        //        throw new GeneralException(issueTokenResult.Error);
-                //        //}
-                //        await BlockchainManager.GetMainChainStatusAsync();
-                //        await BlockchainManager.GetSideChainStatusAsync();
-                //        await TokenManager.AddToTokenSymbolsStorageAsync(Model.Symbol.ToUpper());
-                //        AppDialogService.ShowSuccess("Token creation success.");
-                //        MudDialog.Close();
-                //    }
-                //}
-                //catch (Exception ex)
-                //{
-                //    AppDialogService.ShowError(ex.Message);
-                //}
 
                 IsProcessing = false;
             }
