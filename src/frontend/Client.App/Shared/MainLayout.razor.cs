@@ -15,7 +15,7 @@ namespace Client.App.Shared
     {
         private bool DrawerOpen { get; set; } = true;
         private MudTheme CurrentTheme { get; set; }
-        public bool IsLoaded { get; set; }
+        public bool IsMyLocksLoaded { get; set; }
         public bool IsNavMenuPanelExpanded { get; set; }
 
         public string CurrentChainIdBase58 { get; set; }
@@ -57,9 +57,9 @@ namespace Client.App.Shared
 
         private async Task FetchChainDataAsync()
         {
-            IsLoaded = await ChainService.FetchChainDataAsync();
+            IsMyLocksLoaded = await ChainService.FetchChainDataAsync();
 
-            if (IsLoaded)
+            if (IsMyLocksLoaded)
             {
                 var supportedChains = await ChainService.FetchSupportedChainsAsync();
                 SupportedChains = supportedChains.Select(x => new SupportedChainModel(x)).ToList();

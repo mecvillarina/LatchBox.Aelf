@@ -28,5 +28,7 @@ namespace Domain.Entities
         public bool IsTokenCreationFeatureSupported { get; set; }
         public bool IsLockingFeatureSupported { get; set; }
         public bool IsVestingFeatureSupported { get; set; }
+        public string LockVaultContractAddress { get; set; }
+        public string VestingVaultContractAddress { get; set; }
     }
 }

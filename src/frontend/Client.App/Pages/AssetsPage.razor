@@ -4,17 +4,17 @@
     <div class="d-flex justify-space-between mud-width-full">
         <div class="d-flex">
             <MudText Class="mr-4 align-self-center" Color="Color.Secondary" Typo="Typo.h4" GutterBottom="false">Assets</MudText>
-            <MudIconButton Disabled="@(!IsLoaded || !IsConnected)" OnClick="FetchDataAsync" Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium" />
+            <MudIconButton Disabled="@(!IsMyLocksLoaded || !IsConnected)" OnClick="FetchDataAsync" Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium" />
         </div>
 
         <div class="d-flex ml-auto">
-            <MudButton Disabled="@(!IsLoaded || !IsConnected)" OnClick="OnCreateNewTokenAsync" Class="align-self-center" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium">Create Token</MudButton>
+            <MudButton Disabled="@(!IsMyLocksLoaded || !IsConnected)" OnClick="OnCreateNewTokenAsync" Class="align-self-center" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium">Create Token</MudButton>
         </div>
     </div>
 </MudContainer>
 
 <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
-    @if (!IsLoaded)
+    @if (!IsMyLocksLoaded)
     {
         <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="56px" Width="100%" />
         <MudSkeleton Class="mt-2" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="280px" Width="100%" />
@@ -47,7 +47,7 @@
                             @context.Token.TotalSupply @context.Token.Symbol
                         </MudTd>
                         <MudTd DataLabel="Balance">
-                            @context.Balance @context.Token.Symbol
+                            @context.Balance.RemoveTrailingZeros() @context.Token.Symbol
                         </MudTd>
                         <MudTd DataLabel="">
                             <MudMenu Variant="Variant.Filled" Color="Color.Primary" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" DisableElevation="true" Icon="@Icons.Filled.MoreVert" IconColor="Color.Secondary" Direction="Direction.Left" OffsetX="true">

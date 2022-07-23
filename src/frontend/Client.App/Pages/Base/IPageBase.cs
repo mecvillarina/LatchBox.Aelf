@@ -2,6 +2,6 @@
 {
     public interface IPageBase
     {
-        public bool IsLoaded { get; set; }
+        public bool IsMyLocksLoaded { get; set; }
     }
 }
