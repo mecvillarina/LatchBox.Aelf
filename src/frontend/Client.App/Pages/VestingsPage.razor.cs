@@ -286,6 +286,22 @@ namespace Client.App.Pages
             }
         }
 
+        private async Task InvokeRevokeVestingModalAsync(VestingByInitiatorModel vestingModel)
+        {
+            var parameters = new DialogParameters();
+            parameters.Add(nameof(RevokeVestingModal.Vesting), vestingModel.Vesting);
+            parameters.Add(nameof(RevokeVestingModal.Model), new RevokeVestingParameter() { VestingId = vestingModel.Vesting.VestingId });
+
+            var dialog = DialogService.Show<RevokeVestingModal>($"Revoke Vesting #{vestingModel.Vesting.VestingId}", parameters);
+            var dialogResult = await dialog.Result;
+
+            if (!dialogResult.Cancelled)
+            {
+                await FetchInitiatorVestingsAsync();
+                await FetchVestingRefundsAsync();
+            }
+        }
+
         private async Task InvokeClaimVestingModalAsync(VestingReceiverModel vestingModel)
         {
             var vestingId = vestingModel.Vesting.VestingId;
@@ -308,6 +324,20 @@ namespace Client.App.Pages
             {
                 await FetchReceiverVestingsAsync();
                 await FetchInitiatorVestingsAsync();
+            }
+        }
+
+        private async Task InvokeClaimRefundModalAsync(VestingRefundModel model)
+        {
+            var parameters = new DialogParameters();
+            parameters.Add(nameof(ClaimVestingRefundModal.Model), model);
+
+            var dialog = DialogService.Show<ClaimVestingRefundModal>($"Claim Refund for {model.TokenInfo.TokenName} ({model.TokenInfo.Symbol})", parameters);
+            var dialogResult = await dialog.Result;
+
+            if (!dialogResult.Cancelled)
+            {
+                await FetchVestingRefundsAsync();
             }
         }
 

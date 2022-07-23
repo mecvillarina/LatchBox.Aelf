@@ -6,9 +6,9 @@ namespace Client.App.SmartContractDto.LockTokenVault
     {
         public string TokenSymbol { get; set; }
 
-        public LockClaimRefundInput(LockRefundModel parameters)
+        public LockClaimRefundInput(LockRefundModel parameter)
         {
-            TokenSymbol = parameters.Refund.TokenSymbol;
+            TokenSymbol = parameter.Refund.TokenSymbol;
         }
     }
 }

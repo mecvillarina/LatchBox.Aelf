@@ -56,7 +56,7 @@ namespace Client.App.Services
             return await _nightElfService.SendTxAsync(chain.VestingVaultContractAddress, "ClaimVesting", input);
         }
 
-        public async Task<TransactionResultDto> RevokeVestingAsync(VestingRevokeVestingInput input)
+        public async Task<TransactionResultDto> RevokeVestingAsync(VestingRevokeInput input)
         {
             var chain = await _chainService.FetchCurrentChainInfoAsync();
             return await _nightElfService.SendTxAsync(chain.VestingVaultContractAddress, "RevokeVesting", input);
