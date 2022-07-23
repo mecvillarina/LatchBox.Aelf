@@ -27,7 +27,6 @@ namespace Client.App.Pages
         public List<LockForReceiverModel> LockReceiverTransactions { get; set; } = new();
         public List<LockRefundModel> LockRefunds { get; set; } = new();
 
-        private MudTabs tabs { get; set; }
         protected async override Task OnInitializedAsync()
         {
             NightElfExecutor.Connected += HandleNightElfExecutorConnected;
@@ -38,10 +37,21 @@ namespace Client.App.Pages
         private async void HandleNightElfExecutorConnected(object source, EventArgs e)
         {
             IsConnected = true;
-            //if (!TokenBalances.Any())
-            //{
-            //    await FetchDataAsync();
-            //}
+            if (!LockInitiatorTransactions.Any())
+            {
+                await FetchInitiatorLocksAsync();
+            }
+
+            if (!LockReceiverTransactions.Any())
+            {
+                await FetchReceiverLocksAsync();
+            }
+
+            if (!LockRefunds.Any())
+            {
+                await FetchLockRefundsAsync();
+            }
+
             StateHasChanged();
         }
 
@@ -328,6 +338,9 @@ namespace Client.App.Pages
 
         private void ClearData()
         {
+            LockInitiatorTransactions.Clear();
+            LockReceiverTransactions.Clear();
+            LockRefunds.Clear();
             StateHasChanged();
         }
 

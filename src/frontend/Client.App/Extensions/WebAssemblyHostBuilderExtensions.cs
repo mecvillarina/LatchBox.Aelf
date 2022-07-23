@@ -83,6 +83,7 @@ namespace Client.App.Extensions
             services.AddScoped<ChainService>();
             services.AddScoped<TokenService>();
             services.AddScoped<LockTokenVaultService>();
+            services.AddScoped<VestingTokenVaultService>();
 
             return services;
         }
