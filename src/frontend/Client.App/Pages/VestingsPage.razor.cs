@@ -1,7 +1,10 @@
 ﻿using Client.App.Models;
+using Client.App.Pages.Assets.Modals;
 using Client.App.Pages.Base;
+using Client.App.Pages.Vestings.Modals;
 using Client.App.SmartContractDto;
 using Client.Infrastructure.Exceptions;
+using MudBlazor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,20 +36,20 @@ namespace Client.App.Pages
         private async void HandleNightElfExecutorConnected(object source, EventArgs e)
         {
             IsConnected = true;
-            if (!VestingInitiatorTransactions.Any())
-            {
-                await FetchInitiatorVestingsAsync();
-            }
+            //if (!VestingInitiatorTransactions.Any())
+            //{
+            //    await FetchInitiatorVestingsAsync();
+            //}
 
-            if (!VestingReceiverTransactions.Any())
-            {
-                await FetchReceiverVestingsAsync();
-            }
+            //if (!VestingReceiverTransactions.Any())
+            //{
+            //    await FetchReceiverVestingsAsync();
+            //}
 
-            if (!VestingRefunds.Any())
-            {
-                await FetchVestingRefundsAsync();
-            }
+            //if (!VestingRefunds.Any())
+            //{
+            //    await FetchVestingRefundsAsync();
+            //}
 
             StateHasChanged();
         }
@@ -245,6 +248,29 @@ namespace Client.App.Pages
             catch { }
 
             StateHasChanged();
+        }
+
+        private async Task InvokeAddVestingModalAsync()
+        {
+            var searchTokenDialog = DialogService.Show<SearchTokenModal>($"Search Token");
+            var searchTokenDialogResult = await searchTokenDialog.Result;
+
+            if (!searchTokenDialogResult.Cancelled)
+            {
+                var tokenInfo = (TokenInfo)searchTokenDialogResult.Data;
+
+                var options = new DialogOptions() { MaxWidth = MaxWidth.Medium };
+                var parameters = new DialogParameters();
+                parameters.Add(nameof(AddVestingModal.TokenInfo), tokenInfo);
+
+                var dialog = DialogService.Show<AddVestingModal>($"Add New Vesting", parameters, options);
+                var dialogResult = await dialog.Result;
+
+                if (!dialogResult.Cancelled)
+                {
+                    await FetchDataAsync();
+                }
+            }
         }
 
         private void ClearData()

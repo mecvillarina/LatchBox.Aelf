@@ -37,20 +37,20 @@ namespace Client.App.Pages
         private async void HandleNightElfExecutorConnected(object source, EventArgs e)
         {
             IsConnected = true;
-            if (!LockInitiatorTransactions.Any())
-            {
-                await FetchInitiatorLocksAsync();
-            }
+            //if (!LockInitiatorTransactions.Any())
+            //{
+            //    await FetchInitiatorLocksAsync();
+            //}
 
-            if (!LockReceiverTransactions.Any())
-            {
-                await FetchReceiverLocksAsync();
-            }
+            //if (!LockReceiverTransactions.Any())
+            //{
+            //    await FetchReceiverLocksAsync();
+            //}
 
-            if (!LockRefunds.Any())
-            {
-                await FetchLockRefundsAsync();
-            }
+            //if (!LockRefunds.Any())
+            //{
+            //    await FetchLockRefundsAsync();
+            //}
 
             StateHasChanged();
         }

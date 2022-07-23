@@ -1,4 +1,5 @@
-﻿using Client.App.SmartContractDto.LockTokenVault;
+﻿using Application.Common.Dtos;
+using Client.App.SmartContractDto.LockTokenVault;
 using Client.App.SmartContractDto.VestingTokenVault;
 using System.Threading.Tasks;
 
@@ -34,5 +35,12 @@ namespace Client.App.Services
             var chain = await _chainService.FetchCurrentChainInfoAsync();
             return await _nightElfService.CallTx<VestingRefundListOutput>(chain.VestingVaultContractAddress, "GetRefunds", "");
         }
+
+        public async Task<TransactionResultDto> AddVestingAsync(VestingAddVestingInput input)
+        {
+            var chain = await _chainService.FetchCurrentChainInfoAsync();
+            return await _nightElfService.SendTxAsync(chain.VestingVaultContractAddress, "AddVesting", input);
+        }
+
     }
 }
