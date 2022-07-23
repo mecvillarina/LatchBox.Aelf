@@ -124,7 +124,7 @@ namespace Client.App.Pages
                 LockInitiatorTransactions.Add(new LockModel(@lock));
             }
 
-            LockInitiatorTransactions = LockInitiatorTransactions.Where(x => x.Status != "Revoked").ToList();
+            LockInitiatorTransactions = LockInitiatorTransactions.Where(x => x.Status != "Revoked" && x.Status != "Claimed").ToList();
             LockInitiatorTransactions = LockInitiatorTransactions.OrderByDescending(x => x.Lock.StartTime.GetUniversalDateTime()).ToList();
             IsMyLocksLoaded = true;
             StateHasChanged();
