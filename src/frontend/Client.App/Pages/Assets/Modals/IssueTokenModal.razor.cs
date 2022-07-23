@@ -45,7 +45,7 @@ namespace Client.App.Pages.Assets.Modals
 
                     var amount = Model.Amount.ToChainAmount(Model.Decimals);
                     var payloadContract = new TokenIssueTokenInput(Model) { Amount = amount };
-                    var txResult = await NightElfService.SendTxAsync(chain.TokenContractAddress, "Issue", payloadContract);
+                    var txResult = await TokenService.IssueTokenAsync(payloadContract);
 
                     if (txResult != null)
                     {

@@ -58,7 +58,7 @@ namespace Client.App.Pages.Assets.Modals
                     var walletAddress = await NightElfService.GetAddressAsync();
 
                     var payloadContract = new TokenCreateTokenInput(Model) { Issuer = walletAddress, TotalSupply = Model.TotalSupply.ToChainAmount(Model.Decimals) };
-                    var txResult = await NightElfService.SendTxAsync(chain.TokenContractAddress, "Create", payloadContract);
+                    var txResult = await TokenService.CreateTokenAsync(payloadContract);
 
                     if (txResult != null)
                     {

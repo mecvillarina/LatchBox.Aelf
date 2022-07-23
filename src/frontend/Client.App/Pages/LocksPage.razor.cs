@@ -1,6 +1,8 @@
-﻿using Application.Common.Models;
-using Client.App.Models;
+﻿using Client.App.Models;
+using Client.App.Pages.Assets.Modals;
 using Client.App.Pages.Base;
+using Client.App.Pages.Locks.Modals;
+using Client.App.Parameters;
 using Client.App.SmartContractDto;
 using MudBlazor;
 using System;
@@ -14,12 +16,15 @@ namespace Client.App.Pages
     {
         public bool IsMyLocksLoaded { get; set; }
         public bool IsMyClaimsLoaded { get; set; }
+        public bool IsMyRefundsLoaded { get; set; }
+
         public bool IsConnected { get; set; }
         public bool IsProcessing { get; set; }
         public bool IsSupported { get; set; }
         public string SupportMessage { get; set; }
         public List<LockModel> LockInitiatorTransactions { get; set; } = new();
         public List<LockForReceiverModel> LockReceiverTransactions { get; set; } = new();
+        public List<LockRefundModel> LockRefunds { get; set; } = new();
 
         private MudTabs tabs { get; set; }
         protected async override Task OnInitializedAsync()
@@ -87,8 +92,7 @@ namespace Client.App.Pages
             {
                 await FetchInitiatorLocksAsync();
                 await FetchReceiverLocksAsync();
-
-                //load refunds
+                await FetchLockRefundsAsync();
             }
 
             IsProcessing = false;
@@ -102,6 +106,8 @@ namespace Client.App.Pages
             StateHasChanged();
 
             var lockListOutput = await LockTokenVaultService.GetLocksByInitiatorAsync();
+            lockListOutput.Locks ??= new();
+
             foreach (var @lock in lockListOutput.Locks)
             {
                 LockInitiatorTransactions.Add(new LockModel(@lock));
@@ -142,7 +148,8 @@ namespace Client.App.Pages
             StateHasChanged();
 
             var lockListOutput = await LockTokenVaultService.GetLocksForReceiverAsync();
-            
+            lockListOutput.LockTransactions ??= new();
+
             foreach (var lockTransaction in lockListOutput.LockTransactions)
             {
                 LockReceiverTransactions.Add(new LockForReceiverModel(lockTransaction.Lock, lockTransaction.Receiver));
@@ -176,6 +183,48 @@ namespace Client.App.Pages
             StateHasChanged();
         }
 
+
+        private async Task FetchLockRefundsAsync()
+        {
+            IsMyRefundsLoaded = false;
+            LockRefunds.Clear();
+            StateHasChanged();
+
+            var refundsOutput = await LockTokenVaultService.GetRefundsAsync();
+            
+            refundsOutput.Refunds ??= new();
+
+            foreach (var refund in refundsOutput.Refunds)
+            {
+                LockRefunds.Add(new LockRefundModel(refund));
+            }
+
+            IsMyRefundsLoaded = true;
+            StateHasChanged();
+
+            var tasks = new List<Task>();
+
+            try
+            {
+                foreach (var refundOutput in LockRefunds)
+                {
+                    tasks.Add(InvokeAsync(async () =>
+                    {
+                        var tokenInfo = await TokenService.GetTokenInfoAsync(new TokenGetTokenInfoInput()
+                        {
+                            Symbol = refundOutput.Refund.TokenSymbol
+                        });
+                        refundOutput.SetTokenInfo(tokenInfo);
+                    }));
+                }
+
+                await Task.WhenAll(tasks);
+            }
+            catch { }
+
+            StateHasChanged();
+        }
+
         private void InvokeLockPreviewerModal(long lockId)
         {
             //var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
@@ -186,6 +235,64 @@ namespace Client.App.Pages
 
             //DialogService.Show<LockPreviewerModal>($"Lock #{lockId}", parameters, options);
         }
+
+        private async Task InvokeAddLockModalAsync()
+        {
+            var chain = await ChainService.FetchCurrentChainInfoAsync();
+
+            var searchTokenDialog = DialogService.Show<SearchTokenModal>($"Search Token ({chain.ChainIdBase58} Chain)");
+            var searchTokenDialogResult = await searchTokenDialog.Result;
+
+            if (!searchTokenDialogResult.Cancelled)
+            {
+                var tokenInfo = (TokenInfo)searchTokenDialogResult.Data;
+
+                var parameters = new DialogParameters();
+                parameters.Add(nameof(AddLockModal.TokenInfo), tokenInfo);
+
+                var dialog = DialogService.Show<AddLockModal>($"Add New Lock", parameters);
+                var dialogResult = await dialog.Result;
+
+                if (!dialogResult.Cancelled)
+                {
+                    await FetchInitiatorLocksAsync();
+                    await FetchReceiverLocksAsync();
+                }
+            }
+        }
+
+        private async Task InvokeRevokeLockModalAsync(LockModel lockModel)
+        {
+            var lockId = lockModel.Lock.LockId;
+
+            var parameters = new DialogParameters();
+            parameters.Add(nameof(RevokeLockModal.Lock), lockModel.Lock);
+            parameters.Add(nameof(RevokeLockModal.Model), new RevokeLockParameter() { LockId = lockId });
+
+            var dialog = DialogService.Show<RevokeLockModal>($"Revoke Lock #{lockId}", parameters);
+            var dialogResult = await dialog.Result;
+
+            if (!dialogResult.Cancelled)
+            {
+                await FetchInitiatorLocksAsync();
+                await FetchLockRefundsAsync();
+            }
+        }
+
+        private async Task InvokeClaimRefundModalAsync(LockRefundModel model)
+        {
+            var parameters = new DialogParameters();
+            parameters.Add(nameof(ClaimLockRefundModal.Model), model);
+
+            var dialog = DialogService.Show<ClaimLockRefundModal>($"Claim Refund for {model.TokenInfo.TokenName} ({model.TokenInfo.Symbol})", parameters);
+            var dialogResult = await dialog.Result;
+
+            if (!dialogResult.Cancelled)
+            {
+                await FetchLockRefundsAsync();
+            }
+        }
+
 
         private void ClearData()
         {

@@ -37,11 +37,15 @@
         {
             <!-- MY LOCKS -->
             <MudPaper Square="true" Elevation="15">
-                <div Class="px-4 py-6">
-                    <div class="d-flex justify-space-between mud-width-full">
+                <div class="px-4 py-6">
+                    <div Class="d-flex justify-space-between mud-width-full">
                         <div class="d-flex">
                             <MudText Class="mr-4 align-self-center" Color="Color.Secondary" Typo="Typo.h5" GutterBottom="false">My Locks</MudText>
                             <MudIconButton Disabled="@(!IsMyLocksLoaded || !IsConnected)" OnClick="FetchInitiatorLocksAsync" Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" />
+                        </div>
+
+                        <div class="d-flex ml-auto">
+                            <MudButton Disabled="@(!IsMyLocksLoaded || !IsConnected)" OnClick="InvokeAddLockModalAsync" Class="align-self-center" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium">Create Lock</MudButton>
                         </div>
                     </div>
                 </div>
@@ -50,7 +54,7 @@
                 {
                     <div class="px-4 py-6">
                         <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="56px" Width="100%" />
-                        <MudSkeleton Class="mt-2" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="280px" Width="100%" />
+                        <MudSkeleton Class="mt-2" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="100px" Width="100%" />
                     </div>
                 }
                 else
@@ -105,7 +109,7 @@
                                 </MudTd>
                                 <MudTd DataLabel="Actions">
                                     <MudMenu Variant="Variant.Filled" Color="Color.Primary" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" DisableElevation="true" Icon="@Icons.Filled.KeyboardArrowDown" IconColor="Color.Secondary" Direction="Direction.Left" OffsetX="true">
-                                        @*<MudMenuItem Disabled="@(!context.IsRevocable || !context.Lock.IsActive)" OnClick="(() => InvokeRevokeLockModalAsync(context))">Revoke Lock</MudMenuItem>*@
+                                        <MudMenuItem Disabled="@(!context.IsRevocable || !context.Lock.IsActive)" OnClick="(() => InvokeRevokeLockModalAsync(context))">Revoke Lock</MudMenuItem>
                                     </MudMenu>
                                 </MudTd>
                             }
@@ -130,7 +134,7 @@
                 {
                     <div class="px-4 py-6">
                         <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="56px" Width="100%" />
-                        <MudSkeleton Class="mt-2" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="280px" Width="100%" />
+                        <MudSkeleton Class="mt-2" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="100px" Width="100%" />
                     </div>
                 }
                 else
@@ -171,6 +175,58 @@
                                 <MudTd DataLabel="Actions">
                                     <MudMenu Variant="Variant.Filled" Color="Color.Primary" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" DisableElevation="true" Icon="@Icons.Filled.KeyboardArrowDown" IconColor="Color.Secondary" Direction="Direction.Left" OffsetX="true">
                                         @*<MudMenuItem Disabled="@(!context.CanClaim)" OnClick="(() => InvokeClaimLockModalAsync(context))">Claim Lock</MudMenuItem>*@
+                                    </MudMenu>
+                                </MudTd>
+                            }
+                        </RowTemplate>
+                    </MudTable>
+                }
+            </MudPaper>
+
+            <!-- MY REFUNDS-->
+            <MudPaper Square="true" Elevation="15" Class="mt-8">
+                <div Class="px-4 py-6">
+                    <div class="d-flex justify-space-between mud-width-full">
+                        <div class="d-flex">
+                            <MudText Class="mr-4 align-self-center" Color="Color.Secondary" Typo="Typo.h5" GutterBottom="false">My Refunds</MudText>
+                            <MudIconButton Disabled="@(!IsMyRefundsLoaded || !IsConnected)" OnClick="FetchLockRefundsAsync" Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" />
+                        </div>
+                    </div>
+                </div>
+
+                @if (!IsMyRefundsLoaded)
+                {
+                    <div class="px-4 py-6">
+                        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="56px" Width="100%" />
+                        <MudSkeleton Class="mt-2" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="100px" Width="100%" />
+                    </div>
+                }
+                else
+                {
+                    <MudTable Items="@LockRefunds" Class="mx-0 grey darken-4" FixedHeader="true" Breakpoint="Breakpoint.Sm">
+                        <HeaderContent>
+                            <MudTh>Token</MudTh>
+                            <MudTh>Total Amount</MudTh>
+                            <MudTh>Actions</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            @if (@context.TokenInfo == null)
+                            {
+                                <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
+                                <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
+                                <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
+                            }
+                            else
+                            {
+                                <MudTd DataLabel="Token">
+                                    @context.TokenInfo.TokenName (@context.TokenInfo.Symbol)
+                                </MudTd>
+                                <MudTd DataLabel="Total Amount">
+                                    @context.AmountDisplay
+                                </MudTd>
+                                <MudTd DataLabel="Actions">
+                                    <MudMenu Variant="Variant.Filled" Color="Color.Primary" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" DisableElevation="true" Icon="@Icons.Filled.KeyboardArrowDown" IconColor="Color.Secondary" Direction="Direction.Left" OffsetX="true">
+                                        <MudMenuItem OnClick="(() => InvokeClaimRefundModalAsync(context))">Claim</MudMenuItem>
                                     </MudMenu>
                                 </MudTd>
                             }

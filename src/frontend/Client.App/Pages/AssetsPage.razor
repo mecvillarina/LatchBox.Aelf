@@ -4,17 +4,17 @@
     <div class="d-flex justify-space-between mud-width-full">
         <div class="d-flex">
             <MudText Class="mr-4 align-self-center" Color="Color.Secondary" Typo="Typo.h4" GutterBottom="false">Assets</MudText>
-            <MudIconButton Disabled="@(!IsMyLocksLoaded || !IsConnected)" OnClick="FetchDataAsync" Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium" />
+            <MudIconButton Disabled="@(!IsAssetLoaded || !IsConnected)" OnClick="FetchDataAsync" Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium" />
         </div>
 
         <div class="d-flex ml-auto">
-            <MudButton Disabled="@(!IsMyLocksLoaded || !IsConnected)" OnClick="OnCreateNewTokenAsync" Class="align-self-center" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium">Create Token</MudButton>
+            <MudButton Disabled="@(!IsAssetLoaded || !IsConnected)" OnClick="OnCreateNewTokenAsync" Class="align-self-center" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium">Create Token</MudButton>
         </div>
     </div>
 </MudContainer>
 
 <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
-    @if (!IsMyLocksLoaded)
+    @if (!IsAssetLoaded)
     {
         <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="56px" Width="100%" />
         <MudSkeleton Class="mt-2" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="280px" Width="100%" />
