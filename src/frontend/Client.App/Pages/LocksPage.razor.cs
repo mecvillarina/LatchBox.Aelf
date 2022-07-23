@@ -27,7 +27,6 @@ namespace Client.App.Pages
         public List<LockForReceiverModel> LockReceiverTransactions { get; set; } = new();
         public List<LockRefundModel> LockRefunds { get; set; } = new();
 
-        private MudTabs tabs { get; set; }
         protected async override Task OnInitializedAsync()
         {
             NightElfExecutor.Connected += HandleNightElfExecutorConnected;
@@ -38,10 +37,21 @@ namespace Client.App.Pages
         private async void HandleNightElfExecutorConnected(object source, EventArgs e)
         {
             IsConnected = true;
-            //if (!TokenBalances.Any())
+            //if (!LockInitiatorTransactions.Any())
             //{
-            //    await FetchDataAsync();
+            //    await FetchInitiatorLocksAsync();
             //}
+
+            //if (!LockReceiverTransactions.Any())
+            //{
+            //    await FetchReceiverLocksAsync();
+            //}
+
+            //if (!LockRefunds.Any())
+            //{
+            //    await FetchLockRefundsAsync();
+            //}
+
             StateHasChanged();
         }
 
@@ -124,7 +134,7 @@ namespace Client.App.Pages
                 LockInitiatorTransactions.Add(new LockModel(@lock));
             }
 
-            LockInitiatorTransactions = LockInitiatorTransactions.Where(x => x.Status != "Revoked").ToList();
+            LockInitiatorTransactions = LockInitiatorTransactions.Where(x => x.Status != "Revoked" && x.Status != "Claimed").ToList();
             LockInitiatorTransactions = LockInitiatorTransactions.OrderByDescending(x => x.Lock.StartTime.GetUniversalDateTime()).ToList();
             IsMyLocksLoaded = true;
             StateHasChanged();
@@ -289,7 +299,8 @@ namespace Client.App.Pages
 
             if (!dialogResult.Cancelled)
             {
-                await FetchDataAsync();
+                await FetchReceiverLocksAsync();
+                await FetchInitiatorLocksAsync();
             }
         }
 
@@ -328,6 +339,9 @@ namespace Client.App.Pages
 
         private void ClearData()
         {
+            LockInitiatorTransactions.Clear();
+            LockReceiverTransactions.Clear();
+            LockRefunds.Clear();
             StateHasChanged();
         }
 
