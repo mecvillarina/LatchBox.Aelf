@@ -13,10 +13,16 @@ namespace Client.App.Services
             _chainService = chainService;
         }
 
-        public async Task<GetBalanceOutput> GetBalanceAsync(GetBalanceInput input)
+        public async Task<TokenGetBalanceOutput> GetBalanceAsync(TokenGetBalanceInput input)
         {
             var chain = await _chainService.FetchCurrentChainInfoAsync();
-            return await _nightElfService.CallTx<GetBalanceOutput>(chain.TokenContractAddress, "GetBalance", input);
+            return await _nightElfService.CallTx<TokenGetBalanceOutput>(chain.TokenContractAddress, "GetBalance", input);
+        }
+
+        public async Task<TokenInfo> GetTokenInfoAsync(TokenGetTokenInfoInput input)
+        {
+            var chain = await _chainService.FetchCurrentChainInfoAsync();
+            return await _nightElfService.CallTx<TokenInfo>(chain.TokenContractAddress, "GetTokenInfo", input);
         }
     }
 }

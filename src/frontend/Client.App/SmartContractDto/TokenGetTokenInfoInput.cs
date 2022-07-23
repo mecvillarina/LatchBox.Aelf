@@ -1,8 +1,7 @@
 ﻿namespace Client.App.SmartContractDto
 {
-    public class GetBalanceInput
+    public class TokenGetTokenInfoInput
     {
         public string Symbol { get; set; }
-        public string Owner { get; set; }
     }
 }

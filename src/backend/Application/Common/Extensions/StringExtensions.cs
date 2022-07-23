@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Google.Protobuf.WellKnownTypes;
 
 namespace Application.Common.Extensions
 {
@@ -28,6 +29,13 @@ namespace Application.Common.Extensions
         public static string ToChainIdBase58(this int chainId)
         {
             return ChainHelper.ConvertChainIdToBase58(chainId);
+        }
+
+        public static string RemoveTrailingZeros(this string num)
+        {
+            decimal numVal = Convert.ToDecimal(num);
+            numVal = numVal / 1.000000000000000000000000000000000m;
+            return numVal.ToString();
         }
 
         public static string ToMask(this string value, int length)

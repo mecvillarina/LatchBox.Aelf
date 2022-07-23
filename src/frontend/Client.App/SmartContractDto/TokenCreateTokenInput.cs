@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Client.App.SmartContractDto
 {
-    public class CreateTokenInput
+    public class TokenCreateTokenInput
     {
         //[JsonPropertyName("symbol")]
         public string Symbol { get; set; }
@@ -26,7 +26,7 @@ namespace Client.App.SmartContractDto
         //[JsonPropertyName("issue_chain_id")]
         public int IssueChainId { get; set; }
 
-        public CreateTokenInput(CreateTokenParameter parameter)
+        public TokenCreateTokenInput(CreateTokenParameter parameter)
         {
             Symbol = parameter.Symbol;
             TokenName = parameter.TokenName;

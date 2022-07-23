@@ -18,7 +18,7 @@ namespace Client.App.Pages
     public partial class AssetsPage : IPageBase, IDisposable
     {
         public List<TokenBalanceInfoDto> TokenBalances { get; set; } = new();
-        public bool IsLoaded { get; set; }
+        public bool IsMyLocksLoaded { get; set; }
         public bool IsConnected { get; set; }
         public bool FlagProcess { get; set; }
         public bool IsProcessing { get; set; }
@@ -61,7 +61,7 @@ namespace Client.App.Pages
             if (IsProcessing) return;
 
             TokenBalances = new List<TokenBalanceInfoDto>();
-            IsLoaded = false;
+            IsMyLocksLoaded = false;
             FlagProcess = true;
             IsProcessing = true;
             StateHasChanged();
@@ -83,7 +83,7 @@ namespace Client.App.Pages
                 Console.WriteLine(ex.Message);
             }
 
-            IsLoaded = true;
+            IsMyLocksLoaded = true;
             IsProcessing = false;
             StateHasChanged();
 
@@ -95,7 +95,7 @@ namespace Client.App.Pages
 
                 try
                 {
-                    var balanceOutput = await TokenService.GetBalanceAsync(new GetBalanceInput()
+                    var balanceOutput = await TokenService.GetBalanceAsync(new TokenGetBalanceInput()
                     {
                         Symbol = tokenBalance.Token.Symbol,
                         Owner = walletAddress
@@ -124,11 +124,11 @@ namespace Client.App.Pages
 
             if (!result.Item1)
             {
-                var message = "Token Creation feature is not supported on this chain.";
+                var message = "Token Creation feature is not supported in thischain.";
 
                 if (result.Item2.Any())
                 {
-                    message = $"Token Creation feature is not supported on this chain. Currently, it is only supported on the following chains: <br><ul>{string.Join("", result.Item2.Select(x => $"<li>• {x}</li>").ToList())}</ul>";
+                    message = $"Token Creation feature is not supported in thischain. Currently, it is only supported on the following chains: <br><ul>{string.Join("", result.Item2.Select(x => $"<li>• {x}</li>").ToList())}</ul>";
                 }
 
                 AppDialogService.ShowError(message);
@@ -148,21 +148,6 @@ namespace Client.App.Pages
 
         private async Task OnIssueTokenAsync(TokenBalanceInfoDto balanceInfo)
         {
-            var result = await ValidateSupportedChainAsync();
-
-            if (!result.Item1)
-            {
-                var message = "Issue Token feature is not supported on this chain.";
-
-                if (result.Item2.Any())
-                {
-                    message = $"Issue Token feature is not supported on this chain. Currently, it is only supported on the following chains: <br><ul>{string.Join("", result.Item2.Select(x => $"<li>• {x}</li>").ToList())}</ul>";
-                }
-
-                AppDialogService.ShowError(message);
-                return;
-            }
-
             var isConnected = await NightElfService.IsConnectedAsync();
             if (!isConnected)
             {
@@ -187,6 +172,8 @@ namespace Client.App.Pages
 
         public void Dispose()
         {
+            IsProcessing = false;
+            FlagProcess = true;
             NightElfExecutor.Connected -= HandleNightElfExecutorConnected;
             NightElfExecutor.Disconnected -= HandleNightElfExecutorDisconnected;
         }

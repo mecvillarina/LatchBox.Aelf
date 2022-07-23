@@ -81,6 +81,7 @@ namespace Client.App.Extensions
             services.AddScoped<NightElfService>();
             services.AddScoped<ChainService>();
             services.AddScoped<TokenService>();
+            services.AddScoped<LockTokenVaultService>();
 
             return services;
         }
