@@ -2,7 +2,7 @@
 
 namespace Client.App.SmartContractDto.LockTokenVault
 {
-    public class GetLockListOutput
+    public class LockGetLockListOutput
     {
         public List<LockOutput> Locks { get; set; }
     }
