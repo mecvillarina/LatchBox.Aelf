@@ -1,0 +1,137 @@
+﻿<MudContainer MaxWidth="MaxWidth.False" Style="max-height: 80vh; overflow-y: scroll">
+    <MudDialog DisableSidePadding="true" ClassActions="px-2 py-4" ClassContent="pt-0">
+        <TitleContent>
+            <div>
+                <MudText Typo="Typo.h6">Lock #@LockId</MudText>
+                @if (IsLoaded)
+                {
+                    <MudChip Size="Size.Small" Class="ma-0 mt-1" Color="Color.Primary" Variant="Variant.Text" OnClick="OnCopyShareLinkAsync">@ShareLink</MudChip>
+                }
+            </div>
+        </TitleContent>
+        <DialogContent>
+            <MudGrid Class="pt-0 pb-4" Spacing="1">
+                @if (!IsLoaded)
+                {
+                    <MudItem xs="12">
+                        <MudSkeleton Height="100px" Width="100%" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" />
+                    </MudItem>
+                }
+                else
+                {
+                    <MudItem xs="12" md="6">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Token Name</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.TokenInfo.TokenName</MudText>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Symbol</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.TokenInfo.Symbol</MudText>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Initiator</b></MudText>
+                            <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
+                                <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.InitiatorAddressDisplay.ToMask(6)</MudText>
+
+                            </MudHidden>
+                            <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+                                <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.InitiatorAddressDisplay.ToMask(10)</MudText>
+
+                            </MudHidden>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Status</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.StatusDisplay</MudText>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Date Start</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.DateStartDisplay</MudText>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Date Unlock</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.DateUnlockDisplay</MudText>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Revocable</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.RevocableDisplay</MudText>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Total Amount</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.TotalAmountDisplay</MudText>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12" md="12">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Remarks</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.Lock.Remarks</MudText>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Receivers</b></MudText>
+                            <MudTable Items="@Model.LockReceivers" Class="mx-0 grey darken-4" Context="receiverContext" Elevation="10" Breakpoint="Breakpoint.Sm">
+                                <HeaderContent>
+                                    <MudTh>Address</MudTh>
+                                    <MudTh>Amount</MudTh>
+                                    <MudTh>Status</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="Address">
+                                        <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
+                                            @receiverContext.Receiver.ToMask(6)
+                                        </MudHidden>
+                                        <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+                                             @receiverContext.Receiver.ToMask(10)
+                                        </MudHidden>
+                                    </MudTd>
+                                    <MudTd DataLabel="Amount">@receiverContext.Amount.ToAmount(Model.TokenInfo.Decimals).ToAmountDisplay(Model.TokenInfo.Decimals) @Model.TokenInfo.Symbol</MudTd>
+                                    <MudTd DataLabel="Status">
+                                        @if (Model.StatusDisplay == "Locked")
+                                        {
+                                        <MudChip Color="Color.Primary" Size="Size.Small"><b>Locked</b></MudChip>
+                                        }
+                                        else if (receiverContext.DateClaimed != null)
+                                        {
+                                        <MudChip Color="Color.Info" Size="Size.Small"><b>Claimed</b></MudChip>
+                                        }
+                                        else if (receiverContext.DateRevoked != null)
+                                        {
+                                        <MudChip Color="Color.Error" Size="Size.Small"><b>Revoked</b></MudChip>
+                                        }
+                                        else
+                                        {
+                                        <MudChip Color="Color.Info" Size="Size.Small"><b>Unlocked</b></MudChip>
+                                        }
+                                </MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                    </div>
+                </MudItem>
+                }
+            </MudGrid>
+        </DialogContent>
+    </MudDialog>
+</MudContainer>

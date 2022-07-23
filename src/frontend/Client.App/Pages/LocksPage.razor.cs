@@ -4,6 +4,7 @@ using Client.App.Pages.Base;
 using Client.App.Pages.Locks.Modals;
 using Client.App.Parameters;
 using Client.App.SmartContractDto;
+using Client.Infrastructure.Exceptions;
 using MudBlazor;
 using System;
 using System.Collections.Generic;
@@ -90,9 +91,19 @@ namespace Client.App.Pages
             }
             else
             {
-                await FetchInitiatorLocksAsync();
-                await FetchReceiverLocksAsync();
-                await FetchLockRefundsAsync();
+                try
+                {
+                    var walletAddress = await NightElfService.GetAddressAsync();
+                    if (string.IsNullOrEmpty(walletAddress)) throw new GeneralException("No Wallet found.");
+
+                    await FetchInitiatorLocksAsync();
+                    await FetchReceiverLocksAsync();
+                    await FetchLockRefundsAsync();
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
 
             IsProcessing = false;
@@ -227,13 +238,13 @@ namespace Client.App.Pages
 
         private void InvokeLockPreviewerModal(long lockId)
         {
-            //var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
-            //var parameters = new DialogParameters()
-            //{
-            //     { nameof(LockPreviewerModal.LockId), lockId},
-            //};
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
+            var parameters = new DialogParameters()
+            {
+                 { nameof(LockPreviewerModal.LockId), lockId},
+            };
 
-            //DialogService.Show<LockPreviewerModal>($"Lock #{lockId}", parameters, options);
+            DialogService.Show<LockPreviewerModal>($"Lock #{lockId}", parameters, options);
         }
 
         private async Task InvokeAddLockModalAsync()
@@ -258,6 +269,27 @@ namespace Client.App.Pages
                     await FetchInitiatorLocksAsync();
                     await FetchReceiverLocksAsync();
                 }
+            }
+        }
+
+        private async Task InvokeClaimLockModalAsync(LockForReceiverModel lockModel)
+        {
+            var lockId = lockModel.Lock.LockId;
+
+            var parameters = new DialogParameters();
+            parameters.Add(nameof(ClaimLockModal.Model), new ClaimLockParameter()
+            {
+                LockId = lockId,
+                ReceiverAddress = lockModel.Receiver.Receiver,
+                AmountDisplay = lockModel.AmountDisplay
+            });
+
+            var dialog = DialogService.Show<ClaimLockModal>($"Claim from Lock #{lockId}", parameters);
+            var dialogResult = await dialog.Result;
+
+            if (!dialogResult.Cancelled)
+            {
+                await FetchDataAsync();
             }
         }
 

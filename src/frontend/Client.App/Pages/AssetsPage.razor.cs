@@ -88,24 +88,33 @@ namespace Client.App.Pages
             StateHasChanged();
 
             FlagProcess = false;
-            foreach (var tokenBalance in TokenBalances)
+            var tasks = new List<Task>();
+
+            try
             {
-                if (FlagProcess)
-                    break;
-
-                try
+                foreach (var tokenBalance in TokenBalances)
                 {
-                    var balanceOutput = await TokenService.GetBalanceAsync(new TokenGetBalanceInput()
-                    {
-                        Symbol = tokenBalance.Token.Symbol,
-                        Owner = walletAddress
-                    });
+                    if (FlagProcess)
+                        break;
 
-                    tokenBalance.Balance = balanceOutput.Balance.ToAmountDisplay(tokenBalance.Token.Decimals);
+                    tasks.Add(InvokeAsync(async () =>
+                    {
+                        var balanceOutput = await TokenService.GetBalanceAsync(new TokenGetBalanceInput()
+                        {
+                            Symbol = tokenBalance.Token.Symbol,
+                            Owner = walletAddress
+                        });
+
+                        tokenBalance.Balance = balanceOutput.Balance.ToAmountDisplay(tokenBalance.Token.Decimals);
+                    }));
                 }
-                catch { }
+            }
+            catch
+            {
+
             }
 
+            await Task.WhenAll(tasks);
             StateHasChanged();
         }
 

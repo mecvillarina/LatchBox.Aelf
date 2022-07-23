@@ -86,8 +86,8 @@
                                     </MudText>
                                 </MudTd>
                                 <MudTd DataLabel="Date">
-                                    @context.Lock.StartTime.GetUniversalDateTime().ToString(ClientConstants.LongDateTimeFormat) <br />
-                                    @context.Lock.UnlockTime.GetUniversalDateTime().ToString(ClientConstants.LongDateTimeFormat)
+                                    @context.Lock.StartTime.GetUniversalDateTime().LocalDateTime.ToString(ClientConstants.LongDateTimeFormat) <br />
+                                    @context.Lock.UnlockTime.GetUniversalDateTime().LocalDateTime.ToString(ClientConstants.LongDateTimeFormat)
                                 </MudTd>
                                 <MudTd DataLabel="Revocable">
                                     @if (context.IsRevocable)
@@ -163,7 +163,7 @@
                                         <b class="cursor-pointer" @onclick="(() => InvokeLockPreviewerModal(context.Lock.LockId))">@context.Lock.LockId</b>
                                     </MudText>
                                 </MudTd>
-                                <MudTd DataLabel="Date Unlock">@context.Lock.UnlockTime.GetUniversalDateTime().ToString(ClientConstants.LongDateTimeFormat)</MudTd>
+                                <MudTd DataLabel="Date Unlock">@context.Lock.UnlockTime.GetUniversalDateTime().LocalDateTime.ToString(ClientConstants.LongDateTimeFormat)</MudTd>
                                 <MudTd DataLabel="Claimable Amount">
                                     @context.AmountDisplay
                                 </MudTd>
@@ -174,7 +174,7 @@
                                 </MudTd>
                                 <MudTd DataLabel="Actions">
                                     <MudMenu Variant="Variant.Filled" Color="Color.Primary" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" DisableElevation="true" Icon="@Icons.Filled.KeyboardArrowDown" IconColor="Color.Secondary" Direction="Direction.Left" OffsetX="true">
-                                        @*<MudMenuItem Disabled="@(!context.CanClaim)" OnClick="(() => InvokeClaimLockModalAsync(context))">Claim Lock</MudMenuItem>*@
+                                        <MudMenuItem Disabled="@(!context.CanClaim)" OnClick="(() => InvokeClaimLockModalAsync(context))">Claim Lock</MudMenuItem>
                                     </MudMenu>
                                 </MudTd>
                             }

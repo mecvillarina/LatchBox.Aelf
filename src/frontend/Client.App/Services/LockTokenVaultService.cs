@@ -16,10 +16,21 @@ namespace Client.App.Services
             _chainService = chainService;
         }
 
+
+        public async Task<LockGetLockTransactionOutput> GetLockTransactionAsync(long lockId)
+        {
+            var chain = await _chainService.FetchCurrentChainInfoAsync();
+
+            var payload = new GenericInput<long>() { Value = lockId };
+
+            return await _nightElfService.CallTx<LockGetLockTransactionOutput>(chain.LockVaultContractAddress, "GetLockTransaction", payload);
+        }
+
         public async Task<LockGetLockListOutput> GetLocksByInitiatorAsync()
         {
             var chain = await _chainService.FetchCurrentChainInfoAsync();
             var walletAddress = await _nightElfService.GetAddressAsync();
+
             return await _nightElfService.CallTx<LockGetLockListOutput>(chain.LockVaultContractAddress, "GetLocksByInitiator", walletAddress);
         }
 
@@ -40,6 +51,12 @@ namespace Client.App.Services
         {
             var chain = await _chainService.FetchCurrentChainInfoAsync();
             return await _nightElfService.SendTxAsync(chain.LockVaultContractAddress, "AddLock", input);
+        }
+
+        public async Task<TransactionResultDto> ClaimLockAsync(LockClaimInput input)
+        {
+            var chain = await _chainService.FetchCurrentChainInfoAsync();
+            return await _nightElfService.SendTxAsync(chain.LockVaultContractAddress, "ClaimLock", input);
         }
 
         public async Task<TransactionResultDto> RevokeLockAsync(LockRevokeInput input)
