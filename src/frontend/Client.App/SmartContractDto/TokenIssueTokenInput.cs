@@ -2,14 +2,14 @@
 
 namespace Client.App.SmartContractDto
 {
-    public class IssueTokenInput
+    public class TokenIssueTokenInput
     {
         public string Symbol { get; set; }
         public long Amount { get; set; }
         public string Memo { get; set; }
         public string To { get; set; }
 
-        public IssueTokenInput(IssueTokenParameter parameter)
+        public TokenIssueTokenInput(IssueTokenParameter parameter)
         {
             Symbol = parameter.Symbol;
             Memo = parameter.Memo;

@@ -95,7 +95,7 @@ namespace Client.App.Pages
 
                 try
                 {
-                    var balanceOutput = await TokenService.GetBalanceAsync(new GetBalanceInput()
+                    var balanceOutput = await TokenService.GetBalanceAsync(new TokenGetBalanceInput()
                     {
                         Symbol = tokenBalance.Token.Symbol,
                         Owner = walletAddress

@@ -35,17 +35,149 @@
         }
         else
         {
+            <!-- MY LOCKS -->
             <MudPaper Square="true" Elevation="15">
                 <div Class="px-4 py-6">
                     <div class="d-flex justify-space-between mud-width-full">
                         <div class="d-flex">
                             <MudText Class="mr-4 align-self-center" Color="Color.Secondary" Typo="Typo.h5" GutterBottom="false">My Locks</MudText>
-                            <MudIconButton Disabled="@(!IsMyLocksLoaded || !IsConnected)" Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium" />
+                            <MudIconButton Disabled="@(!IsMyLocksLoaded || !IsConnected)" OnClick="FetchInitiatorLocksAsync" Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" />
                         </div>
                     </div>
                 </div>
+
+                @if (!IsMyLocksLoaded)
+                {
+                    <div class="px-4 py-6">
+                        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="56px" Width="100%" />
+                        <MudSkeleton Class="mt-2" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="280px" Width="100%" />
+                    </div>
+                }
+                else
+                {
+                    <MudTable Items="@LockInitiatorTransactions" Class="mx-0 grey darken-4" FixedHeader="true" Breakpoint="Breakpoint.Sm">
+                        <HeaderContent>
+                            <MudTh>Lock Id</MudTh>
+                            <MudTh>Date</MudTh>
+                            <MudTh>Revocable</MudTh>
+                            <MudTh>Total Amount</MudTh>
+                            <MudTh>Status</MudTh>
+                            <MudTh>Actions</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            @if (@context.TokenInfo == null)
+                            {
+                                <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
+                                <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
+                                <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
+                                <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
+                                <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
+                                <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
+                            }
+                            else
+                            {
+                                <MudTd DataLabel="Lock Id">
+                                    <MudText Color="Color.Primary">
+                                        <b class="cursor-pointer" @onclick="(() => InvokeLockPreviewerModal(context.Lock.LockId))">@context.Lock.LockId</b>
+                                    </MudText>
+                                </MudTd>
+                                <MudTd DataLabel="Date">
+                                    @context.Lock.StartTime.GetUniversalDateTime().ToString(ClientConstants.LongDateTimeFormat) <br />
+                                    @context.Lock.UnlockTime.GetUniversalDateTime().ToString(ClientConstants.LongDateTimeFormat)
+                                </MudTd>
+                                <MudTd DataLabel="Revocable">
+                                    @if (context.IsRevocable)
+                                    {
+                                        <span>Yes</span>
+                                    }
+                                    else
+                                    {
+                                        <span>No</span>
+                                    }
+                                </MudTd>
+                                <MudTd DataLabel="Total Amount">
+                                    @context.TotalAmountDisplay
+                                </MudTd>
+                                <MudTd DataLabel="Status">
+                                    <MudChip Color="@context.StatusColor" Size="Size.Small">
+                                        <b>@context.Status</b>
+                                    </MudChip>
+                                </MudTd>
+                                <MudTd DataLabel="Actions">
+                                    <MudMenu Variant="Variant.Filled" Color="Color.Primary" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" DisableElevation="true" Icon="@Icons.Filled.KeyboardArrowDown" IconColor="Color.Secondary" Direction="Direction.Left" OffsetX="true">
+                                        @*<MudMenuItem Disabled="@(!context.IsRevocable || !context.Lock.IsActive)" OnClick="(() => InvokeRevokeLockModalAsync(context))">Revoke Lock</MudMenuItem>*@
+                                    </MudMenu>
+                                </MudTd>
+                            }
+                        </RowTemplate>
+                    </MudTable>
+                }
+
             </MudPaper>
 
+            <!-- MY CLAIMS-->
+            <MudPaper Square="true" Elevation="15" Class="mt-8">
+                <div Class="px-4 py-6">
+                    <div class="d-flex justify-space-between mud-width-full">
+                        <div class="d-flex">
+                            <MudText Class="mr-4 align-self-center" Color="Color.Secondary" Typo="Typo.h5" GutterBottom="false">My Claims</MudText>
+                            <MudIconButton Disabled="@(!IsMyClaimsLoaded || !IsConnected)" OnClick="FetchReceiverLocksAsync" Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" />
+                        </div>
+                    </div>
+                </div>
+
+                @if (!IsMyClaimsLoaded)
+                {
+                    <div class="px-4 py-6">
+                        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="56px" Width="100%" />
+                        <MudSkeleton Class="mt-2" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="280px" Width="100%" />
+                    </div>
+                }
+                else
+                {
+                    <MudTable Items="@LockReceiverTransactions" Class="mx-0 grey darken-4" FixedHeader="true" Breakpoint="Breakpoint.Sm">
+                        <HeaderContent>
+                            <MudTh>Lock Id</MudTh>
+                            <MudTh>Date Unlock</MudTh>
+                            <MudTh>Claimable Amount</MudTh>
+                            <MudTh>Status</MudTh>
+                            <MudTh>Actions</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            @if (@context.TokenInfo == null)
+                            {
+                                <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
+                                <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
+                                <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
+                                <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
+                                <MudTd><MudSkeleton Height="20px" Width="90px" Animation="Animation.Wave" SkeletonType="SkeletonType.Rectangle" /></MudTd>
+                            }
+                            else
+                            {
+                                <MudTd DataLabel="Lock Id">
+                                    <MudText Color="Color.Primary">
+                                        <b class="cursor-pointer" @onclick="(() => InvokeLockPreviewerModal(context.Lock.LockId))">@context.Lock.LockId</b>
+                                    </MudText>
+                                </MudTd>
+                                <MudTd DataLabel="Date Unlock">@context.Lock.UnlockTime.GetUniversalDateTime().ToString(ClientConstants.LongDateTimeFormat)</MudTd>
+                                <MudTd DataLabel="Claimable Amount">
+                                    @context.AmountDisplay
+                                </MudTd>
+                                <MudTd DataLabel="Status">
+                                    <MudChip Color="@context.StatusColor" Size="Size.Small">
+                                        <b>@context.Status</b>
+                                    </MudChip>
+                                </MudTd>
+                                <MudTd DataLabel="Actions">
+                                    <MudMenu Variant="Variant.Filled" Color="Color.Primary" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" DisableElevation="true" Icon="@Icons.Filled.KeyboardArrowDown" IconColor="Color.Secondary" Direction="Direction.Left" OffsetX="true">
+                                        @*<MudMenuItem Disabled="@(!context.CanClaim)" OnClick="(() => InvokeClaimLockModalAsync(context))">Claim Lock</MudMenuItem>*@
+                                    </MudMenu>
+                                </MudTd>
+                            }
+                        </RowTemplate>
+                    </MudTable>
+                }
+            </MudPaper>
         }
     }
 </MudContainer>

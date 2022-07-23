@@ -15,8 +15,8 @@ namespace Client.App.SmartContractDto.LockTokenVault
         public long TotalAmount { get; set; }
 
         public TimestampOutput CreationTime { get; set; }
-        public object StartTime { get; set; }
-        public object UnlockTime { get; set; }
+        public TimestampOutput StartTime { get; set; }
+        public TimestampOutput UnlockTime { get; set; }
         public bool IsRevocable { get; set; }
         public bool IsRevoked { get; set; }
         public bool IsActive { get; set; }

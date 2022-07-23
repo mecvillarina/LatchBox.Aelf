@@ -44,7 +44,7 @@ namespace Client.App.Pages.Assets.Modals
                     var chain = await ChainService.FetchCurrentChainInfoAsync();
 
                     var amount = Model.Amount.ToChainAmount(Model.Decimals);
-                    var payloadContract = new IssueTokenInput(Model) { Amount = amount };
+                    var payloadContract = new TokenIssueTokenInput(Model) { Amount = amount };
                     var txResult = await NightElfService.SendTxAsync(chain.TokenContractAddress, "Issue", payloadContract);
 
                     if (txResult != null)

@@ -1,4 +1,5 @@
 ﻿using Application.Common.Models;
+using Client.App.Models;
 using Client.App.Pages.Base;
 using Client.App.SmartContractDto;
 using MudBlazor;
@@ -12,10 +13,13 @@ namespace Client.App.Pages
     public partial class LocksPage : IPageBase, IDisposable
     {
         public bool IsMyLocksLoaded { get; set; }
+        public bool IsMyClaimsLoaded { get; set; }
         public bool IsConnected { get; set; }
         public bool IsProcessing { get; set; }
         public bool IsSupported { get; set; }
         public string SupportMessage { get; set; }
+        public List<LockModel> LockInitiatorTransactions { get; set; } = new();
+        public List<LockForReceiverModel> LockReceiverTransactions { get; set; } = new();
 
         private MudTabs tabs { get; set; }
         protected async override Task OnInitializedAsync()
@@ -63,12 +67,12 @@ namespace Client.App.Pages
         private async Task FetchDataAsync()
         {
             if (IsProcessing) return;
-            IsMyLocksLoaded = false;
+
             IsProcessing = true;
             SupportMessage = String.Empty;
 
             var result = await ValidateSupportedChainAsync();
-            
+
             IsSupported = result.Item1;
 
             if (!IsSupported)
@@ -81,13 +85,106 @@ namespace Client.App.Pages
             }
             else
             {
-                var balanceOutput = await LockTokenVaultService.GetLocksByInitiatorAsync();
-                var s = balanceOutput.Locks[0].CreationTime;
-                var ss = s.GetUniversalDateTime();
+                await FetchInitiatorLocksAsync();
+                await FetchReceiverLocksAsync();
+
+                //load refunds
             }
 
+            IsProcessing = false;
+            StateHasChanged();
+        }
+
+        private async Task FetchInitiatorLocksAsync()
+        {
+            IsMyLocksLoaded = false;
+            LockInitiatorTransactions.Clear();
+            StateHasChanged();
+
+            var lockListOutput = await LockTokenVaultService.GetLocksByInitiatorAsync();
+            foreach (var @lock in lockListOutput.Locks)
+            {
+                LockInitiatorTransactions.Add(new LockModel(@lock));
+            }
+
+            LockInitiatorTransactions = LockInitiatorTransactions.Where(x => x.Status != "Revoked").ToList();
+            LockInitiatorTransactions = LockInitiatorTransactions.OrderByDescending(x => x.Lock.StartTime.GetUniversalDateTime()).ToList();
             IsMyLocksLoaded = true;
             StateHasChanged();
+
+            var tasks = new List<Task>();
+
+            try
+            {
+                foreach (var @lock in LockInitiatorTransactions)
+                {
+                    tasks.Add(InvokeAsync(async () =>
+                    {
+                        var tokenInfo = await TokenService.GetTokenInfoAsync(new TokenGetTokenInfoInput()
+                        {
+                            Symbol = @lock.Lock.TokenSymbol
+                        });
+                        @lock.SetTokenInfo(tokenInfo);
+                    }));
+                }
+
+                await Task.WhenAll(tasks);
+            }
+            catch { }
+
+            StateHasChanged();
+        }
+
+        private async Task FetchReceiverLocksAsync()
+        {
+            IsMyClaimsLoaded = false;
+            LockReceiverTransactions.Clear();
+            StateHasChanged();
+
+            var lockListOutput = await LockTokenVaultService.GetLocksForReceiverAsync();
+            
+            foreach (var lockTransaction in lockListOutput.LockTransactions)
+            {
+                LockReceiverTransactions.Add(new LockForReceiverModel(lockTransaction.Lock, lockTransaction.Receiver));
+            }
+
+            LockReceiverTransactions = LockReceiverTransactions.Where(x => x.Status == "Locked" || x.Status == "Unlocked").ToList();
+            LockReceiverTransactions = LockReceiverTransactions.OrderByDescending(x => x.Lock.StartTime.GetUniversalDateTime()).ToList();
+            IsMyClaimsLoaded = true;
+            StateHasChanged();
+
+            var tasks = new List<Task>();
+
+            try
+            {
+                foreach (var @lock in LockReceiverTransactions)
+                {
+                    tasks.Add(InvokeAsync(async () =>
+                    {
+                        var tokenInfo = await TokenService.GetTokenInfoAsync(new TokenGetTokenInfoInput()
+                        {
+                            Symbol = @lock.Lock.TokenSymbol
+                        });
+                        @lock.SetTokenInfo(tokenInfo);
+                    }));
+                }
+
+                await Task.WhenAll(tasks);
+            }
+            catch { }
+
+            StateHasChanged();
+        }
+
+        private void InvokeLockPreviewerModal(long lockId)
+        {
+            //var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
+            //var parameters = new DialogParameters()
+            //{
+            //     { nameof(LockPreviewerModal.LockId), lockId},
+            //};
+
+            //DialogService.Show<LockPreviewerModal>($"Lock #{lockId}", parameters, options);
         }
 
         private void ClearData()

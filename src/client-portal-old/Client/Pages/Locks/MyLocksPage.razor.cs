@@ -74,10 +74,7 @@ namespace Client.Pages.Locks
                 IsCompletelyLoaded = true;
                 StateHasChanged();
             }
-            catch
-            {
-
-            }
+            catch { }
         }
 
         private async Task InvokeAddLockModalAsync()

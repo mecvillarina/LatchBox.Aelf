@@ -20,5 +20,12 @@ namespace Client.App.Services
             var walletAddress = await _nightElfService.GetAddressAsync();
             return await _nightElfService.CallTx<GetLockListOutput>(chain.LockVaultContractAddress, "GetLocksByInitiator", walletAddress);
         }
+
+        public async Task<GetLockReceiverListOutput> GetLocksForReceiverAsync()
+        {
+            var chain = await _chainService.FetchCurrentChainInfoAsync();
+            var walletAddress = await _nightElfService.GetAddressAsync();
+            return await _nightElfService.CallTx<GetLockReceiverListOutput>(chain.LockVaultContractAddress, "GetLocksForReceiver", walletAddress);
+        }
     }
 }
