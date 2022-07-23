@@ -1,0 +1,88 @@
+﻿<MudContainer MaxWidth="MaxWidth.False" Style="max-height: 80vh; overflow-y: scroll">
+    <MudDialog DisableSidePadding="true" ClassActions="px-2 py-4" ClassContent="pt-0">
+        <DialogContent>
+            <MudGrid Class="pt-0 pb-4" Spacing="1">
+                <MudItem xs="12">
+                    <div>
+                        <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Name</b></MudText>
+                        <MudText Typo="Typo.body1" Class="text-white mb-2">@Period.Name</MudText>
+                    </div>
+                </MudItem>
+
+                <MudItem xs="12">
+                    <div>
+                        <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Unlock Date</b></MudText>
+                        <MudText Typo="Typo.body1" Class="text-white mb-2">@Period.UnlockTime.GetUniversalDateTime().LocalDateTime.ToString(ClientConstants.LongDateTimeFormat)</MudText>
+                    </div>
+                </MudItem>
+
+                <MudItem xs="12">
+                    <div>
+                        <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Receivers</b></MudText>
+
+                        @if (Receivers.Any())
+                        {
+                            <MudTable Items="Receivers" Context="receiverContext" Class="mx-0 grey darken-4" Breakpoint="Breakpoint.Sm">
+                                <HeaderContent>
+                                    <MudTh>Name</MudTh>
+                                    <MudTh>Address</MudTh>
+                                    <MudTh>Amount</MudTh>
+                                    <MudTh>Status</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="Name">@receiverContext.Name</MudTd>
+                                    <MudTd DataLabel="Address">
+                                        @receiverContext.Address.ToMask(6)
+                                    </MudTd>
+                                    <MudTd DataLabel="Amount">@receiverContext.Amount.ToAmountDisplay(TokenInfo.Decimals) @TokenInfo.Symbol</MudTd>
+                                    <MudTd DataLabel="Status">
+                                        @if (receiverContext.DateRevoked != null)
+                                        {
+                                        <MudChip Color="Color.Error" Size="Size.Small">
+                                            <b>Revoked</b>
+                                        </MudChip>
+                                        }
+                                        else if (receiverContext.DateClaimed != null)
+                                        {
+                                        <MudChip Color="Color.Info" Size="Size.Small">
+                                            <b>Claimed</b>
+                                        </MudChip>
+                                        }
+                                        else
+                                        {
+                                            @if (Vesting.IsActive)
+                                            {
+                                                @if (DateTime.UtcNow < Period.UnlockTime.GetUniversalDateTime())
+                                                {
+                                                <MudChip Color="Color.Primary" Size="Size.Small">
+                                                    <b>Locked</b>
+                                                </MudChip>
+                                                }
+                                                else
+                                                {
+                                                <MudChip Color="Color.Info" Size="Size.Small">
+                                                    <b>Unlocked</b>
+                                                </MudChip>
+                                                }
+                                            }
+                                        }
+                                </MudTd>
+                            </RowTemplate>
+                            <FooterContent>
+                                <MudTd colspan="4" align="right">
+                                    <MudText Typo="Typo.body1" Color="Color.Primary">
+                                        <b>
+                                            Total Amount: @Receivers.Sum(x => x.Amount.ToAmount(TokenInfo.Decimals)).ToAmountDisplay(TokenInfo.Decimals) @TokenInfo.Symbol  <br />
+                                        </b>
+                                    </MudText>
+                                </MudTd>
+                            </FooterContent>
+                        </MudTable>
+                        }
+                    </div>
+                </MudItem>
+
+            </MudGrid>
+        </DialogContent>
+    </MudDialog>
+</MudContainer>

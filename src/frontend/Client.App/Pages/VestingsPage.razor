@@ -81,7 +81,7 @@
                             {
                                 <MudTd DataLabel="Vesting Id">
                                     <MudText Color="Color.Primary">
-                                        @*<b Class="cursor-pointer" @onclick="(() => InvokeVestingPreviewerModal(context.Vesting.VestingId))">@context.Vesting.VestingId</b>*@
+                                        <b Class="cursor-pointer" @onclick="(() => InvokeVestingPreviewerModal(context.Vesting.VestingId))">@context.Vesting.VestingId</b>
                                     </MudText>
                                 </MudTd>
                                 <MudTd DataLabel="Date Created">@context.Vesting.CreationTime.GetUniversalDateTime().LocalDateTime.ToString(ClientConstants.LongDateTimeFormat)</MudTd>
@@ -148,7 +148,7 @@
                             {
                                 <MudTd DataLabel="Vesting Id">
                                     <MudText Color="Color.Primary">
-                                        @*<b class="cursor-pointer" @onclick="(() => InvokeVestingPreviewerModal(context.Vesting.VestingId))">@context.Vesting.VestingId</b>*@
+                                        <b class="cursor-pointer" @onclick="(() => InvokeVestingPreviewerModal(context.Vesting.VestingId))">@context.Vesting.VestingId</b>
                                     </MudText>
                                 </MudTd>
                                 <MudTd DataLabel="Date Unlock">@context.Period.UnlockTime.GetUniversalDateTime().LocalDateTime.ToString(ClientConstants.LongDateTimeFormat)</MudTd>
@@ -165,7 +165,7 @@
                                 </MudTd>
                                 <MudTd DataLabel="Actions">
                                     <MudMenu Variant="Variant.Filled" Color="Color.Primary" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" DisableElevation="true" Icon="@Icons.Filled.KeyboardArrowDown" IconColor="Color.Secondary" Direction="Direction.Left" OffsetX="true">
-                                        @*<MudMenuItem Disabled="@(!context.CanClaim)" OnClick="(() => InvokeClaimVestingModalAsync(context))">Claim Vesting</MudMenuItem>*@
+                                        <MudMenuItem Disabled="@(!context.CanClaim)" OnClick="(() => InvokeClaimVestingModalAsync(context))">Claim Vesting</MudMenuItem>
                                     </MudMenu>
                                 </MudTd>
                             }

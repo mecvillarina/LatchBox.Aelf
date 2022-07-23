@@ -299,7 +299,8 @@ namespace Client.App.Pages
 
             if (!dialogResult.Cancelled)
             {
-                await FetchDataAsync();
+                await FetchReceiverLocksAsync();
+                await FetchInitiatorLocksAsync();
             }
         }
 

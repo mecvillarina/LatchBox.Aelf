@@ -1,4 +1,5 @@
 ﻿using Application.Common.Dtos;
+using Client.App.SmartContractDto;
 using Client.App.SmartContractDto.LockTokenVault;
 using Client.App.SmartContractDto.VestingTokenVault;
 using System.Threading.Tasks;
@@ -14,6 +15,13 @@ namespace Client.App.Services
         {
             _nightElfService = nightElfService;
             _chainService = chainService;
+        }
+
+        public async Task<VestingGetVestingTransactionOutput> GetVestingTransactionAsync(long vestingId)
+        {
+            var chain = await _chainService.FetchCurrentChainInfoAsync();
+            var payload = new GenericInput<long>() { Value = vestingId };
+            return await _nightElfService.CallTx<VestingGetVestingTransactionOutput>(chain.VestingVaultContractAddress, "GetVestingTransaction", payload);
         }
 
         public async Task<VestingListOutput> GetVestingsByInitiatorAsync()
@@ -42,5 +50,22 @@ namespace Client.App.Services
             return await _nightElfService.SendTxAsync(chain.VestingVaultContractAddress, "AddVesting", input);
         }
 
+        public async Task<TransactionResultDto> ClaimVestingAsync(VestingClaimInput input)
+        {
+            var chain = await _chainService.FetchCurrentChainInfoAsync();
+            return await _nightElfService.SendTxAsync(chain.VestingVaultContractAddress, "ClaimVesting", input);
+        }
+
+        public async Task<TransactionResultDto> RevokeVestingAsync(VestingRevokeVestingInput input)
+        {
+            var chain = await _chainService.FetchCurrentChainInfoAsync();
+            return await _nightElfService.SendTxAsync(chain.VestingVaultContractAddress, "RevokeVesting", input);
+        }
+
+        public async Task<TransactionResultDto> ClaimRefundAsync(VestingClaimRefundInput input)
+        {
+            var chain = await _chainService.FetchCurrentChainInfoAsync();
+            return await _nightElfService.SendTxAsync(chain.VestingVaultContractAddress, "ClaimRefund", input);
+        }
     }
 }

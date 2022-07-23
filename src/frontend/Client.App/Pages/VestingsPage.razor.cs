@@ -2,6 +2,7 @@
 using Client.App.Pages.Assets.Modals;
 using Client.App.Pages.Base;
 using Client.App.Pages.Vestings.Modals;
+using Client.App.Parameters;
 using Client.App.SmartContractDto;
 using Client.Infrastructure.Exceptions;
 using MudBlazor;
@@ -250,6 +251,17 @@ namespace Client.App.Pages
             StateHasChanged();
         }
 
+        private void InvokeVestingPreviewerModal(long vestingId)
+        {
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
+            var parameters = new DialogParameters()
+            {
+                 { nameof(VestingPreviewerModal.VestingId), vestingId},
+            };
+
+            DialogService.Show<VestingPreviewerModal>($"Vesting #{vestingId}", parameters, options);
+        }
+
         private async Task InvokeAddVestingModalAsync()
         {
             var searchTokenDialog = DialogService.Show<SearchTokenModal>($"Search Token");
@@ -268,8 +280,34 @@ namespace Client.App.Pages
 
                 if (!dialogResult.Cancelled)
                 {
-                    await FetchDataAsync();
+                    await FetchInitiatorVestingsAsync();
+                    await FetchReceiverVestingsAsync();
                 }
+            }
+        }
+
+        private async Task InvokeClaimVestingModalAsync(VestingReceiverModel vestingModel)
+        {
+            var vestingId = vestingModel.Vesting.VestingId;
+            var periodName = vestingModel.Period.Name;
+
+            var parameters = new DialogParameters();
+            parameters.Add(nameof(ClaimVestingModal.Model), new ClaimVestingParameter()
+            {
+                VestingId = vestingModel.Vesting.VestingId,
+                PeriodId = vestingModel.Period.PeriodId,
+                PeriodName = periodName,
+                ReceiverAddress = vestingModel.Receiver.Address,
+                AmountDisplay = vestingModel.AmountDisplay
+            });
+
+            var dialog = DialogService.Show<ClaimVestingModal>($"Claim from Vesting #{vestingId} - {periodName}", parameters);
+            var dialogResult = await dialog.Result;
+
+            if (!dialogResult.Cancelled)
+            {
+                await FetchReceiverVestingsAsync();
+                await FetchInitiatorVestingsAsync();
             }
         }
 
