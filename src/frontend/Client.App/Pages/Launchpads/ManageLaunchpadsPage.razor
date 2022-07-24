@@ -1,0 +1,181 @@
+﻿@page "/launchpads/manage"
+
+<MudContainer MaxWidth="MaxWidth.False">
+    <div class="d-flex justify-space-between mud-width-full">
+        <div class="d-flex">
+            <MudText Class="mr-4 align-self-center" Color="Color.Secondary" Typo="Typo.h4" GutterBottom="false">Manage Launchpads</MudText>
+        </div>
+    </div>
+</MudContainer>
+
+<MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
+    @if (!IsConnected)
+    {
+        <MudPaper Square="true" Elevation="15">
+            <MudText Typo="Typo.h5" Color="Color.Error" Class="px-4 py-6" GutterBottom="false" h>
+                Connect your wallet first.
+            </MudText>
+        </MudPaper>
+    }
+    else
+    {
+        @if (!IsSupported)
+        {
+            <MudPaper Square="true" Elevation="15">
+                <div class="px-4 py-6">
+                    <MudText Typo="Typo.h6" Color="Color.Error" Class="pa-0" GutterBottom="false">
+                        Token Lock feature is not supported on this chain.
+                    </MudText>
+                    <br />
+                    <MudText Typo="Typo.body1" Class="pa-0" GutterBottom="false">
+                        @((MarkupString)SupportMessage)
+                    </MudText>
+                </div>
+            </MudPaper>
+        }
+        else
+        {
+            <!-- MY LAUNCHPADS -->
+            <MudPaper Square="true" Elevation="15">
+                <div class="px-4 py-6">
+                    <div Class="d-flex justify-space-between mud-width-full">
+                        <div class="d-flex">
+                            <MudText Class="mr-4 align-self-center" Color="Color.Secondary" Typo="Typo.h5" GutterBottom="false">My Launchpads</MudText>
+                            <MudIconButton Disabled="@(!IsMyLaunchpadLoaded || !IsConnected)" OnClick="FetchMyLaunchpadsAsync" Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" />
+                        </div>
+
+                        <div class="d-flex ml-auto">
+                            <MudButton Disabled="@(!IsMyLaunchpadLoaded || !IsConnected)" OnClick="InvokeAddLaunchpadModalAsync" Class="align-self-center" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium">Create Launchpad</MudButton>
+                        </div>
+                    </div>
+                </div>
+
+                @if (!IsMyLaunchpadLoaded)
+                {
+                    <div class="px-4 py-6">
+                        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="56px" Width="100%" />
+                        <MudSkeleton Class="mt-2" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="100px" Width="100%" />
+                    </div>
+                }
+                else
+                {
+                    <MudTable Items="@MyLaunchpadList" Class="mx-0 grey darken-4" FixedHeader="true" Breakpoint="Breakpoint.Sm">
+                        <HeaderContent>
+                            <MudTh>Id</MudTh>
+                            <MudTh>Name</MudTh>
+                            <MudTh>Token</MudTh>
+                            <MudTh>Raised Amount</MudTh>
+                            <MudTh>Sale Duration</MudTh>
+                            <MudTh>Status</MudTh>
+                            <MudTh>Action</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Id">
+                                <MudText Typo="Typo.body1" Color="Color.Primary" Class="cursor-pointer" @onclick="(() => OnViewMyLaunchpad(context))">
+                                    <b>@context.Launchpad.Id</b>
+                                </MudText>
+                            </MudTd>
+                            <MudTd DataLabel="Name">
+                                <span>@context.Launchpad.Name</span>
+                            </MudTd>
+                            <MudTd DataLabel="Token">
+                                <span>@context.Launchpad.TokenSymbol</span>
+                            </MudTd>
+                            <MudTd DataLabel="Raised Amount">
+                                <span>@context.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol / @context.Launchpad.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol (@(context.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) / context.Launchpad.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) * 100) %)</span>
+                            </MudTd>
+                            <MudTd DataLabel="Sale Duration">
+                                <div>
+                                    <span>@context.Launchpad.SaleStartDate.GetUniversalDateTime().LocalDateTime.ToString(ClientConstants.LongDateTimeFormat)</span><br />
+                                    <span>@context.Launchpad.SaleEndDate.GetUniversalDateTime().LocalDateTime.ToString(ClientConstants.LongDateTimeFormat)</span>
+                                </div>
+                            </MudTd>
+                            <MudTd DataLabel="Status">
+                                <MudChip Color="@context.StatusColor" Size="Size.Small">
+                                    <b>@context.Status</b>
+                                </MudChip>
+                            </MudTd>
+                            <MudTd DataLabel="Actions">
+                                <MudMenu Variant="Variant.Filled" Color="Color.Primary" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" DisableElevation="true" Icon="@Icons.Filled.MoreVert" IconColor="Color.Secondary" Direction="Direction.Left" OffsetX="true">
+                                    <MudMenuItem Disabled="!context.CanCancel" OnClick="(() => InvokeCancelLaunchpadConfirmationAsync(context))">Cancel</MudMenuItem>
+                                    <MudMenuItem Disabled="!context.CanComplete" OnClick="(() => InvokeCompleteLaunchpadConfirmationAsync(context))">Complete</MudMenuItem>
+                                        <MudMenuItem Disabled="!context.CanRefund" OnClick="(() => InvokeCompleteLaunchpadConfirmationAsync(context))">Refund</MudMenuItem>
+                                </MudMenu>
+                            </MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+            </MudPaper>
+
+            <!-- INVESTED LAUNCHPADS-->
+            <MudPaper Square="true" Elevation="15" Class="mt-8">
+                <div Class="px-4 py-6">
+                    <div class="d-flex justify-space-between mud-width-full">
+                        <div class="d-flex">
+                            <MudText Class="mr-4 align-self-center" Color="Color.Secondary" Typo="Typo.h5" GutterBottom="false">Invested Launchpads</MudText>
+                            <MudIconButton Disabled="@(!IsInvestedLaunchpadLoaded || !IsConnected)" OnClick="FetchInvestedLaunchpadsAsync" Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" />
+                        </div>
+                    </div>
+                </div>
+
+                @if (!IsInvestedLaunchpadLoaded)
+                {
+                    <div class="px-4 py-6">
+                        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="56px" Width="100%" />
+                        <MudSkeleton Class="mt-2" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="100px" Width="100%" />
+                    </div>
+                }
+                else
+                {
+                    <MudTable Items="@InvestedLaunchpadList" Class="mx-0 grey darken-4" FixedHeader="true" Breakpoint="Breakpoint.Sm">
+                        <HeaderContent>
+                            <MudTh>Id</MudTh>
+                            <MudTh>Name</MudTh>
+                            <MudTh>Token</MudTh>
+                            <MudTh>Invested Amount</MudTh>
+                            <MudTh>Token Equivalent</MudTh>
+                            <MudTh>Lock Vault</MudTh>
+                            <MudTh>Status</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Id">
+                                <MudText Typo="Typo.body1" Color="Color.Primary" Class="cursor-pointer" @onclick="(() => OnViewInvestedLaunchpad(context))">
+                                    <b>@context.Launchpad.Id</b>
+                                </MudText>
+                            </MudTd>
+                            <MudTd DataLabel="Name">
+                                <span>@context.Launchpad.Name</span>
+                            </MudTd>
+                            <MudTd DataLabel="Token">
+                                <span>@context.Launchpad.TokenSymbol</span>
+                            </MudTd>
+                            <MudTd DataLabel="Invested Amount">
+                                <span>@context.InvestedAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol </span>
+                            </MudTd>
+                            <MudTd DataLabel="Token Equivalent">
+                                <span>@((context.Investment.TokenAmount.ToAmount(context.TokenDecimals) * context.Launchpad.TokenAmountPerNativeToken.ToAmount(NativeTokenInfo.Decimals)).ToAmountDisplay(context.TokenDecimals)) @context.TokenSymbol </span>
+                            </MudTd>
+                            <MudTd DataLabel="Lock Vault">
+                                @if (context.LockId.HasValue)
+                                {
+                                    <MudText Typo="Typo.body2" Color="Color.Primary" Class="cursor-pointer" @onclick="(() => InvokeLockPreviewerModal(context.LockId.Value))">
+                                        <b>Lock #@context.LockId.Value</b>
+                                    </MudText>
+                                }
+                                else
+                                {
+                                    <span>-</span>
+                                }
+                            </MudTd>
+                            <MudTd DataLabel="Status">
+                                <MudChip Color="@context.StatusColor" Size="Size.Small">
+                                    <b>@context.Status</b>
+                                </MudChip>
+                            </MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+            </MudPaper>
+        }
+    }
+</MudContainer>

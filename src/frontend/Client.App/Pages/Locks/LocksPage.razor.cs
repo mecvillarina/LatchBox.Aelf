@@ -5,16 +5,19 @@ using Client.App.Pages.Locks.Modals;
 using Client.App.Parameters;
 using Client.App.SmartContractDto;
 using Client.Infrastructure.Exceptions;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Client.App.Pages
+namespace Client.App.Pages.Locks
 {
     public partial class LocksPage : IPageBase, IDisposable
     {
+        [Parameter]
+        public long? LockId { get; set; }
         public bool IsMyLocksLoaded { get; set; }
         public bool IsMyClaimsLoaded { get; set; }
         public bool IsMyRefundsLoaded { get; set; }
@@ -24,7 +27,7 @@ namespace Client.App.Pages
         public bool IsSupported { get; set; }
         public string SupportMessage { get; set; }
         public List<LockModel> LockInitiatorTransactions { get; set; } = new();
-        public List<LockForReceiverModel> LockReceiverTransactions { get; set; } = new();
+        public List<LockReceiverModel> LockReceiverTransactions { get; set; } = new();
         public List<LockRefundModel> LockRefunds { get; set; } = new();
 
         protected async override Task OnInitializedAsync()
@@ -37,21 +40,6 @@ namespace Client.App.Pages
         private async void HandleNightElfExecutorConnected(object source, EventArgs e)
         {
             IsConnected = true;
-            //if (!LockInitiatorTransactions.Any())
-            //{
-            //    await FetchInitiatorLocksAsync();
-            //}
-
-            //if (!LockReceiverTransactions.Any())
-            //{
-            //    await FetchReceiverLocksAsync();
-            //}
-
-            //if (!LockRefunds.Any())
-            //{
-            //    await FetchLockRefundsAsync();
-            //}
-
             StateHasChanged();
         }
 
@@ -67,6 +55,7 @@ namespace Client.App.Pages
         {
             if (firstRender)
             {
+                
                 await FetchDataAsync();
             }
         }
@@ -103,6 +92,13 @@ namespace Client.App.Pages
             {
                 try
                 {
+                    var isConnected = await NightElfService.IsConnectedAsync();
+
+                    if (isConnected && LockId.HasValue && LockId.Value > 0)
+                    {
+                        InvokeLockPreviewerModal(LockId.Value);
+                    }
+
                     var walletAddress = await NightElfService.GetAddressAsync();
                     if (string.IsNullOrEmpty(walletAddress)) throw new GeneralException("No Wallet found.");
 
@@ -173,7 +169,7 @@ namespace Client.App.Pages
 
             foreach (var lockTransaction in lockListOutput.LockTransactions)
             {
-                LockReceiverTransactions.Add(new LockForReceiverModel(lockTransaction.Lock, lockTransaction.Receiver));
+                LockReceiverTransactions.Add(new LockReceiverModel(lockTransaction.Lock, lockTransaction.Receiver));
             }
 
             LockReceiverTransactions = LockReceiverTransactions.Where(x => x.Status == "Locked" || x.Status == "Unlocked").ToList();
@@ -282,7 +278,7 @@ namespace Client.App.Pages
             }
         }
 
-        private async Task InvokeClaimLockModalAsync(LockForReceiverModel lockModel)
+        private async Task InvokeClaimLockModalAsync(LockReceiverModel lockModel)
         {
             var lockId = lockModel.Lock.LockId;
 

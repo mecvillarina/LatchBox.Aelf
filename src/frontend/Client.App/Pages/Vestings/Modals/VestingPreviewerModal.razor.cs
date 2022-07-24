@@ -39,7 +39,7 @@ namespace Client.App.Pages.Vestings.Modals
                 });
 
                 Model = new VestingModel(output, tokenInfo);
-                ShareLink = $"{NavigationManager.BaseUri}view/vestings/{VestingId}";
+                ShareLink = $"{NavigationManager.BaseUri}vestings/{VestingId}";
                 IsLoaded = true;
                 MudDialog.SetTitle("");
                 StateHasChanged();

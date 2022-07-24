@@ -64,6 +64,9 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("IsEnabled")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsLaunchpadFeatureSupported")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsLockingFeatureSupported")
                         .HasColumnType("bit");
 
@@ -82,6 +85,10 @@ namespace Infrastructure.Migrations
 
                     b.Property<DateTime?>("LastUpdate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("LaunchpadContractAddress")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("LockVaultContractAddress")
                         .HasMaxLength(128)

@@ -26,7 +26,9 @@ namespace Application.Common.Dtos
         public bool IsTokenCreationFeatureSupported { get; set; }
         public bool IsLockingFeatureSupported { get; set; }
         public bool IsVestingFeatureSupported { get; set; }
+        public bool IsLaunchpadFeatureSupported { get; set; }
         public string LockVaultContractAddress { get; set; }
         public string VestingVaultContractAddress { get; set; }
+        public string LaunchpadContractAddress { get; set; }
     }
 }

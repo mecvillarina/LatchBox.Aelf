@@ -15,6 +15,10 @@ namespace Client.App.SmartContractDto.LockTokenVault
         public List<LockAddLockReceiverInput> Receivers { get; set; }
         public string Remarks { get; set; }
 
+        public LockAddLockInput()
+        {
+
+        }
         public LockAddLockInput(AddLockParameter parameter, int tokenDecimals)
         {
             TokenSymbol = parameter.TokenSymbol;

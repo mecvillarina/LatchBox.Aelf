@@ -11,7 +11,7 @@ namespace Client.App.SmartContractDto.VestingTokenVault
         public string TokenSymbol { get; set; }
         public long TotalAmount { get; set; }
         public bool IsRevocable { get; set; }
-        public List<VestingAddVestingPeriodInput> Periods { get; set; }
+        public List<VestingAddVestingPeriodInput> Periods { get; set; } = new();
 
         public VestingAddVestingInput(AddVestingParameter parameter, int tokenDecimals)
         {

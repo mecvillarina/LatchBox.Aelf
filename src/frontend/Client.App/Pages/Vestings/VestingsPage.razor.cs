@@ -5,16 +5,19 @@ using Client.App.Pages.Vestings.Modals;
 using Client.App.Parameters;
 using Client.App.SmartContractDto;
 using Client.Infrastructure.Exceptions;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Client.App.Pages
+namespace Client.App.Pages.Vestings
 {
     public partial class VestingsPage : IPageBase, IDisposable
-    {
+    { 
+        [Parameter]
+        public long? VestingId { get; set; }
         public bool IsMyVestingsLoaded { get; set; }
         public bool IsMyClaimsLoaded { get; set; }
         public bool IsMyRefundsLoaded { get; set; }
@@ -37,21 +40,6 @@ namespace Client.App.Pages
         private async void HandleNightElfExecutorConnected(object source, EventArgs e)
         {
             IsConnected = true;
-            //if (!VestingInitiatorTransactions.Any())
-            //{
-            //    await FetchInitiatorVestingsAsync();
-            //}
-
-            //if (!VestingReceiverTransactions.Any())
-            //{
-            //    await FetchReceiverVestingsAsync();
-            //}
-
-            //if (!VestingRefunds.Any())
-            //{
-            //    await FetchVestingRefundsAsync();
-            //}
-
             StateHasChanged();
         }
 
@@ -103,6 +91,13 @@ namespace Client.App.Pages
             {
                 try
                 {
+                    var isConnected = await NightElfService.IsConnectedAsync();
+
+                    if (isConnected && VestingId.HasValue && VestingId.Value > 0)
+                    {
+                        InvokeVestingPreviewerModal(VestingId.Value);
+                    }
+
                     var walletAddress = await NightElfService.GetAddressAsync();
                     if (string.IsNullOrEmpty(walletAddress)) throw new GeneralException("No Wallet found.");
 

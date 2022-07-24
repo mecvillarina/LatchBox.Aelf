@@ -4,6 +4,6 @@ namespace Client.App.SmartContractDto.VestingTokenVault
 {
     public class VestingReceiverListOutput
     {
-        public List<VestingGetVestingTransactionForReceiverOutput> Transactions { get; set; }
+        public List<VestingGetVestingTransactionForReceiverOutput> Transactions { get; set; } = new();
     }
 }

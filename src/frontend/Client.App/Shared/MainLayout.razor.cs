@@ -120,6 +120,7 @@ namespace Client.App.Shared
                 {
                     NightElf.WalletAddress = await NightElfService.GetAddressAsync();
                     NightElf.IsConnected = await NightElfService.IsConnectedAsync();
+                    IsNavMenuPanelExpanded = false;
                     AppDialogService.Clear();
                     StateHasChanged();
                 }
@@ -136,6 +137,9 @@ namespace Client.App.Shared
 
         private void OnViewWallet()
         {
+            IsNavMenuPanelExpanded = false;
+            StateHasChanged();
+
             var options = new DialogOptions()
             {
                 CloseButton = true

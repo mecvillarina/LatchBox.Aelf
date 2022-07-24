@@ -84,6 +84,7 @@ namespace Client.App.Extensions
             services.AddScoped<TokenService>();
             services.AddScoped<LockTokenVaultService>();
             services.AddScoped<VestingTokenVaultService>();
+            services.AddScoped<LaunchpadService>();
 
             return services;
         }

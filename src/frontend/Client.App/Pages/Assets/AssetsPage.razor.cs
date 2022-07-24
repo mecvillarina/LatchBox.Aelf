@@ -13,7 +13,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Client.App.Pages
+namespace Client.App.Pages.Assets
 {
     public partial class AssetsPage : IPageBase, IDisposable
     {
