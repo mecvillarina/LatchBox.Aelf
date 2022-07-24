@@ -32,8 +32,7 @@
             <div class="d-none d-md-flex justify-space-between align-center px-6 mud-width-full">
                 <div class="d-flex align-center gap-2">
                     <MudText Typo="Typo.h6" Color="Color.Primary" Class="ml-4 mr-10 py-1">aelf.LatchBox</MudText>
-                    <MudButton Color="Color.Inherit" Link="/">Home</MudButton>
-                    <MudButton Color="Color.Inherit" Link="/assets">Assets</MudButton>
+                    <MudButton Color="Color.Inherit" Link="/">Assets</MudButton>
                     <MudButton Color="Color.Inherit" Link="/locks">Locks</MudButton>
                     <MudButton Color="Color.Inherit" Link="/vestings">Vestings</MudButton>
                     <MudMenu Class="ml-2" Color="Color.Inherit" Label="Launchpads" EndIcon="@Icons.Material.Filled.ArrowDropDown" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
@@ -87,10 +86,13 @@
                         <ChildContent>
                             <div class="py-6 mx-n6 muudstrap-navbar-expand">
                                 <MudNavMenu>
-                                    <MudNavLink Match="NavLinkMatch.All" Href="/">Home</MudNavLink>
-                                    <MudNavLink Href="/assets">Assets</MudNavLink>
-                                    <MudNavLink Href="/locks">Locks</MudNavLink>
-                                    <MudNavLink Href="/vestings">Vestings</MudNavLink>
+                                    <MudNavLink Match="NavLinkMatch.All" Href="/">Assets</MudNavLink>
+                                    <MudNavLink Match="NavLinkMatch.All" Href="/locks">Locks</MudNavLink>
+                                    <MudNavLink Match="NavLinkMatch.All" Href="/vestings">Vestings</MudNavLink>
+                                    <MudNavGroup Title="Launchpads">
+                                        <MudNavLink Match="NavLinkMatch.All" Href="/launchpads">All Launchpads</MudNavLink>
+                                        <MudNavLink Match="NavLinkMatch.All" Href="/launchpads/manage">Manage Launchpads</MudNavLink>
+                                    </MudNavGroup>
 
                                     @if (IsAssetLoaded)
                                     {
