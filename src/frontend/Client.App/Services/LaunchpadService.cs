@@ -35,5 +35,21 @@ namespace Client.App.Services
             var chain = await _chainService.FetchCurrentChainInfoAsync();
             return await _nightElfService.CallTx<CrowdSaleInvestmentListOutput>(chain.LaunchpadContractAddress, "GetCrowdSaleInvestments", input);
         }
+
+        public async Task<CrowdSaleListOutput> GetCrowdSalesByInitiatorAsync()
+        {
+            var chain = await _chainService.FetchCurrentChainInfoAsync();
+            var walletAddress = await _nightElfService.GetAddressAsync();
+            return await _nightElfService.CallTx<CrowdSaleListOutput>(chain.LaunchpadContractAddress, "GetCrowdSalesByInitiator", walletAddress);
+        }
+        public async Task<CrowdSaleByInvestorListOutput> GetCrowdSalesByInvestorAsync()
+        {
+            var chain = await _chainService.FetchCurrentChainInfoAsync();
+            var walletAddress = await _nightElfService.GetAddressAsync();
+            return await _nightElfService.CallTx<CrowdSaleByInvestorListOutput>(chain.LaunchpadContractAddress, "GetCrowdSalesByInvestor", walletAddress);
+        }
+
+
+
     }
 }

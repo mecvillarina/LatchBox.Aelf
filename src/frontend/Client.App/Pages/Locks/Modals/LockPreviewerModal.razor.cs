@@ -35,7 +35,7 @@ namespace Client.App.Pages.Locks.Modals
                 var tokenInfo = await TokenService.GetTokenInfoAsync(new TokenGetTokenInfoInput() { Symbol = transactionOutput.Lock.TokenSymbol });
 
                 Model = new LockTransactionModel(transactionOutput.Lock, transactionOutput.Receivers.ToList(), tokenInfo);
-                ShareLink = $"{NavigationManager.BaseUri}view/locks/{LockId}";
+                ShareLink = $"{NavigationManager.BaseUri}locks/{LockId}";
                 IsLoaded = true;
                 MudDialog.SetTitle("");
                 StateHasChanged();

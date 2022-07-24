@@ -5,6 +5,7 @@ using Client.App.Pages.Locks.Modals;
 using Client.App.Parameters;
 using Client.App.SmartContractDto;
 using Client.Infrastructure.Exceptions;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,8 @@ namespace Client.App.Pages.Locks
 {
     public partial class LocksPage : IPageBase, IDisposable
     {
+        [Parameter]
+        public long? LockId { get; set; }
         public bool IsMyLocksLoaded { get; set; }
         public bool IsMyClaimsLoaded { get; set; }
         public bool IsMyRefundsLoaded { get; set; }
@@ -37,21 +40,6 @@ namespace Client.App.Pages.Locks
         private async void HandleNightElfExecutorConnected(object source, EventArgs e)
         {
             IsConnected = true;
-            //if (!LockInitiatorTransactions.Any())
-            //{
-            //    await FetchInitiatorLocksAsync();
-            //}
-
-            //if (!LockReceiverTransactions.Any())
-            //{
-            //    await FetchReceiverLocksAsync();
-            //}
-
-            //if (!LockRefunds.Any())
-            //{
-            //    await FetchLockRefundsAsync();
-            //}
-
             StateHasChanged();
         }
 
@@ -67,6 +55,7 @@ namespace Client.App.Pages.Locks
         {
             if (firstRender)
             {
+                
                 await FetchDataAsync();
             }
         }
@@ -103,6 +92,13 @@ namespace Client.App.Pages.Locks
             {
                 try
                 {
+                    var isConnected = await NightElfService.IsConnectedAsync();
+
+                    if (isConnected && LockId.HasValue && LockId.Value > 0)
+                    {
+                        InvokeLockPreviewerModal(LockId.Value);
+                    }
+
                     var walletAddress = await NightElfService.GetAddressAsync();
                     if (string.IsNullOrEmpty(walletAddress)) throw new GeneralException("No Wallet found.");
 

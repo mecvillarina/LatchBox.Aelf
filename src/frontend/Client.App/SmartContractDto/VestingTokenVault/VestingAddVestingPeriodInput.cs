@@ -8,6 +8,6 @@ namespace Client.App.SmartContractDto.VestingTokenVault
         public string Name { get; set; }
         public long TotalAmount { get; set; }
         public Timestamp UnlockTime { get; set; }
-        public List<VestingAddVestingReceiverInput> Receivers { get; set; }
+        public List<VestingAddVestingReceiverInput> Receivers { get; set; } = new();
     }
 }
