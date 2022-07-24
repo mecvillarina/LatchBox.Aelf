@@ -22,7 +22,7 @@
 
 <MudThemeProvider Theme="CurrentTheme" IsDarkMode="true" />
 <MudDialogProvider Position="DialogPosition.Center" MaxWidth="MaxWidth.Small" FullWidth="true" CloseButton="false" DisableBackdropClick="true" CloseOnEscapeKey="false" />
-<MudSnackbarProvider  />
+<MudSnackbarProvider />
 
 
 @if (IsAssetLoaded)
@@ -36,6 +36,10 @@
                     <MudButton Color="Color.Inherit" Link="/assets">Assets</MudButton>
                     <MudButton Color="Color.Inherit" Link="/locks">Locks</MudButton>
                     <MudButton Color="Color.Inherit" Link="/vestings">Vestings</MudButton>
+                    <MudMenu Class="ml-2" Color="Color.Inherit" Label="Launchpads" EndIcon="@Icons.Material.Filled.ArrowDropDown" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+                        <MudMenuItem Link="/launchpads">All Launchpads</MudMenuItem>
+                        <MudMenuItem Link="/launchpads/manage">Manage Launchpads</MudMenuItem>
+                    </MudMenu>
                 </div>
 
                 @if (IsAssetLoaded)
@@ -87,6 +91,7 @@
                                     <MudNavLink Href="/assets">Assets</MudNavLink>
                                     <MudNavLink Href="/locks">Locks</MudNavLink>
                                     <MudNavLink Href="/vestings">Vestings</MudNavLink>
+
                                     @if (IsAssetLoaded)
                                     {
                                         <MudNavGroup Title="@CurrentChainDisplay">
@@ -96,8 +101,15 @@
                                             }
                                         </MudNavGroup>
 
-                                        <MudNavLink>Connect Wallet</MudNavLink>
+                                        @if (!NightElf.IsConnected)
+                                        {
+                                            <MudNavLink OnClick="OnConnectWalletAsync">Connect Wallet</MudNavLink>
 
+                                        }
+                                        else
+                                        {
+                                            <MudNavLink OnClick="OnViewWallet">@NightElf.WalletAddress.ToMask(10)</MudNavLink>
+                                        }
                                     }
                                 </MudNavMenu>
                             </div>

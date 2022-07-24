@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Client.App.Pages
+namespace Client.App.Pages.Vestings
 {
     public partial class VestingsPage : IPageBase, IDisposable
     {

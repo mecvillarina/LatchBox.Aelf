@@ -1,0 +1,128 @@
+﻿@page "/launchpads"
+
+<MudContainer MaxWidth="MaxWidth.False">
+    <div class="d-flex justify-space-between mud-width-full">
+        <div class="d-flex">
+            <MudText Class="mr-4 align-self-center" Color="Color.Secondary" Typo="Typo.h4" GutterBottom="false">Launchpads</MudText>
+            <MudIconButton Disabled="@(!IsLoaded || !IsConnected)" OnClick="FetchDataAsync" Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium" />
+        </div>
+
+        <div class="d-flex ml-auto">
+            @*<MudButton Disabled="@(!IsAssetLoaded || !IsConnected)" OnClick="OnCreateNewTokenAsync" Class="align-self-center" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium">Create Token</MudButton>*@
+        </div>
+    </div>
+</MudContainer>
+
+
+<MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
+    @if (!IsConnected)
+    {
+        <MudPaper Square="true" Elevation="15">
+            <MudText Typo="Typo.h5" Color="Color.Error" Class="px-4 py-6" GutterBottom="false" h>
+                Connect your wallet first.
+            </MudText>
+        </MudPaper>
+    }
+    else
+    {
+        @if (!IsSupported)
+        {
+            <MudPaper Square="true" Elevation="15">
+                <div class="px-4 py-6">
+                    <MudText Typo="Typo.h6" Color="Color.Error" Class="pa-0" GutterBottom="false">
+                        Launchpad feature is not supported on this chain.
+                    </MudText>
+                    <br />
+                    <MudText Typo="Typo.body1" Class="pa-0" GutterBottom="false">
+                        @((MarkupString)SupportMessage)
+                    </MudText>
+                </div>
+            </MudPaper>
+        }
+        else
+        {
+            <MudGrid Spacing="4" Class="mt-4">
+                <MudItem xs="12">
+                    <MudSelect T="int" Label="Status" Variant="Variant.Outlined" MultiSelection="false" ValueChanged="OnStatusChanged">
+                        <MudSelectItem Value="0">All</MudSelectItem>
+                        <MudSelectItem Value="1">Upcoming</MudSelectItem>
+                        <MudSelectItem Value="2">Ongoing</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+            </MudGrid>
+
+
+            @if (!IsLoaded)
+            {
+                <MudSkeleton Class="mt-4" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="280px" Width="100%" />
+            }
+            else
+            {
+                <MudGrid Spacing="4" Class="mt-4">
+                    @foreach (var output in LaunchpadList)
+                    {
+                        <MudItem xs="12" md="6">
+                            <MudCard Elevation="10" Class="grey darken-4">
+                                <MudCardContent>
+                                    <div>
+                                        <div class="mb-2 d-flex justify-space-between">
+                                            <div>
+                                                <MudText Typo="Typo.h6" Color="Color.Secondary"><b>@output.Launchpad.Name.ToUpper()</b></MudText>
+                                                <MudText Typo="Typo.caption">1 @NativeTokenInfo.Symbol = @output.Launchpad.TokenAmountPerNativeToken.ToAmountDisplay(output.TokenDecimals) @output.Launchpad.TokenSymbol </MudText>
+                                            </div>
+                                            <div class="d-flex flex-column">
+                                                <MudChip Color="output.StatusColor" Size="Size.Small" Variant="Variant.Filled" Class="align-self-end">
+                                                    @output.Status
+                                                </MudChip>
+
+                                                <div>
+                                                    @if (!string.IsNullOrEmpty(output.Substatus))
+                                                    {
+                                                        <MudText Typo="Typo.caption" Inline="false">@output.Substatus</MudText>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="my-2 d-flex justify-space-between">
+                                            <div>
+                                                <MudText Typo="Typo.caption" Class="text-white"><b>Soft/Hard Cap</b></MudText>
+                                                <MudText Typo="Typo.h6">@output.Launchpad.SoftCapNativeTokenAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol - @output.Launchpad.HardCapNativeTokenAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol</MudText>
+                                            </div>
+
+                                            <div class="d-flex">
+                                                @*<MudChip Color="Color.Secondary" Variant="Variant.Filled" Class="align-self-center" OnClick="(() => OnViewLaunchpad(output))">
+                                                    View Pool
+                                                </MudChip>*@
+                                            </div>
+                                        </div>
+
+
+                                        <div class="my-2">
+                                            <MudText Typo="Typo.caption" Class="text-white"><b>Progress</b></MudText>
+                                            <MudProgressLinear Color="Color.Primary" Size="Size.Large" Value="@(Convert.ToDouble(output.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) / output.Launchpad.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) * 100))">
+                                                <MudText Typo="Typo.caption">
+                                                    <b>@(Convert.ToDouble(output.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) / output.Launchpad.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) * 100)) %</b>
+                                                </MudText>
+                                            </MudProgressLinear>
+
+                                            <div class="mt-2">
+                                                <MudText Typo="Typo.caption">@output.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol Raised</MudText>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex justify-space-between my-2">
+                                            <MudText Typo="Typo.caption" Class="text-white"><b>Lockup Time</b></MudText>
+                                            <MudText Typo="Typo.caption">@output.Launchpad.LockUntilDurationInMinutes minutes</MudText>
+                                        </div>
+
+                                    </div>
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
+                    }
+                </MudGrid>
+            }
+        }
+    }
+</MudContainer>

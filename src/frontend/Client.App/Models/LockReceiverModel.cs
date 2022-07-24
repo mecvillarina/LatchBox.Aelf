@@ -7,7 +7,7 @@ using System;
 
 namespace Client.App.Models
 {
-    public class LockForReceiverModel
+    public class LockReceiverModel
     {
         public TokenInfo TokenInfo { get; private set; }
         public LockOutput Lock { get; private set; }
@@ -18,7 +18,7 @@ namespace Client.App.Models
         public bool CanClaim { get; private set; }
         public string AmountDisplay { get; private set; }
 
-        public LockForReceiverModel(LockOutput @lock, LockReceiverOutput receiver)
+        public LockReceiverModel(LockOutput @lock, LockReceiverOutput receiver)
         {
             Lock = @lock;
 

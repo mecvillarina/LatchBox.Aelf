@@ -38,6 +38,12 @@ namespace Client.App.Services
             return await _nightElfService.CallTx<TokenInfo>(chain.TokenContractAddress, "GetTokenInfo", input);
         }
 
+        public async Task<TokenInfo> GetNativeTokenInfoAsync()
+        {
+            var chain = await _chainService.FetchCurrentChainInfoAsync();
+            return await _nightElfService.CallTx<TokenInfo>(chain.TokenContractAddress, "GetNativeTokenInfo", "");
+        }
+
         public async Task<TokenGetAllowanceOutput> GetAllowanceAsync(TokenGetAllowanceInput input)
         {
             var chain = await _chainService.FetchCurrentChainInfoAsync();

@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Client.App.Pages
+namespace Client.App.Pages.Locks
 {
     public partial class LocksPage : IPageBase, IDisposable
     {
@@ -24,7 +24,7 @@ namespace Client.App.Pages
         public bool IsSupported { get; set; }
         public string SupportMessage { get; set; }
         public List<LockModel> LockInitiatorTransactions { get; set; } = new();
-        public List<LockForReceiverModel> LockReceiverTransactions { get; set; } = new();
+        public List<LockReceiverModel> LockReceiverTransactions { get; set; } = new();
         public List<LockRefundModel> LockRefunds { get; set; } = new();
 
         protected async override Task OnInitializedAsync()
@@ -173,7 +173,7 @@ namespace Client.App.Pages
 
             foreach (var lockTransaction in lockListOutput.LockTransactions)
             {
-                LockReceiverTransactions.Add(new LockForReceiverModel(lockTransaction.Lock, lockTransaction.Receiver));
+                LockReceiverTransactions.Add(new LockReceiverModel(lockTransaction.Lock, lockTransaction.Receiver));
             }
 
             LockReceiverTransactions = LockReceiverTransactions.Where(x => x.Status == "Locked" || x.Status == "Unlocked").ToList();
@@ -282,7 +282,7 @@ namespace Client.App.Pages
             }
         }
 
-        private async Task InvokeClaimLockModalAsync(LockForReceiverModel lockModel)
+        private async Task InvokeClaimLockModalAsync(LockReceiverModel lockModel)
         {
             var lockId = lockModel.Lock.LockId;
 
