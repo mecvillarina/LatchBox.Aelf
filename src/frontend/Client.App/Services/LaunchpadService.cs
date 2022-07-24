@@ -1,6 +1,7 @@
 ﻿using Application.Common.Dtos;
 using Client.App.SmartContractDto.Launchpad;
 using Client.App.SmartContractDto.VestingTokenVault;
+using System;
 using System.Threading.Tasks;
 
 namespace Client.App.Services
@@ -14,6 +15,27 @@ namespace Client.App.Services
         {
             _nightElfService = nightElfService;
             _chainService = chainService;
+        }
+
+        public async Task<long> GetCrowdSaleCountAsync()
+        {
+            var chain = await _chainService.FetchCurrentChainInfoAsync();
+            var value = await _nightElfService.CallTx<CrowdSaleListOutput>(chain.LaunchpadContractAddress, "GetCrowdSaleCount", "");
+            return Convert.ToInt64(value);
+        }
+
+        public async Task<long> GetUpcomingCrowdSaleCountAsync()
+        {
+            var chain = await _chainService.FetchCurrentChainInfoAsync();
+            var value = await _nightElfService.CallTx<CrowdSaleListOutput>(chain.LaunchpadContractAddress, "GetUpcomingCrowdSaleCount", "");
+            return Convert.ToInt64(value);
+        }
+
+        public async Task<long> GetOngoingCrowdSaleCountAsync()
+        {
+            var chain = await _chainService.FetchCurrentChainInfoAsync();
+            var value = await _nightElfService.CallTx<CrowdSaleListOutput>(chain.LaunchpadContractAddress, "GetOngoingCrowdSaleCount", "");
+            return Convert.ToInt64(value);
         }
 
         public async Task<CrowdSaleListOutput> GetCrowdSalesAsync(CrowdSaleGetCrowdSalesInput input)
