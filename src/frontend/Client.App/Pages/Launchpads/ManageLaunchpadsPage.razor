@@ -44,9 +44,9 @@
                             <MudIconButton Disabled="@(!IsMyLaunchpadLoaded || !IsConnected)" OnClick="FetchMyLaunchpadsAsync" Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" />
                         </div>
 
-                        @*                        <div class="d-flex ml-auto">
-                <MudButton Disabled="@(!IsMyLaunchpadLoaded || !IsConnected)" OnClick="InvokeAddLockModalAsync" Class="align-self-center" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium">Create Lock</MudButton>
-                </div>*@
+                        <div class="d-flex ml-auto">
+                            <MudButton Disabled="@(!IsMyLaunchpadLoaded || !IsConnected)" OnClick="InvokeAddLaunchpadModalAsync" Class="align-self-center" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium">Create Launchpad</MudButton>
+                        </div>
                     </div>
                 </div>
 
@@ -97,9 +97,9 @@
                             </MudTd>
                             <MudTd DataLabel="Actions">
                                 <MudMenu Variant="Variant.Filled" Color="Color.Primary" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" DisableElevation="true" Icon="@Icons.Filled.MoreVert" IconColor="Color.Secondary" Direction="Direction.Left" OffsetX="true">
-                                    @* <MudMenuItem Disabled="!context.CanCancel" OnClick="(() => InvokeCancelLaunchpadConfirmationAsync(context))">Cancel</MudMenuItem>
-                        <MudMenuItem Disabled="!context.CanComplete" OnClick="(() => InvokeCompleteLaunchpadConfirmationAsync(context))">Complete</MudMenuItem>
-                        <MudMenuItem Disabled="!context.CanRefund" OnClick="(() => InvokeCompleteLaunchpadConfirmationAsync(context))">Refund</MudMenuItem>*@
+                                    <MudMenuItem Disabled="!context.CanCancel" OnClick="(() => InvokeCancelLaunchpadConfirmationAsync(context))">Cancel</MudMenuItem>
+                                    <MudMenuItem Disabled="!context.CanComplete" OnClick="(() => InvokeCompleteLaunchpadConfirmationAsync(context))">Complete</MudMenuItem>
+                                        <MudMenuItem Disabled="!context.CanRefund" OnClick="(() => InvokeCompleteLaunchpadConfirmationAsync(context))">Refund</MudMenuItem>
                                 </MudMenu>
                             </MudTd>
                         </RowTemplate>

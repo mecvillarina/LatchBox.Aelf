@@ -1,0 +1,71 @@
+﻿<MudContainer Class="pa-0 ma-0" MaxWidth="MaxWidth.False" style="max-height: 80vh; overflow-y: scroll">
+    <EditForm Model="@Model" OnValidSubmit="SubmitAsync">
+        <FluentValidationValidator @ref="_fluentValidationValidator" />
+        <MudDialog DisableSidePadding="true" ClassActions="px-2 py-4">
+            <DialogContent>
+                <MudContainer MaxWidth="MaxWidth.False">
+                    <MudGrid Class="pt-0 pb-4" Spacing="2">
+                        <MudItem xs="12">
+                            <MudTextField Label="Token Symbol" Variant="Variant.Outlined" Disabled="true"
+                                          Value="Model.TokenSymbol" For="@(() => Model.TokenSymbol)" />
+                        </MudItem>
+                        
+                        <MudItem xs="12">
+                            <MudTextField Label="Launchpad Name" Variant="Variant.Outlined" Disabled="IsProcessing"
+                                          @bind-Value="Model.Name" For="@(() => Model.Name)" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField Label="@($"Soft Cap ({Model.NativeTokenSymbol})")" Variant="Variant.Outlined" Disabled="IsProcessing"
+                                          @bind-Value="Model.SoftCapNativeTokenAmount" For="@(() => Model.SoftCapNativeTokenAmount)" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField Label="@($"Hard Cap ({Model.NativeTokenSymbol})")" Variant="Variant.Outlined" Disabled="IsProcessing"
+                                          @bind-Value="Model.HardCapNativeTokenAmount" For="@(() => Model.HardCapNativeTokenAmount)" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField Label="@($"Token Purchase Limit ({Model.NativeTokenSymbol}) per buyer address")" Variant="Variant.Outlined" Disabled="IsProcessing"
+                                          @bind-Value="Model.NativeTokenPurchaseLimitPerBuyerAddress" For="@(() => Model.NativeTokenPurchaseLimitPerBuyerAddress)" />
+                        </MudItem>
+                        
+                        <MudItem xs="12">
+                            <MudTextField Label="@($"Token Amount ({Model.TokenSymbol}) equivalent per {Model.NativeTokenSymbol}")" Variant="Variant.Outlined" Disabled="IsProcessing"
+                                          @bind-Value="Model.TokenAmountPerNativeToken" For="@(() => Model.TokenAmountPerNativeToken)" />
+                        </MudItem>
+
+                         <MudItem xs="12">
+                            <MudDatePicker Label="Sale Start Date (Start of the day in GMT)" For="@(() => Model.SaleStartDate)" Variant="Variant.Outlined" Disabled="IsProcessing" 
+                                MinDate="@MinDateValue" @bind-Date="Model.SaleStartDate" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudDatePicker Label="Sale End Date (End of the day in GMT)" For="@(() => Model.SaleEndDate)" Variant="Variant.Outlined" Disabled="IsProcessing" 
+                                MinDate="@MinDateValue" @bind-Date="Model.SaleEndDate" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField Label="Lock Duration (Minutes) after Sale" Variant="Variant.Outlined" Disabled="IsProcessing"
+                                          @bind-Value="Model.LockUntilDurationInMinutes" For="@(() => Model.LockUntilDurationInMinutes)" />
+                        </MudItem>
+                    </MudGrid>
+                </MudContainer>
+            </DialogContent>
+            <DialogActions>
+                <MudButton DisableElevation Variant="Variant.Text" Disabled="IsProcessing" OnClick="Cancel">CANCEL</MudButton>
+                <MudButton DisableElevation Variant="Variant.Filled" Disabled="IsProcessing" ButtonType="ButtonType.Submit" Color="Color.Primary">
+                    @if (IsProcessing)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                    }
+                    else
+                    {
+                        <span>CREATE</span>
+                    }
+                </MudButton>
+            </DialogActions>
+        </MudDialog>
+    </EditForm>
+</MudContainer>
+

@@ -1,5 +1,7 @@
-﻿using Client.App.Models;
+﻿using Application.Common.Extensions;
+using Client.App.Models;
 using Client.App.Pages.Locks.Modals;
+using Client.App.Parameters;
 using Client.App.SmartContractDto;
 using Client.App.SmartContractDto.Launchpad;
 using Microsoft.AspNetCore.Components;
@@ -42,7 +44,7 @@ namespace Client.App.Pages.Launchpads.Modals
 
             var launchpad = await LaunchpadService.GetCrowdSaleAsync(new CrowdSaleGetCrowdSaleInput() { CrowdSaleId = CrowdSaleId });
             Model = new LaunchpadModel(launchpad);
-            ShareLink = $"{NavigationManager.BaseUri}view/launchpads/{CrowdSaleId}";
+            ShareLink = $"{NavigationManager.BaseUri}launchpads/{CrowdSaleId}";
 
             MudDialog.SetTitle(Model.Launchpad.Name);
             IsLoaded = true;
@@ -61,24 +63,24 @@ namespace Client.App.Pages.Launchpads.Modals
             AppDialogService.ShowSuccess("Launchpad Link copied to clipboard.");
         }
 
-        //private async Task InvokeInvestOnLaunchpadModalAsync()
-        //{
-        //    var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Small };
-        //    var parameters = new DialogParameters()
-        //    {
-        //         { nameof(InvestOnLaunchpadConfirmationModal.LaunchpadModel), Model},
-        //         { nameof(InvestOnLaunchpadConfirmationModal.NativeTokenInfo), NativeTokenInfo},
-        //         { nameof(InvestOnLaunchpadConfirmationModal.Model), new InvestOnLaunchpadParameter() { LimitAmount = (double)Model.Launchpad.NativeTokenPurchaseLimitPerBuyerAddress.ToAmount(NativeTokenInfo.Decimals) } },
-        //    };
+        private async Task InvokeInvestOnLaunchpadModalAsync()
+        {
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Small };
+            var parameters = new DialogParameters()
+            {
+                 { nameof(InvestOnLaunchpadConfirmationModal.LaunchpadModel), Model},
+                 { nameof(InvestOnLaunchpadConfirmationModal.NativeTokenInfo), NativeTokenInfo},
+                 { nameof(InvestOnLaunchpadConfirmationModal.Model), new InvestOnLaunchpadParameter() { LimitAmount = (double)Model.Launchpad.NativeTokenPurchaseLimitPerBuyerAddress.ToAmount(NativeTokenInfo.Decimals) } },
+            };
 
-        //    var dialog = DialogService.Show<InvestOnLaunchpadConfirmationModal>($"{Model.Launchpad.Name} invest confirmation", parameters, options);
-        //    var dialogResult = await dialog.Result;
+            var dialog = DialogService.Show<InvestOnLaunchpadConfirmationModal>($"{Model.Launchpad.Name} invest confirmation", parameters, options);
+            var dialogResult = await dialog.Result;
 
-        //    if (!dialogResult.Cancelled)
-        //    {
-        //        await FetchDataAsync();
-        //    }
-        //}
+            if (!dialogResult.Cancelled)
+            {
+                await FetchDataAsync();
+            }
+        }
 
         private void InvokeLockPreviewerModal()
         {

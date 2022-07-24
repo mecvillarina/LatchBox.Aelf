@@ -1,11 +1,13 @@
 ﻿using Client.App.Models;
 using Client.App.Pages.Assets.Modals;
 using Client.App.Pages.Base;
+using Client.App.Pages.Launchpads.Modals;
 using Client.App.Pages.Vestings.Modals;
 using Client.App.Parameters;
 using Client.App.SmartContractDto;
 using Client.App.SmartContractDto.Launchpad;
 using Client.Infrastructure.Exceptions;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System;
 using System.Collections.Generic;
@@ -16,6 +18,9 @@ namespace Client.App.Pages.Launchpads
 {
     public partial class AllLaunchpadsPage : IPageBase, IDisposable
     {
+        [Parameter]
+        public long? CrowdSaleId { get; set; }
+
         public bool IsLoaded { get; set; }
 
         public bool IsConnected { get; set; }
@@ -87,9 +92,17 @@ namespace Client.App.Pages.Launchpads
             {
                 try
                 {
+                    var isConnected = await NightElfService.IsConnectedAsync();
+
+                    if (isConnected && CrowdSaleId.HasValue && CrowdSaleId.Value > 0)
+                    {
+                        NativeTokenInfo = await TokenService.GetNativeTokenInfoAsync();
+                        InvokeLaunchpadPreviewerModal(CrowdSaleId.Value);
+                    }
+
                     var walletAddress = await NightElfService.GetAddressAsync();
                     if (string.IsNullOrEmpty(walletAddress)) throw new GeneralException("No Wallet found.");
-
+                    
                     NativeTokenInfo = await TokenService.GetNativeTokenInfoAsync();
                     await FetchLaunchpadsAsync();
                 }
@@ -129,6 +142,18 @@ namespace Client.App.Pages.Launchpads
 
             IsLoaded = true;
             StateHasChanged();
+        }
+
+        private void InvokeLaunchpadPreviewerModal(long crowdSaleId)
+        {
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
+            var parameters = new DialogParameters()
+            {
+                 { nameof(LaunchpadPreviewerModal.CrowdSaleId), crowdSaleId},
+                 { nameof(LaunchpadPreviewerModal.NativeTokenInfo), NativeTokenInfo},
+            };
+
+            DialogService.Show<LaunchpadPreviewerModal>($"Launchpad #{crowdSaleId}", parameters, options);
         }
 
         public async Task OnStatusChanged(int value)

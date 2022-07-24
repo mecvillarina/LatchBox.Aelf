@@ -1,6 +1,8 @@
 ﻿using Client.App.Models;
+using Client.App.Pages.Assets.Modals;
 using Client.App.Pages.Base;
 using Client.App.Pages.Launchpads.Modals;
+using Client.App.Parameters;
 using Client.App.SmartContractDto;
 using Client.Infrastructure.Exceptions;
 using MudBlazor;
@@ -85,6 +87,7 @@ namespace Client.App.Pages.Launchpads
             {
                 try
                 {
+                    
                     var walletAddress = await NightElfService.GetAddressAsync();
                     if (string.IsNullOrEmpty(walletAddress)) throw new GeneralException("No Wallet found.");
 
@@ -158,6 +161,77 @@ namespace Client.App.Pages.Launchpads
         {
             NavigationManager.NavigateTo($"/locks/{lockId}");
         }
+
+        private async Task InvokeAddLaunchpadModalAsync()
+        {
+            var chain = await ChainService.FetchCurrentChainInfoAsync();
+
+            var searchTokenDialog = DialogService.Show<SearchTokenModal>($"Search Token ({chain.ChainIdBase58} Chain)");
+            var searchTokenDialogResult = await searchTokenDialog.Result;
+
+            if (!searchTokenDialogResult.Cancelled)
+            {
+                var data = (TokenInfo)searchTokenDialogResult.Data;
+
+                var createParameters = new DialogParameters()
+                {
+                    { nameof(CreateLaunchpadModal.Model), new CreateLaunchpadParameter()
+                        {
+                           NativeTokenName = NativeTokenInfo.TokenName,
+                           NativeTokenSymbol = NativeTokenInfo.Symbol,
+                           NativeTokenDecimals = NativeTokenInfo.Decimals,
+                           TokenName = data.TokenName,
+                           TokenSymbol = data.Symbol,
+                           TokenDecimals = data.Decimals
+                        }
+                    }
+                };
+
+                var createDialog = DialogService.Show<CreateLaunchpadModal>("Create Launchpad", createParameters);
+                var createDialogResult = await createDialog.Result;
+
+                if (!createDialogResult.Cancelled)
+                {
+                    await FetchMyLaunchpadsAsync();
+                }
+            }
+        }
+
+        private async Task InvokeCompleteLaunchpadConfirmationAsync(MyLaunchpadModel model)
+        {
+            var parameters = new DialogParameters()
+            {
+                { nameof(CompleteLaunchpadConfirmationModal.Model), model},
+                { nameof(CompleteLaunchpadConfirmationModal.NativeTokenInfo), NativeTokenInfo}
+            };
+
+            var dialog = DialogService.Show<CompleteLaunchpadConfirmationModal>("Complete Launchpad Confirmation", parameters);
+            var dialogResult = await dialog.Result;
+
+            if (!dialogResult.Cancelled)
+            {
+                await FetchDataAsync();
+            }
+        }
+
+        private async Task InvokeCancelLaunchpadConfirmationAsync(MyLaunchpadModel output)
+        {
+            var parameters = new DialogParameters()
+            {
+                { nameof(CancelLaunchpadConfirmationModal.Model), output},
+                { nameof(CancelLaunchpadConfirmationModal.NativeTokenInfo), NativeTokenInfo}
+            };
+
+            var dialog = DialogService.Show<CancelLaunchpadConfirmationModal>("Cancel Launchpad Confirmation", parameters);
+            var dialogResult = await dialog.Result;
+
+            if (!dialogResult.Cancelled)
+            {
+                await FetchMyLaunchpadsAsync();
+                await FetchInvestedLaunchpadsAsync();
+            }
+        }
+
 
         private void ClearData()
         {

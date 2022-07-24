@@ -1,0 +1,92 @@
+﻿<MudContainer Class="pa-0 ma-0" MaxWidth="MaxWidth.False" style="max-height: 80vh; overflow-y: scroll">
+    <MudDialog DisableSidePadding="true" ClassActions="px-2 py-4">
+        <DialogContent>
+            <MudContainer MaxWidth="MaxWidth.False">
+                <MudGrid Class="pt-0 pb-4" Spacing="1">
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.body1" Class="text-white">
+                            You are about to cancel your launchpad for your token <b>@Model.TokenSymbol</b>.
+                        </MudText>
+                    </MudItem>
+
+                     <MudItem xs="12">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Sale Id</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.Launchpad.Id</MudText>
+                        </div>
+                    </MudItem>
+
+                     <MudItem xs="12">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Name</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.Launchpad.Name</MudText>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Token</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.TokenName (@Model.TokenSymbol)</MudText>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Cap</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.Launchpad.SoftCapNativeTokenAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol - @Model.Launchpad.HardCapNativeTokenAmount.ToAmountDisplay(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol</MudText>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Sale Conversion</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">1 @NativeTokenInfo.Symbol = @Model.Launchpad.TokenAmountPerNativeToken.ToAmountDisplay(Model.TokenDecimals) @Model.Launchpad.TokenSymbol</MudText>
+                        </div>
+                    </MudItem>
+
+                     <MudItem xs="12">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Raised Amount</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol / @Model.Launchpad.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol (@(Model.RaisedAmount.ToAmount(NativeTokenInfo.Decimals) / Model.Launchpad.HardCapNativeTokenAmount.ToAmount(NativeTokenInfo.Decimals) * 100) %)</MudText>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Sale Starts</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.Launchpad.SaleStartDate.GetUniversalDateTime().LocalDateTime.ToString(ClientConstants.LongDateTimeFormat)</MudText>
+                        </div>
+                    </MudItem>
+                    
+                    <MudItem xs="12">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Sale Ends</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.Launchpad.SaleEndDate.GetUniversalDateTime().LocalDateTime.ToString(ClientConstants.LongDateTimeFormat)</MudText>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <div>
+                            <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Lock Duration after Sale</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mb-2">@Model.Launchpad.LockUntilDurationInMinutes minutes</MudText>
+                        </div>
+                    </MudItem>
+                </MudGrid>
+            </MudContainer>
+        </DialogContent>
+        <DialogActions>
+            <MudButton DisableElevation Variant="Variant.Text" Disabled="IsProcessing" OnClick="Cancel">CANCEL</MudButton>
+            <MudButton DisableElevation Variant="Variant.Filled" Disabled="IsProcessing" Color="Color.Primary" OnClick="SubmitAsync">
+                @if (IsProcessing)
+                {
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                }
+                else
+                {
+                    <span>CONFIRM</span>
+                }
+            </MudButton>
+        </DialogActions>
+    </MudDialog>
+</MudContainer>
+

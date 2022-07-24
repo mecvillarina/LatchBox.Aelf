@@ -1,7 +1,5 @@
 ﻿using Application.Common.Dtos;
-using Client.App.SmartContractDto;
 using Client.App.SmartContractDto.Launchpad;
-using Client.App.SmartContractDto.LockTokenVault;
 using Client.App.SmartContractDto.VestingTokenVault;
 using System.Threading.Tasks;
 
@@ -49,7 +47,34 @@ namespace Client.App.Services
             return await _nightElfService.CallTx<CrowdSaleByInvestorListOutput>(chain.LaunchpadContractAddress, "GetCrowdSalesByInvestor", walletAddress);
         }
 
+        public async Task<TransactionResultDto> CreateAsync(CrowdSaleCreateInput input)
+        {
+            var chain = await _chainService.FetchCurrentChainInfoAsync();
+            return await _nightElfService.SendTxAsync(chain.LaunchpadContractAddress, "Create", input);
+        }
 
+        public async Task<TransactionResultDto> CancelAsync(CrowdSaleCancelInput input)
+        {
+            var chain = await _chainService.FetchCurrentChainInfoAsync();
+            return await _nightElfService.SendTxAsync(chain.LaunchpadContractAddress, "Cancel", input);
+        }
 
+        public async Task<TransactionResultDto> InvestAsync(CrowdSaleInvestInput input)
+        {
+            var chain = await _chainService.FetchCurrentChainInfoAsync();
+            return await _nightElfService.SendTxAsync(chain.LaunchpadContractAddress, "Invest", input);
+        }
+
+        public async Task<TransactionResultDto> CompleteAsync(CrowdSaleCompleteInput input)
+        {
+            var chain = await _chainService.FetchCurrentChainInfoAsync();
+            return await _nightElfService.SendTxAsync(chain.LaunchpadContractAddress, "Complete", input);
+        }
+
+        public async Task<TransactionResultDto> UpdateLockInfoAsync(CrowdSaleUpdateLockInfoInput input)
+        {
+            var chain = await _chainService.FetchCurrentChainInfoAsync();
+            return await _nightElfService.SendTxAsync(chain.LaunchpadContractAddress, "UpdateLockInfo", input);
+        }
     }
 }

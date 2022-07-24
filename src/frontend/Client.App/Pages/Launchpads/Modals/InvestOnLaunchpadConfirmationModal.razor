@@ -1,0 +1,59 @@
+﻿<MudContainer Class="pa-0 ma-0" MaxWidth="MaxWidth.False" style="max-height: 80vh; overflow-y: scroll">
+    <EditForm Model="@Model" OnValidSubmit="SubmitAsync">
+        <FluentValidationValidator @ref="_fluentValidationValidator" />
+        <MudDialog DisableSidePadding="true" ClassActions="px-2 py-4">
+            <DialogContent>
+                <MudContainer MaxWidth="MaxWidth.False">
+                    <MudGrid Class="pt-0 pb-4" Spacing="1">
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.body1" Class="text-white">
+                                Invest on the launchpad <b>@LaunchpadModel.Launchpad.Name</b>.
+                            </MudText>
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <div>
+                                <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Token</b></MudText>
+                                <MudText Typo="Typo.body1" Class="text-white mb-2">@LaunchpadModel.TokenName (@LaunchpadModel.TokenSymbol)</MudText>
+                            </div>
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <div>
+                                <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Sale Conversion</b></MudText>
+                                <MudText Typo="Typo.body1" Class="text-white mb-2">1 @NativeTokenInfo.Symbol = @LaunchpadModel.Launchpad.TokenAmountPerNativeToken.ToAmountDisplay(LaunchpadModel.TokenDecimals) @LaunchpadModel.Launchpad.TokenSymbol</MudText>
+                            </div>
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <div>
+                                <MudText Typo="Typo.caption" Class="text-white mb-2"><b>Purchase Limit</b></MudText>
+                                <MudText Typo="Typo.body1" Class="text-white mb-2">@LaunchpadModel.Launchpad.NativeTokenPurchaseLimitPerBuyerAddress.ToAmount(NativeTokenInfo.Decimals) @NativeTokenInfo.Symbol</MudText>
+                            </div>
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField Label="@($"Amount ({NativeTokenInfo.Symbol})")" Variant="Variant.Outlined" Disabled="IsProcessing"
+                                          @bind-Value="Model.Amount" For="@(() => Model.Amount)" />
+                        </MudItem>
+                    </MudGrid>
+                </MudContainer>
+            </DialogContent>
+            <DialogActions>
+                <MudButton DisableElevation Variant="Variant.Text" Disabled="IsProcessing" OnClick="Cancel">CANCEL</MudButton>
+                <MudButton DisableElevation Variant="Variant.Filled" Disabled="IsProcessing" Color="Color.Secondary" OnClick="SubmitAsync">
+                    @if (IsProcessing)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                    }
+                    else
+                    {
+                        <span>BUY</span>
+                    }
+                </MudButton>
+            </DialogActions>
+        </MudDialog>
+    </EditForm>
+
+</MudContainer>
+
