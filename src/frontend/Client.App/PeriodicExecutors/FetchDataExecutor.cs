@@ -3,70 +3,65 @@ using Client.App.Infrastructure.Managers.Interfaces;
 using Client.App.Services;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Threading;
 using System.Timers;
 
 namespace Client.App.PeriodicExecutors
 {
-    public class FetchDataExecutor : IDisposable
+    public class FetchDataExecutor : IAsyncDisposable
     {
         private readonly ChainService _chainService;
 
-        private Timer _timer;
-        private bool _running;
-        bool _isFetching;
+        private Task? _timerTask;
+        private readonly PeriodicTimer _timer;
+        private readonly CancellationTokenSource _cts = new();
 
         public FetchDataExecutor(ChainService chainService)
         {
             _chainService = chainService;
+            _timer = new PeriodicTimer(TimeSpan.FromMilliseconds(30000));
         }
 
         public void StartExecuting()
         {
-            if (!_running)
-            {
-                _timer = new Timer();
-                _timer.Interval = 30000;
-                _timer.Elapsed += HandleTimer;
-                _timer.AutoReset = true;
-                _timer.Enabled = true;
-                _running = true;
-            }
+            _timerTask = DoWorkAsync();
         }
 
-        async void HandleTimer(object source, ElapsedEventArgs e)
+        private async Task DoWorkAsync()
         {
             try
             {
-                if (_isFetching)
+                while (await _timer.WaitForNextTickAsync(_cts.Token))
                 {
-                    return;
+                    try
+                    {
+                        //#if RELEASE
+                        await _chainService.GetAllSupportedChainsAsync();
+                        await _chainService.FetchChainDataAsync();
+                        //#endif
+
+                        Console.WriteLine($"Fetch Done...");
+                    }
+                    catch
+                    {
+                        Console.WriteLine($"Fetch Data Executor: Fetch Error.");
+                    }
                 }
-
-                Console.WriteLine($"Fetching...");
-
-                _isFetching = true;
-
-                //#if RELEASE
-                await _chainService.GetAllSupportedChainsAsync();
-                await _chainService.FetchChainDataAsync();
-                //#endif
-
-                Console.WriteLine($"Fetch Done...");
             }
             catch
             {
-                Console.WriteLine($"Fetch Data Executor: Fetch Error");
-            }
-            finally
-            {
-                _isFetching = false;
+                Console.WriteLine($"Fetch Data Executor: Error..");
             }
         }
 
-        public void Dispose()
+        public async ValueTask DisposeAsync()
         {
-            _timer?.Stop();
-            _timer?.Dispose();
+            if (_timerTask == null) return;
+
+            _cts.Cancel();
+            await _timerTask;
+            _cts.Dispose();
         }
     }
 }

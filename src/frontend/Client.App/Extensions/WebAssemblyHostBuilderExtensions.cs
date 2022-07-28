@@ -8,6 +8,8 @@ using Client.App.Services;
 using Client.Infrastructure.Managers;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Http;
 using MudBlazor;
 using MudBlazor.Services;
 using System;
@@ -68,6 +70,7 @@ namespace Client.App.Extensions
 
 #if Release
             builder.Logging.SetMinimumLevel(LogLevel.Critical | LogLevel.Error);
+            builder.Services.RemoveAll<IHttpMessageHandlerBuilderFilter>();
 #endif
 
             return builder;

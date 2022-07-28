@@ -1,16 +1,23 @@
 ﻿using Client.App.Services;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Timers;
 
 namespace Client.App.PeriodicExecutors
 {
-    public class NightElfExecutor : IDisposable
+    public class NightElfExecutor : IAsyncDisposable
     {
         private readonly NightElfService _nightElfService;
 
+        private Task? _timerTask;
+        private readonly PeriodicTimer _timer;
+        private readonly CancellationTokenSource _cts = new();
         public NightElfExecutor(NightElfService nightElfService)
         {
             _nightElfService = nightElfService;
+            _timer = new PeriodicTimer(TimeSpan.FromMilliseconds(2000));
+
         }
 
         public bool HasConnected { get; set; }
@@ -18,39 +25,30 @@ namespace Client.App.PeriodicExecutors
         public event EventHandler Connected;
         public event EventHandler Disconnected;
 
-        private Timer _timer;
-        private bool _running;
-
         public void StartExecuting()
         {
-            if (!_running)
-            {
-                _timer = new Timer();
-                _timer.Interval = 2000;
-                _timer.Elapsed += HandleTimer;
-                _timer.AutoReset = true;
-                _timer.Enabled = true;
-                _running = true;
-                HandleTimer(null, null);
-            }
+            _timerTask = DoWorkAsync();
         }
 
-        private async void HandleTimer(object source, ElapsedEventArgs e)
+        private async Task DoWorkAsync()
         {
             try
             {
-                var isConnected = await _nightElfService.IsConnectedAsync();
-                if (HasConnected && !isConnected)
+                while(await _timer.WaitForNextTickAsync(_cts.Token))
                 {
-                    Disconnected?.Invoke(this, EventArgs.Empty);
-                }
-                
-                if(!HasConnected && isConnected)
-                {
-                    Connected?.Invoke(this, EventArgs.Empty);
-                }
+                    var isConnected = await _nightElfService.IsConnectedAsync();
+                    if (HasConnected && !isConnected)
+                    {
+                        InvokeDisconnect();
+                    }
 
-                HasConnected = isConnected;
+                    if (!HasConnected && isConnected)
+                    {
+                        Connected?.Invoke(this, EventArgs.Empty);
+                    }
+
+                    HasConnected = isConnected;
+                }
             }
             catch
             {
@@ -63,11 +61,13 @@ namespace Client.App.PeriodicExecutors
             Disconnected?.Invoke(this, EventArgs.Empty);
         }
 
-        public void Dispose()
+        public async ValueTask DisposeAsync()
         {
-            _timer?.Stop();
-            _timer?.Dispose();
-            _timer = null;
+            if (_timerTask == null) return;
+
+            _cts.Cancel();
+            await _timerTask;
+            _cts.Dispose();
         }
     }
 }
