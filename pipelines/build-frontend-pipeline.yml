@@ -9,7 +9,7 @@ steps:
   - task: AzureStaticWebApp@0
     inputs:
       app_location: '/src/frontend/Client.App'
-      app_build_command: 'dotnet build'
+      app_build_command: 'dotnet build --configuration Release'
       output_location: 'wwwroot'
       api_location: ''
       api_build_command: ''
