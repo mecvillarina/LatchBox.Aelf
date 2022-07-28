@@ -3,14 +3,15 @@
 **LatchBox** is a fully decentralized token creation, vesting, locking, and launchpad platform on aelf blockchain. LatchBox aims to provides new cryptocurrency projects a faster way to launch their token on aelf blockchain. Also, LatchBox aims to protect every cryptocurrency communities and investors from rug pulls and traitorous advisors. 
 
 ## LatchBox Platform
-- **App Portal** - https://aelf-testnet-side1.latchbox.io/
-- **Test Wallet (Keystore)**
-    - **Keystore JSON** - [Keystore JSON](wallet/QErL8jgoobEvBep6mD5mRWkYFbAN43JN7J1ShEyV9YjGnyM1e.json)
-    - **Password** - password
+- **App Portal** - https://aelf-testnet.latchbox.io/
+- **Test Wallet 1**
+    - **Address** - 819zDcyfuLnqASnbLwNmjoevQ5JB9Xoqi7ekfMkf9JqPsA815
+    - **Private Key** - a6bfed88e164d6359baa569947a6f318cf6908986ebc685549500b6e0b738049
+- **Test Wallet 2**
+    - **Address** - QErL8jgoobEvBep6mD5mRWkYFbAN43JN7J1ShEyV9YjGnyM1e
+    - **Private Key** - ed6a9dea73c013bdd456073b9da027052b70f970cd02a25ad30f03fbe747d3c9
 - **Blockchain** - aelf blockchain
     - **Network** - TESTNET
-    - **Main Chain** - https://aelf-test-node.aelf.io (Main AELF) 
-    - **Side Chain** - https://tdvv-test-node.aelf.io (Side tDVV) 
 
 ## Features
 - **Token Creation** - token creation on aelf is not a new feature, but LatchBox made it much easier. Anyone can create a token both on main chain and perform a cross chain token creation on side chain. 
@@ -68,7 +69,7 @@ LatchBox Platform has dashboard to track the following:
 - **Vestings** - Vesting Token Vault Contract, total created vestings
 - **Launchpads** - Launchpad Contract, total # of upcoming ssale, total # of ongoing sales, total # of created token sales.  
 
-## Smart Contracts (Testnet)
+## Smart Contracts (Testnet) - tDVV
 - **Lock Token Vault Contract** - `2q7NLAr6eqF4CTsnNeXnBZ9k4XcmiUeM61CLWYaym6WsUmbg1k` [[See Code](src/chain/contract/LatchBox.Contracts.LockTokenVaultContract/)] [[See Explorer](https://explorer-test-side01.aelf.io/address/2q7NLAr6eqF4CTsnNeXnBZ9k4XcmiUeM61CLWYaym6WsUmbg1k)]
 - **Vesting Token Vault Contract** - `22tVtWLFwGxFu5Xk5rQgCdQnmsNA7PpTzZbkpGr1REgt5GEaN5` [[See Code](src/chain/contract/LatchBox.Contracts.VestingTokenVaultContract/)] [[See Explorer](https://explorer-test-side01.aelf.io/address/22tVtWLFwGxFu5Xk5rQgCdQnmsNA7PpTzZbkpGr1REgt5GEaN5)]
 - **Launchpad Contract** - `2cGT3RZZy6UJJ3eJPZdWMmuoH2TZBihvMtAtKvLJUaBnvskK2x` [[See Code](src/chain/contract/LatchBox.Contracts.MultiCrowdSaleContract/)] [[See Explorer](https://explorer-test-side01.aelf.io/address/2cGT3RZZy6UJJ3eJPZdWMmuoH2TZBihvMtAtKvLJUaBnvskK2x)]
