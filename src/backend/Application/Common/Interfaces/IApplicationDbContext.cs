@@ -9,6 +9,8 @@ namespace Application.Common.Interfaces
     {
         DbSet<ChainInfo> ChainInfos { get; set; }
         DbSet<TokenInfo> TokenInfos { get; set; }
+        DbSet<CrossChainOperation> CrossChainOperations { get; set; }
+
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken());
         int SaveChanges();
     }

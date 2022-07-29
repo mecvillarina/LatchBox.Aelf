@@ -139,12 +139,13 @@ export async function SendTx(address, functionName, payload) {
 
         await aelf.chain.getChainStatus();
         var contractResult = await aelf.chain.contractAt(address, walletPayload);
-        //console.log(contractResult);
+        console.log(contractResult);
 
         if (contractResult) {
             var callResult = await contractResult[functionName](payload);
 
-            //console.log(callResult);
+            console.log("Call Result");
+            console.log(callResult);
             if (callResult) {
                 return callResult.TransactionId;
             }
