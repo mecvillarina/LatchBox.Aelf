@@ -1,4 +1,5 @@
 ﻿using Application.Common.Extensions;
+using Application.Features.CrossChainOperations.Commands.Create;
 using Blazored.FluentValidation;
 using Client.App.Models;
 using Client.App.Parameters;
@@ -51,7 +52,7 @@ namespace Client.App.Pages.Assets.Modals
             if (Validated)
             {
                 IsProcessing = true;
-                
+
                 try
                 {
                     var chain = await ChainService.FetchCurrentChainInfoAsync();
@@ -65,6 +66,24 @@ namespace Client.App.Pages.Assets.Modals
                         if (txResult.ErrorMessage != null)
                             throw new GeneralException(txResult.ErrorMessage.Message);
 
+                        if (chain.ChainId != Model.IssueChainId)
+                        {
+                            await _exceptionHandler.HandlerRequestTaskAsync(() => CrossChainOperationManager.CreateAsync(new CreateCrossChainOperationCommand()
+                            {
+                                From = walletAddress,
+                                ChainId = chain.ChainId,
+                                IssueChainId = Model.IssueChainId,
+                                ContactName = "Token",
+                                ChainOperation = "Create",
+                                TransactionId = txResult.TransactionId
+                            }));
+
+                            AppDialogService.ShowTxSend(chain.Explorer, txResult.TransactionId, "Token creation success");
+                        }
+                        else
+                        {
+                            AppDialogService.ShowTxSend(chain.Explorer, txResult.TransactionId, "Token creation success");
+                        }
                         AppDialogService.ShowTxSend(chain.Explorer, txResult.TransactionId, "Token creation success");
                         MudDialog.Close();
                     }
