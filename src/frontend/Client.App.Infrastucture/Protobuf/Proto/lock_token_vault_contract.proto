@@ -5,7 +5,7 @@ import "google/protobuf/wrappers.proto";
 import "google/protobuf/timestamp.proto";
 import "client.proto";
 
-option csharp_namespace = "Client.App.Infrastucture.Proto";
+option csharp_namespace = "Client.App.Infrastucture.Proto.LockTokenVault";
 
 message AddLockOuput {
     int64 lock_id = 1;

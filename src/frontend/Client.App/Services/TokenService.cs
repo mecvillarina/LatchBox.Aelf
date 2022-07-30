@@ -55,5 +55,17 @@ namespace Client.App.Services
             var chain = await _chainService.FetchCurrentChainInfoAsync();
             return await _nightElfService.SendTxAsync(chain.TokenContractAddress, "Approve", input);
         }
+
+        public async Task<TransactionResultDto> ValidateTokenInfoExistsAsync(TokenValidateInfoExistsInput input)
+        {
+            var chain = await _chainService.FetchCurrentChainInfoAsync();
+            return await _nightElfService.SendTxAsync(chain.TokenContractAddress, "ValidateTokenInfoExists", input);
+        }
+
+        public async Task<TransactionResultDto> CrossChainCreateTokenAsync(TokenCrossChainCreateInput input)
+        {
+            var chain = await _chainService.FetchCurrentChainInfoAsync();
+            return await _nightElfService.SendTxAsync(chain.TokenContractAddress, "CrossChainCreateToken", input);
+        }
     }
 }

@@ -1,16 +1,15 @@
 ﻿using Application.Common.Dtos;
 using Application.Common.Extensions;
+using Application.Features.CrossChainOperations.Queries;
 using Client.App.Pages.Assets.Modals;
 using Client.App.Pages.Base;
 using Client.App.Parameters;
 using Client.App.SmartContractDto;
 using Client.Infrastructure.Exceptions;
-using Domain.Entities;
 using MudBlazor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Client.App.Pages.Assets
@@ -22,6 +21,8 @@ namespace Client.App.Pages.Assets
         public bool IsConnected { get; set; }
         public bool FlagProcess { get; set; }
         public bool IsProcessing { get; set; }
+        public bool IsCrossChainOperationSectionEnabled { get; set; }
+        public List<CrossChainPendingOperationDto> CrossChainOps { get; set; } = new();
         protected async override Task OnInitializedAsync()
         {
             NightElfExecutor.Connected += HandleNightElfExecutorConnected;
@@ -44,6 +45,7 @@ namespace Client.App.Pages.Assets
             IsConnected = false;
             IsProcessing = false;
             FlagProcess = false;
+            IsCrossChainOperationSectionEnabled = false;
             ClearData();
             StateHasChanged();
         }
@@ -65,12 +67,15 @@ namespace Client.App.Pages.Assets
             FlagProcess = true;
             IsProcessing = true;
             StateHasChanged();
+
             var currentChainBase58 = await ChainService.FetchCurrentChainAsync();
             var walletAddress = await NightElfService.GetAddressAsync();
 
             try
             {
                 if (string.IsNullOrEmpty(walletAddress)) throw new GeneralException("No Wallet found.");
+
+                await FetchCrossChainOperationAsync();
 
                 var result = await TokenManager.GetTokenBalancesAsync(currentChainBase58, walletAddress);
                 if (result.Succeeded)
@@ -116,6 +121,41 @@ namespace Client.App.Pages.Assets
 
             await Task.WhenAll(tasks);
             StateHasChanged();
+        }
+
+        private async Task FetchCrossChainOperationAsync()
+        {
+            var currentChain = await ChainService.FetchCurrentChainInfoAsync();
+
+            if (currentChain.ChainType != "Side")
+            {
+                IsCrossChainOperationSectionEnabled = false;
+                CrossChainOps.Clear();
+                StateHasChanged();
+                return;
+            }
+
+            var walletAddress = await NightElfService.GetAddressAsync();
+
+            if (string.IsNullOrEmpty(walletAddress)) return;
+
+            try
+            {
+                var result = await _exceptionHandler.HandlerRequestTaskAsync(() => CrossChainOperationManager.GetPendingOperationAsync(new GetPendingOperationsQuery()
+                {
+                    From = walletAddress,
+                    ContractName = "Token",
+                    IssueChainId = currentChain.ChainId
+                }));
+
+                if (result.Succeeded)
+                {
+                    CrossChainOps = result.Data;
+                    IsCrossChainOperationSectionEnabled = true;
+                    StateHasChanged();
+                }
+            }
+            catch { }
         }
 
         private async Task<(bool, List<string>)> ValidateSupportedChainAsync()
@@ -173,9 +213,33 @@ namespace Client.App.Pages.Assets
             await dialog.Result;
         }
 
+        private async Task OnConfirmTransactionAsync(CrossChainPendingOperationDto op)
+        {
+            var isConnected = await NightElfService.IsConnectedAsync();
+            if (!isConnected)
+            {
+                AppDialogService.ShowError("Connect your wallet first.");
+                return;
+            }
+
+            var parameters = new DialogParameters()
+            {
+                { nameof(ConfirmTokenCrossChainTransactionModal.Model), op }
+            };
+
+            var dialog = DialogService.Show<ConfirmTokenCrossChainTransactionModal>($"Confirm Cross Chain Transaction", parameters);
+            var dialogResult = await dialog.Result;
+
+            if (!dialogResult.Cancelled)
+            {
+                await FetchDataAsync();
+            }
+        }
+
         private void ClearData()
         {
             TokenBalances = new();
+            CrossChainOps = new();
             StateHasChanged();
         }
 

@@ -71,5 +71,45 @@
                 </MudText>
             }
         </MudPaper>
+
+        @if (IsCrossChainOperationSectionEnabled && CrossChainOps.Any())
+        {
+            <MudPaper Square="true" Elevation="15" Class="mt-4">
+                <div class="px-4 py-6">
+                    <div Class="d-flex justify-space-between mud-width-full">
+                        <div class="d-flex">
+                            <MudText Class="mr-4 align-self-center" Color="Color.Secondary" Typo="Typo.h5" GutterBottom="false">Pending Confirmations</MudText>
+                        </div>
+                    </div>
+                </div>
+
+                <MudTable Items="@CrossChainOps" Class="mx-0 grey darken-4" FixedHeader="true" Breakpoint="Breakpoint.Sm">
+                    <HeaderContent>
+                        <MudTh>Operation</MudTh>
+                        <MudTh>Source Chain</MudTh>
+                        <MudTh>Source Chain Tx</MudTh>
+                        <MudTh>Action</MudTh>
+                    </HeaderContent>
+
+                    <RowTemplate>
+                        <MudTd DataLabel="Operation">
+                            <span>@context.IssueChainOperation</span>
+                        </MudTd>
+                        <MudTd DataLabel="Source Chain">
+                            <span>@context.IssueChainId.ToChainIdBase58()</span>
+                        </MudTd>
+                        <MudTd DataLabel="Source Chain Tx">
+                            <MudLink Href="@context.ExplorerUrl" Target="_blank">@context.Transaction.TransactionId.ToMask(10)</MudLink>
+                        </MudTd>
+                        <MudTd DataLabel="Action">
+                            <MudMenu Variant="Variant.Filled" Color="Color.Primary" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" DisableElevation="true" Icon="@Icons.Filled.KeyboardArrowDown" IconColor="Color.Secondary" Direction="Direction.Left" OffsetX="true">
+                                <MudMenuItem OnClick="(() => OnConfirmTransactionAsync(context))">Confirm</MudMenuItem>
+                            </MudMenu>
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudPaper>
+        }
     }
+
 </MudContainer>
