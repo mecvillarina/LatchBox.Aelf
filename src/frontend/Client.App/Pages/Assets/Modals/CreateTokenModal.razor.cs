@@ -66,17 +66,17 @@ namespace Client.App.Pages.Assets.Modals
                         if (txResult.ErrorMessage != null)
                             throw new GeneralException(txResult.ErrorMessage.Message);
 
-                        var validateInfoPayload = new TokenValidateInfoExistsInput(Model) { Issuer = walletAddress, TotalSupply = Model.TotalSupply.ToChainAmount(Model.Decimals) };
-
-                        var validateInfoTxResult = await TokenService.ValidateTokenInfoExistsAsync(validateInfoPayload);
-
-                        if (validateInfoTxResult != null)
+                        if (chain.ChainId != Model.IssueChainId)
                         {
-                            if (validateInfoTxResult.ErrorMessage != null)
-                                throw new GeneralException(validateInfoTxResult.ErrorMessage.Message);
+                            var validateInfoPayload = new TokenValidateInfoExistsInput(Model) { Issuer = walletAddress, TotalSupply = Model.TotalSupply.ToChainAmount(Model.Decimals) };
 
-                            if (chain.ChainId != Model.IssueChainId)
+                            var validateInfoTxResult = await TokenService.ValidateTokenInfoExistsAsync(validateInfoPayload);
+
+                            if (validateInfoTxResult != null)
                             {
+                                if (validateInfoTxResult.ErrorMessage != null)
+                                    throw new GeneralException(validateInfoTxResult.ErrorMessage.Message);
+
                                 await _exceptionHandler.HandlerRequestTaskAsync(() => CrossChainOperationManager.CreateAsync(new CreateCrossChainOperationCommand()
                                 {
                                     From = walletAddress,
@@ -86,16 +86,15 @@ namespace Client.App.Pages.Assets.Modals
                                     ChainOperation = "Create",
                                     TransactionId = validateInfoTxResult.TransactionId
                                 }));
+                            }
 
-                                var issueChain = SupportedChains.FirstOrDefault(x => x.ChainId == Model.IssueChainId);
-                                AppDialogService.ShowTxSend(chain.Explorer, txResult.TransactionId, $"Token creation success on {chain.ChainIdBase58} chain. After few minutes, please change your current chain to {issueChain.ChainIdBase58} chain as there is another transaction needed to be confirm.");
-                            }
-                            else
-                            {
-                                AppDialogService.ShowTxSend(chain.Explorer, txResult.TransactionId, "Token creation success");
-                            }
+                            var issueChain = SupportedChains.FirstOrDefault(x => x.ChainId == Model.IssueChainId);
+                            AppDialogService.ShowTxSend(chain.Explorer, txResult.TransactionId, $"Token creation success on {chain.ChainIdBase58} chain. After few minutes, please change your current chain to {issueChain.ChainIdBase58} chain as there is another transaction needed to be confirm.");
                         }
-
+                        else
+                        {
+                            AppDialogService.ShowTxSend(chain.Explorer, txResult.TransactionId, "Token creation success");
+                        }
                         MudDialog.Close();
                     }
                 }
