@@ -44,7 +44,7 @@ namespace Client.App.Pages.Assets.Modals
                 {
                     var chain = await ChainService.FetchCurrentChainInfoAsync();
 
-                    var input = System.Text.Json.JsonSerializer.Deserialize<TokenValidateInfoExistsInputDto>(Model.Transaction.Transaction.Params, new JsonSerializerOptions
+                    var input = JsonSerializer.Deserialize<TokenValidateInfoExistsInputDto>(Model.Transaction.Transaction.Params, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     });
@@ -55,15 +55,15 @@ namespace Client.App.Pages.Assets.Modals
                         TokenName = input.TokenName,
                         TotalSupply = input.TotalSupply,
                         Decimals = input.Decimals,
-                        Issuer = new Client.App.Infrastucture.Proto.Address { Value = AElf.Types.Address.FromBase58(input.Issuer).Value },
+                        Issuer = new Infrastucture.Proto.Address { Value = AElf.Types.Address.FromBase58(input.Issuer).Value },
                         IsBurnable = input.IsBurnable,
                         IssueChainId = input.IssueChainId
                     };
 
                     Transaction transaction = new Transaction()
                     {
-                        From = AElf.Types.Address.FromBase58(Model.Transaction.Transaction.From),
-                        To = AElf.Types.Address.FromBase58(Model.Transaction.Transaction.To),
+                        From = Address.FromBase58(Model.Transaction.Transaction.From),
+                        To = Address.FromBase58(Model.Transaction.Transaction.To),
                         MethodName = Model.Transaction.Transaction.MethodName,
                         RefBlockNumber = Model.Transaction.Transaction.RefBlockNumber,
                         RefBlockPrefix = ByteString.FromBase64(Model.Transaction.Transaction.RefBlockPrefix),
