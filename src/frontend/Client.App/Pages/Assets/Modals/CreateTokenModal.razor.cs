@@ -73,7 +73,7 @@ namespace Client.App.Pages.Assets.Modals
                         if (validateInfoTxResult != null)
                         {
                             if (validateInfoTxResult.ErrorMessage != null)
-                                throw new GeneralException(txResult.ErrorMessage.Message);
+                                throw new GeneralException(validateInfoTxResult.ErrorMessage.Message);
 
                             if (chain.ChainId != Model.IssueChainId)
                             {
