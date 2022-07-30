@@ -17,9 +17,9 @@
 - **Token Creation** - token creation on aelf is not a new feature, but LatchBox made it much easier. Anyone can create a token both on main chain and perform a cross chain token creation on side chain. 
     
     Anyone can: 
-    - **Create New Token**, when someone created a token, LatchBox will create it on main chain but the issued chain id value will be the side tDVV chain id.
-    - **Add Existing Token**, when someone knows the token symbol of the token, they can add it on the portal to see the token balance. If you're the token issuer and your token exists **Main AELF** chain and not on **Side tDVV** chain, LatchBox will send a transaction to token contract `CrossChainCreateToken` method on side tDVV chain.
-    - **Issue Token**, if you're the token issuer of a specific token, you can able to issue/mint new tokens.
+    - **Create New Token**, when someone created a token, they have the option to choose which chain they want to issue it.
+    - **Cross Chain Token Creation Confirmation**, when someone created a token on main chain (AELF) and set the issue chain to a side chain, there will be a pending confirmation display on the side chain **Assets Page**.
+    - **Issue Token**, if you're the token issuer of a specific token, you can able to issue/mint new tokens on your selected issue chain.
 
 - **Token Lock** provides locking of tokens in a smart contract for certain period of time. This is designed for those people who loves to hold their tokens for a long time and have no intention selling it for a cheap price. 
     
