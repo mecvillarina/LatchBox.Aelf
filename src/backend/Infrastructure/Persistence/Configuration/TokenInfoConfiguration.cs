@@ -12,7 +12,6 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.Property(t => t.Symbol).HasMaxLength(128).IsRequired();
             builder.Property(t => t.RawExplorerData).IsRequired();
-            builder.Property(t => t.RawTxData);
             builder.Property(t => t.Issuer).HasMaxLength(128);
         }
     }

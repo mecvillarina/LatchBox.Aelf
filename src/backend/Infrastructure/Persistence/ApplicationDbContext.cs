@@ -22,6 +22,7 @@ namespace Infrastructure.Persistence
 
         public DbSet<ChainInfo> ChainInfos { get; set; }
         public DbSet<TokenInfo> TokenInfos { get; set; }
+        public DbSet<CrossChainOperation> CrossChainOperations { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {

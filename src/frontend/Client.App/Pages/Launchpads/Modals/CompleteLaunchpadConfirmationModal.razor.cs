@@ -1,8 +1,8 @@
 ﻿using AElf;
 using Application.Common.Extensions;
-using Client.App.Infrastucture.Proto;
+using Client.App.Infrastucture.Proto.Launchpad;
+using Client.App.Infrastucture.Proto.LockTokenVault;
 using Client.App.Models;
-using Client.App.Parameters;
 using Client.App.Services;
 using Client.App.SmartContractDto;
 using Client.App.SmartContractDto.Launchpad;
@@ -123,11 +123,11 @@ namespace Client.App.Pages.Launchpads.Modals
 
                             var updateLockInfoTxResult = await LaunchpadService.UpdateLockInfoAsync(new CrowdSaleUpdateLockInfoInput()
                             {
-                                CrowdSaleId = Model.Launchpad.Id, 
+                                CrowdSaleId = Model.Launchpad.Id,
                                 LockId = addLockOutput.LockId
                             });
 
-                            if(updateLockInfoTxResult != null)
+                            if (updateLockInfoTxResult != null)
                             {
                                 if (updateLockInfoTxResult.ErrorMessage != null)
                                     throw new GeneralException(updateLockInfoTxResult.ErrorMessage.Message);
