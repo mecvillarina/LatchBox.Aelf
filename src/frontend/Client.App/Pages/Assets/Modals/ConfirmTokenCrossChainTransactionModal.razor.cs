@@ -1,24 +1,15 @@
 ﻿using AElf;
 using AElf.Types;
 using Application.Common.Dtos;
+using Application.Features.CrossChainOperations.Commands.Confirm;
 using Blazored.FluentValidation;
-using Client.App.Infrastucture.Proto;
 using Client.App.Infrastucture.Proto.MultiToken;
-using Client.App.Parameters;
 using Client.App.SmartContractDto;
-using Client.App.SmartContractDto.LockTokenVault;
 using Client.Infrastructure.Exceptions;
 using Google.Protobuf;
-using Humanizer;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using Newtonsoft.Json;
 using System;
-using System.IO;
-using System.Reflection;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Security.Principal;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -95,7 +86,13 @@ namespace Client.App.Pages.Assets.Modals
                         if (txResult.ErrorMessage != null)
                             throw new GeneralException(txResult.ErrorMessage.Message);
 
-                        AppDialogService.ShowTxSend(chain.Explorer, txResult.TransactionId, "Transaction confirmed");
+                        await _exceptionHandler.HandlerRequestTaskAsync(() => CrossChainOperationManager.ConfirmAsync(new ConfirmCrossChainOperationCommand()
+                        {
+                            ChainId = chain.ChainId,
+                            IssueChainTransactionId = txResult.TransactionId
+                        }));
+
+                        AppDialogService.ShowTxSend(chain.Explorer, txResult.TransactionId, "Cross Chain Transaction submitted");
                         MudDialog.Close();
                     }
                 }

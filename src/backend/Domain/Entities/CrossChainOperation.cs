@@ -16,6 +16,7 @@ namespace Domain.Entities
         public string RawMerklePathData { get; set; }
         public int IssueChainId { get; set; }
         public string IssueChainOperation { get; set; }
+        public string IssueChainTransactionId { get; set; }
         public bool IsConfirmed { get; set; }
         public DateTime Created { get; set; }
     }

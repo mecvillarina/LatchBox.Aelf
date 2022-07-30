@@ -1,5 +1,6 @@
 ﻿using Application.Common.Dtos;
 using Application.Common.Models;
+using Application.Features.CrossChainOperations.Commands.Confirm;
 using Application.Features.CrossChainOperations.Commands.Create;
 using Application.Features.CrossChainOperations.Queries;
 using Client.App.Infrastructure.Routes;
@@ -17,6 +18,7 @@ namespace Client.App.Infrastructure.WebServices
         }
 
         public Task<IResult> CreateAsync(CreateCrossChainOperationCommand contract) => PostAsync(CrossChainOperationEndpoints.Create, contract);
+        public Task<IResult> ConfirmAsync(ConfirmCrossChainOperationCommand contract) => PostAsync(CrossChainOperationEndpoints.Confirm, contract);
         public Task<IResult<List<CrossChainPendingOperationDto>>> GetPendingOperationsAsync(GetPendingOperationsQuery contract)
         {
             var endpoint = string.Format(CrossChainOperationEndpoints.GetPending, contract.From, contract.IssueChainId, contract.ContractName);

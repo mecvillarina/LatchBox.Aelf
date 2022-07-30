@@ -19,6 +19,7 @@ namespace Infrastructure.Persistence.Configuration
             builder.Property(t => t.IssueChainId).IsRequired();
             builder.Property(t => t.IssueChainOperation).HasMaxLength(64).IsRequired();
             builder.Property(t => t.IsConfirmed).HasMaxLength(64).IsRequired();
+            builder.Property(t => t.IssueChainTransactionId).HasMaxLength(128);
             builder.Property(t => t.RawTxData).IsRequired();
             builder.Property(t => t.RawMerklePathData).IsRequired();
             builder.Property(t => t.Created).IsRequired();

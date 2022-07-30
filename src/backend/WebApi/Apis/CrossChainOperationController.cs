@@ -1,6 +1,7 @@
 ﻿using Application.Common.Dtos;
 using Application.Common.Interfaces;
 using Application.Common.Models;
+using Application.Features.CrossChainOperations.Commands.Confirm;
 using Application.Features.CrossChainOperations.Commands.Create;
 using Application.Features.CrossChainOperations.Queries;
 using MediatR;
@@ -32,6 +33,12 @@ namespace WebApi.Apis
         public async Task<IActionResult> GetPending([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "crosschain/operation/pending")] GetPendingOperationsQuery queryArgs, HttpRequest req, ExecutionContext context, ILogger logger)
         {
             return await ExecuteAsync<GetPendingOperationsQuery, Result<List<CrossChainPendingOperationDto>>>(context, logger, req, queryArgs);
+        }
+
+        [FunctionName("CrossChainOperation_Confirm")]
+        public async Task<IActionResult> Confirm([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "crosschain/operation/confirm")] ConfirmCrossChainOperationCommand commandArgs, HttpRequest req, ExecutionContext context, ILogger logger)
+        {
+            return await ExecuteAsync<ConfirmCrossChainOperationCommand, IResult>(context, logger, req, commandArgs);
         }
     }
 }

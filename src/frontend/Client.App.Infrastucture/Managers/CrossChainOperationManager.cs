@@ -1,5 +1,6 @@
 ﻿using Application.Common.Dtos;
 using Application.Common.Models;
+using Application.Features.CrossChainOperations.Commands.Confirm;
 using Application.Features.CrossChainOperations.Commands.Create;
 using Application.Features.CrossChainOperations.Queries;
 using Client.App.Infrastructure.Managers.Interfaces;
@@ -26,5 +27,11 @@ namespace Client.App.Infrastructure.Managers
         {
             return await _crossChainOperationWebService.GetPendingOperationsAsync(contract);
         }
+
+        public async Task<IResult> ConfirmAsync(ConfirmCrossChainOperationCommand contract)
+        {
+            return await _crossChainOperationWebService.ConfirmAsync(contract);
+        }
+
     }
 }
