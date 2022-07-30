@@ -7,5 +7,6 @@
         public TransactionResultDto Transaction { get; set; }
         public MerklePathDto MerklePath { get; set; }
         public string IssueChainOperation { get; set; }
+        public string ExplorerUrl { get; set; }
     }
 }

@@ -10,6 +10,6 @@ namespace Client.App.Infrastructure.Managers.Interfaces
     public interface ICrossChainOperationManager : IManager
     {
         Task<IResult> CreateAsync(CreateCrossChainOperationCommand contract);
-        Task<IResult<List<CrossChainPendingOperationDto>>> CreateAsync(GetPendingOperationsQuery contract);
+        Task<IResult<List<CrossChainPendingOperationDto>>> GetPendingOperationAsync(GetPendingOperationsQuery contract);
     }
 }

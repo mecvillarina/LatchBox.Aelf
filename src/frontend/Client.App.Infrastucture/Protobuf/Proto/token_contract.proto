@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+import "client.proto";
+
+option csharp_namespace = "Client.App.Infrastucture.Proto.MultiToken";
+
+message ValidateTokenInfoExistsInput {
+    string symbol = 1;
+    string token_name = 2;
+    int64 total_supply = 3;
+    int32 decimals = 4;
+    client.Address issuer = 5;
+    bool is_burnable = 6;
+    int32 issue_chain_id = 7;
+}

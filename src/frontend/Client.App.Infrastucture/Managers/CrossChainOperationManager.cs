@@ -22,7 +22,7 @@ namespace Client.App.Infrastructure.Managers
             return await _crossChainOperationWebService.CreateAsync(contract);
         }
 
-        public async Task<IResult<List<CrossChainPendingOperationDto>>> CreateAsync(GetPendingOperationsQuery contract)
+        public async Task<IResult<List<CrossChainPendingOperationDto>>> GetPendingOperationAsync(GetPendingOperationsQuery contract)
         {
             return await _crossChainOperationWebService.GetPendingOperationsAsync(contract);
         }

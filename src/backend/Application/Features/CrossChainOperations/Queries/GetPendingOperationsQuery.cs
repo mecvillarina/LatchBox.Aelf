@@ -39,8 +39,8 @@ namespace Application.Features.CrossChainOperations.Queries
 
                 foreach (var op in ops)
                 {
-                    var chain = _dbContext.ChainInfos.FirstOrDefault(x => x.ChainId == op.ChainId); 
-                    if(chain != null && (chain.LastIrreversibleBlockHeight - op.ChainBlockNumber) > 80)
+                    var chain = _dbContext.ChainInfos.FirstOrDefault(x => x.ChainId == op.ChainId);
+                    if (chain != null && (chain.LastIrreversibleBlockHeight - op.ChainBlockNumber) > 80)
                     {
                         var item = new CrossChainPendingOperationDto();
                         item.FromChainId = op.ChainId;
@@ -48,6 +48,7 @@ namespace Application.Features.CrossChainOperations.Queries
                         item.Transaction = JsonSerializer.Deserialize<TransactionResultDto>(op.RawTxData);
                         item.MerklePath = JsonSerializer.Deserialize<MerklePathDto>(op.RawMerklePathData);
                         item.IssueChainOperation = op.IssueChainOperation;
+                        item.ExplorerUrl = $"{chain.Explorer}/tx/{item.Transaction.TransactionId}";
                         data.Add(item);
                     }
                 }
